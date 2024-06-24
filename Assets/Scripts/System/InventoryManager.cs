@@ -405,7 +405,7 @@ public class InventoryManager : MonoBehaviour
                 inventoryItem.slot.amount.text = "" + inventoryItem.status.amount;
                 GameObject droppdeObject = Instantiate(inventoryItem.data.dropObject, playerController.tHead.transform.position + playerController.tHead.transform.forward * 0.5f, playerController.tHead.transform.rotation);
                 droppdeObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
-                droppdeObject.GetComponent<NetworkObject>().Spawn();
+                droppdeObject.GetComponent<Interactable>().SpawnServerRpc();
 
             }
             else
@@ -414,7 +414,7 @@ public class InventoryManager : MonoBehaviour
                 Destroy(inventoryItem.slot.gameObject);
                 GameObject droppdeObject = Instantiate(inventoryItem.data.dropObject, playerController.tHead.transform.position + playerController.tHead.transform.forward * 0.5f, playerController.tHead.transform.rotation);
                 droppdeObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
-                droppdeObject.GetComponent<NetworkObject>().Spawn();
+                droppdeObject.GetComponent<Interactable>().SpawnServerRpc();
                 if (equippedItemLeft == inventoryItem || equippedItemRight == inventoryItem || equippedItemCenter == inventoryItem)
                 {
                     UnequipItem(inventoryItem.data.equipType);
@@ -428,7 +428,7 @@ public class InventoryManager : MonoBehaviour
             GameObject droppdeObject = Instantiate(inventoryItem.data.dropObject, playerController.tHead.transform.position + playerController.tHead.transform.forward * 0.5f, playerController.tHead.transform.rotation);
             droppdeObject.GetComponentInChildren<I_InventoryItem>().itemStatus.durability = inventoryItem.status.durability;
             droppdeObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
-            droppdeObject.GetComponent<NetworkObject>().Spawn();
+            droppdeObject.GetComponent<Interactable>().SpawnServerRpc();
             if (equippedItemLeft == inventoryItem || equippedItemRight == inventoryItem || equippedItemCenter == inventoryItem)
             {
                 UnequipItem(inventoryItem.data.equipType);

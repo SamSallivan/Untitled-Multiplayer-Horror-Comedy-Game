@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using System;
 using TMPro;
 using Unity.VisualScripting;
+using Unity.Netcode;
 
 public enum InteractionType
 {
@@ -19,7 +20,7 @@ public enum InteractionType
 [Serializable]
 public class MyEvent : UnityEvent<string, GameObject> { }
 
-public class Interactable : MonoBehaviour
+public class Interactable : NetworkBehaviour
 {
 
     //[Separator("Base Info")]
@@ -160,17 +161,23 @@ public class Interactable : MonoBehaviour
         //UIManager.instance.interactionPromptAnimation.Play("PromptButtonDisappear");
     }
     
-    // [ServerRpc(RequireOwnership = false)]
-    // public void DestroyServerRpc()
-    // {
-    //     //this.NetworkObject.Despawn();
-    //     DestroyClientRpc();
-    // }
+    [ServerRpc(RequireOwnership = false)]
+    public void SpawnServerRpc()
+    {
+        this.NetworkObject.Spawn();
+    }
 
-    // [ClientRpc]
-    // public void DestroyClientRpc()
-    // {
-    //     //this.NetworkObject.Despawn();
-    //     Destroy(this.gameObject);
-    // }
+    [ServerRpc(RequireOwnership = false)]
+    public void DespawnServerRpc()
+    {
+        this.NetworkObject.Despawn();
+        //DestroyClientRpc();
+    }
+
+    [ClientRpc]
+    public void DestroyClientRpc()
+    {
+        //this.NetworkObject.Despawn();
+        Destroy(this.gameObject);
+    }
 }

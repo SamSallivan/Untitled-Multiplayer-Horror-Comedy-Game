@@ -2,6 +2,7 @@ using Netcode.Transports.Facepunch;
 using Steamworks;
 using Steamworks.Data;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
@@ -255,6 +256,23 @@ public class GameNetworkManager : MonoBehaviour
         LeaveCurrentSteamLobby();
         currentSteamLobbyName = SteamClient.Name;
 		ResetNetworkManagerValues();
+	}
+
+	public void StartLocalClient()
+	{	
+		localClientJoinRequestPending = true;
+		NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(Instance.gameVersionNumber.ToString());
+
+		SubscribeToNetworkManagerCallbacks();
+		if (NetworkManager.Singleton.StartClient())
+		{
+			Debug.Log("Started a client");		
+		}
+		else
+		{
+			Debug.Log("Could not start client");
+		}
+		
 	}
 
 	public void LeaveCurrentSteamLobby()
