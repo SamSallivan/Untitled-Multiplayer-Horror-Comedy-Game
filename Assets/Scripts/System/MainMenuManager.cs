@@ -78,13 +78,19 @@ public class MainMenuManager : MonoBehaviour
 		GameNetworkManager.Instance.disableSteam = lobbyIsLocalToggle.isOn;
 		if(lobbyIsLocalToggle.isOn){
 			Destroy(NetworkManager.Singleton.GetComponent<FacepunchTransport>());
-			NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<UnityTransport>();
-			NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ServerListenAddress = "0.0.0.0";
+			if (!NetworkManager.Singleton.GetComponent<UnityTransport>())
+			{
+				NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<UnityTransport>();
+                NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ServerListenAddress = "0.0.0.0";
+            }
 			GameNetworkManager.Instance.UnsubscribeToSteamMatchmakingCallbacks();
 		}
 		else{
 			Destroy(NetworkManager.Singleton.GetComponent<UnityTransport>());
-			NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<FacepunchTransport>();
+			if (!NetworkManager.Singleton.GetComponent<FacepunchTransport>())
+			{
+				NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<FacepunchTransport>();
+			}
 			GameNetworkManager.Instance.SubscribeToSteamMatchmakingCallbacks();
 		}
 	}

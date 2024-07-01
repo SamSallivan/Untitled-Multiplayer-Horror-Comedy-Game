@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class InventoryBackSlot : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
 {
-    public event Action<InventoryItem> OnReturnRequiredType = delegate { };
+    public event Action<I_InventoryItem> OnReturnRequiredType = delegate { };
 
     public int GetIndex()
     {
@@ -24,7 +24,7 @@ public class InventoryBackSlot : MonoBehaviour, IPointerEnterHandler, IPointerCl
         Debug.Log("???");
         Vector2 mouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-        if (mouseInput != Vector2.zero && InventoryManager.instance.selectedIndex != GetIndex())
+        if (mouseInput != Vector2.zero && InventoryManager.instance.hoveredIndex != GetIndex())
         {
             foreach (Transform child in transform.parent)
             {
@@ -34,7 +34,7 @@ public class InventoryBackSlot : MonoBehaviour, IPointerEnterHandler, IPointerCl
             transform.GetChild(0).gameObject.SetActive(true);
 
             //InventoryManager.instance.selectedPosition = InventoryManager.instance.GetGridPosition(GetIndex());
-            InventoryManager.instance.selectedIndex = GetIndex();
+            InventoryManager.instance.hoveredIndex = GetIndex();
 
             InventoryManager.instance.UpdateSelection(false);
         }
@@ -51,7 +51,7 @@ public class InventoryBackSlot : MonoBehaviour, IPointerEnterHandler, IPointerCl
         if (eventData.button == PointerEventData.InputButton.Left && eventData.clickCount == 1)
         {
             InventoryManager.instance.selectedPosition = InventoryManager.instance.GetGridPosition(GetIndex());
-            InventoryManager.instance.selectedIndex = GetIndex();
+            InventoryManager.instance.hoveredIndex = GetIndex();
             InventoryManager.instance.UpdateSelection();
 
             for (int i = 0; i < UIManager.instance.inventoryBackGrid.transform.childCount; i++)
@@ -66,7 +66,7 @@ public class InventoryBackSlot : MonoBehaviour, IPointerEnterHandler, IPointerCl
                 if (InventoryManager.instance.requireItemList.Count > GetIndex())
                 {
                     OnReturnRequiredType?.Invoke(InventoryManager.instance.requireItemList[GetIndex()]);
-                    print(InventoryManager.instance.requireItemList[GetIndex()].data.title);
+                    print(InventoryManager.instance.requireItemList[GetIndex()].itemData.title);
                     InventoryManager.instance.CloseInventory();
                 }
                 return;
@@ -76,7 +76,7 @@ public class InventoryBackSlot : MonoBehaviour, IPointerEnterHandler, IPointerCl
             {
                 if (InventoryManager.instance.inventoryItemList.Count > GetIndex())
                 {
-                    InventoryItem item = InventoryManager.instance.inventoryItemList[GetIndex()];
+                    I_InventoryItem item = InventoryManager.instance.inventoryItemList[GetIndex()];
                     InventoryManager.instance.EquipItem(item);
                 }
             }

@@ -394,7 +394,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
                 string playerName = new Friend(steamIdList[i]).Name;
                 GameSessionManager.Instance.playerControllerList[i].playerUsername = playerName;
-                GameSessionManager.Instance.playerControllerList[i].playerUsernameText.text = playerUsername;
+                GameSessionManager.Instance.playerControllerList[i].playerUsernameText.text = playerName;
 
             }
         }

@@ -3,48 +3,80 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Steamworks;
 
 public class I_InventoryItem : Interactable
 {
     public event Action OnPickUp = delegate { };
 
+    public PlayerController owner;
+    public bool isCurrentlyEquipped;
+    public InventorySlot inventorySlot;
+    
+	public virtual void LateUpdate()
+	{
+		if (owner != null)
+		{
+            Transform targetTransform = owner.equippedTransform;
+			base.transform.position = targetTransform.position + itemData.equipPosition;
+			base.transform.rotation = targetTransform.rotation;
+            base.transform.Rotate(itemData.equipRotation);
+        }
+    }
+
     public override IEnumerator InteractionEvent()
     {
-        
         if(itemData != null)
         {
-            InventoryItem newItem = InventoryManager.instance.AddItem(itemData, itemStatus);
-            Destroy(transform.gameObject);
+            I_InventoryItem item = InventoryManager.instance.AddItemToInventory(this);
+            //InventoryItem newItem = InventoryManager.instance.AddItem(itemData, itemStatus);
+            //Destroy(transform.gameObject);
             OnPickUp?.Invoke();
-            if (newItem != null)
+            if (item != null)
             {
-
-                if (equipOnPickUp && itemData.isEquippable)
+                /*if (equipOnPickUp && itemData.isEquippable)
                 {
-                    InventoryManager.instance.EquipItem(newItem);
-                }
+                    InventoryManager.instance.EquipItem(item);
+                }*/
 
                 if (openInventoryOnPickUp)
                 {
                     InventoryManager.instance.OpenInventory();
                     InventoryManager.instance.selectedPosition =
-                        InventoryManager.instance.GetGridPosition(newItem.slot.GetIndex());
+                    InventoryManager.instance.GetGridPosition(item.inventorySlot.GetIndex());
                 }
-
-                UnTarget();
             }
+            UnTarget();
         }
         yield return null; 
     }
 
-    // public IEnumerator PickUp()
-    // {
-    //     yield return null;
-    // }
-    // public IEnumerator Examine()
-    // {
-    //     yield return null;
-    // }
+
+	public void EnableItemMeshes(bool enable)
+	{
+		MeshRenderer[] meshRenderers = base.gameObject.GetComponentsInChildren<MeshRenderer>();
+		for (int i = 0; i < meshRenderers.Length; i++)
+		{
+            meshRenderers[i].enabled = enable;
+		}
+
+		SkinnedMeshRenderer[] skinnedMeshRenderers = base.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+		for (int j = 0; j < skinnedMeshRenderers.Length; j++)
+		{
+			skinnedMeshRenderers[j].enabled = enable;
+			Debug.Log("DISABLING/ENABLING SKINNEDMESH: " + skinnedMeshRenderers[j].gameObject.name);
+		}
+	}
+    
+	public void EnableItemPhysics(bool enable)
+	{
+        base.gameObject.GetComponent<Rigidbody>().isKinematic = !enable;
+        Collider[] colliders = base.gameObject.GetComponentsInChildren<Collider>();
+		for (int i = 0; i < colliders.Length; i++)
+		{
+            colliders[i].enabled = enable;
+		}
+    }
 
     public override void Target()
     {

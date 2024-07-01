@@ -39,7 +39,7 @@ public class ItemData : ScriptableObject
     [ConditionalField(nameof(isEquippable))]
     public EquipType equipType;
     public Vector3 equipPosition;
-    public Quaternion equipRotation;
+    public Vector3 equipRotation;
     //public GameObject equipObject;
 
     public bool isDroppable;
@@ -84,9 +84,9 @@ public struct ItemStatus
 [System.Serializable]
 public class InventoryItem
 {
-    public ItemData data;
-    public ItemStatus status;
-    public InventorySlot slot;
+    public ItemData itemData;
+    public ItemStatus itemStatus;
+    public InventorySlot inventorySlot;
 
     public InventoryItem()
     {
@@ -94,8 +94,8 @@ public class InventoryItem
 
     public InventoryItem(ItemData data, ItemStatus status, InventorySlot slot)
     {
-        this.data = data;
-        this.status = status;
-        this.slot = slot;
+        this.itemData = data;
+        this.itemStatus = status;
+        this.inventorySlot = slot;
     }
 }

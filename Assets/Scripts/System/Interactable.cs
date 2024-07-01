@@ -168,16 +168,22 @@ public class Interactable : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void DespawnServerRpc()
+    public void DestroyServerRpc()
     {
-        this.NetworkObject.Despawn();
-        //DestroyClientRpc();
-    }
-
-    [ClientRpc]
-    public void DestroyClientRpc()
-    {
-        //this.NetworkObject.Despawn();
         Destroy(this.gameObject);
     }
+
+    // [ServerRpc(RequireOwnership = false)]
+    // public void DespawnServerRpc()
+    // {
+    //     this.NetworkObject.Despawn();
+    //     DestroyClientRpc();
+    // }
+
+    // [ClientRpc]
+    // public void DestroyClientRpc()
+    // {
+    //     //this.NetworkObject.Despawn();
+    //     Destroy(this.gameObject);
+    // }
 }

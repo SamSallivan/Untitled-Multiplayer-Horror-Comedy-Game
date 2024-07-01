@@ -607,9 +607,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4945066506940757530}
   - component: {fileID: 4676142308570759257}
-  - component: {fileID: 2797364767154917558}
+  - component: {fileID: 4258619532127092097}
   m_Layer: 5
-  m_Name: InventorySlot
+  m_Name: ShortcutSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -651,7 +651,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7598172357254557228}
   m_CullTransparentMesh: 1
---- !u!114 &2797364767154917558
+--- !u!114 &4258619532127092097
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -660,17 +660,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 7598172357254557228}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1e95bbd0b64bde40b568f5f0619af4f, type: 3}
+  m_Script: {fileID: 11500000, guid: fe72b18f3df8e854ca8eb680bf65ebe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shortcutId: 0
+  targetSlot: {fileID: 0}
   name: {fileID: 8865148507167838187}
   amount: {fileID: 1707619877708639716}
   image: {fileID: 6013253618423580451}
-  leftHandIcon: {fileID: 3688811748454322074}
-  rightHandIcon: {fileID: 8459054106828542698}
-  inventoryItem: {fileID: 0}
   durability: {fileID: 0}
-  background: {fileID: 6549553433472021650}
   outline: {fileID: 6937287344986174507}
 --- !u!1 &7985178255726924116
 GameObject:

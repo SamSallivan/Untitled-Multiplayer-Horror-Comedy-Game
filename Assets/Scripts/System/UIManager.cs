@@ -51,6 +51,9 @@ public class UIManager : MonoBehaviour
         public Transform detailObjectPivot;
         public bool detailObjectInBound;
 
+        public GameObject draggedItemDisplay;
+        public Image draggedImage;
+
     // [Foldout("Upgrade", true)]
     // public GameObject upgradeUI;
     // public TMP_Text upgradeTitle;
@@ -90,7 +93,7 @@ public class UIManager : MonoBehaviour
                 Unexamine();
             }
         }
-        if (!gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera)
+        if (!gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera && GameSessionManager.Instance.localPlayerController)
         {
             gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera = GameSessionManager.Instance.localPlayerController.cameraList[1];
         }

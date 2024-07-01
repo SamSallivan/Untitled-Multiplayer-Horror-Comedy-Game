@@ -66,7 +66,10 @@ public class GameSessionManager : NetworkBehaviour
             //Teleport player controller to its spawn position.
             playerControllerList[0].TeleportPlayer(playerControllerList[0].gameObject.transform.position + new Vector3(0, 10, 0));
 
-            GameNetworkManager.Instance.currentSteamLobby.Value.SetJoinable(true);
+			if (!GameNetworkManager.Instance.disableSteam)
+			{
+				GameNetworkManager.Instance.currentSteamLobby.Value.SetJoinable(true);
+			}
 		}
         
     }

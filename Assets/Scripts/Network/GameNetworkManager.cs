@@ -259,8 +259,8 @@ public class GameNetworkManager : MonoBehaviour
 	}
 
 	public void StartLocalClient()
-	{	
-		localClientJoinRequestPending = true;
+    {
+        localClientJoinRequestPending = true;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(Instance.gameVersionNumber.ToString());
 
 		SubscribeToNetworkManagerCallbacks();
