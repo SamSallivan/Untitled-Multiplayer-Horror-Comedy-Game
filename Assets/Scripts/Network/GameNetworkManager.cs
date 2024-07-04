@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class GameNetworkManager : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class GameNetworkManager : MonoBehaviour
 
     private bool networkManagerCallbacksSubscribed;
 
-	public int connectedPlayerNumber;
+	public int totalPlayerCount;
     public int maxPlayerNumber = 4;
 
 	public string disconnectionReasonText;
@@ -56,9 +57,14 @@ public class GameNetworkManager : MonoBehaviour
 		{
 			Destroy(gameObject);
 			return;
-		}
+        }
 
-		DontDestroyOnLoad(gameObject);
+        if (!NetworkManager.Singleton.GetComponent<FacepunchTransport>())
+        {
+            NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<FacepunchTransport>();
+        }
+
+        DontDestroyOnLoad(gameObject);
 	}
     
 	private IEnumerator GetLocalSteamClientUsernameCoroutine()
@@ -114,6 +120,7 @@ public class GameNetworkManager : MonoBehaviour
 	{
 		try
 		{
+			//Save
 			Disconnect();
 		}
 		catch (Exception arg)
@@ -124,7 +131,7 @@ public class GameNetworkManager : MonoBehaviour
 
 	public void Disconnect()
 	{
-		if ((!isDisconnecting) && (GameSessionManager.Instance != null))
+		if (!isDisconnecting && GameSessionManager.Instance != null)
 		{
 			isDisconnecting = true;
 			if (isHostingGame)
@@ -138,6 +145,7 @@ public class GameNetworkManager : MonoBehaviour
                 LeaveCurrentSteamLobby();
                 currentSteamLobbyName = SteamClient.Name;
             }
+
             Debug.Log("Disconnecting and setting networkobjects to destroy with owner");
             NetworkObject[] array = UnityEngine.Object.FindObjectsOfType<NetworkObject>(includeInactive: true);
             for (int i = 0; i < array.Length; i++)
@@ -217,7 +225,7 @@ public class GameNetworkManager : MonoBehaviour
 			steamIdsInCurrentSteamLobby.Add(SteamClient.SteamId);
 		}
 		isHostingGame = true;
-		connectedPlayerNumber = 1;
+		totalPlayerCount = 1;
     }
 	
 	private IEnumerator DelayLoadLobbyScene()
@@ -274,7 +282,6 @@ public class GameNetworkManager : MonoBehaviour
 		}
 		
 	}
-
 	public void LeaveCurrentSteamLobby()
 	{
 		try
@@ -350,6 +357,13 @@ public class GameNetworkManager : MonoBehaviour
 		{
 			return;
 		}
+
+        Destroy(NetworkManager.Singleton.GetComponent<UnityTransport>());
+        if (!NetworkManager.Singleton.GetComponent<FacepunchTransport>())
+        {
+            NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<FacepunchTransport>();
+        }
+        GameNetworkManager.Instance.SubscribeToSteamMatchmakingCallbacks();
 
         // MainMenuManager menuManager = FindObjectOfType<MainMenuManager>();
         // if (menuManager == null)
@@ -604,7 +618,7 @@ public class GameNetworkManager : MonoBehaviour
 			Debug.Log("Client connected callback in gamenetworkmanager");
 			if (NetworkManager.Singleton.IsServer)
 			{
-				connectedPlayerNumber++;
+				totalPlayerCount++;
 			}
 			if (GameSessionManager.Instance != null)
 			{
@@ -612,6 +626,57 @@ public class GameNetworkManager : MonoBehaviour
 			}
 		}
 	}
+    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+    {
+        Debug.Log("Connection approval callback! Game version of client request: " + Encoding.ASCII.GetString(request.Payload).ToString());
+        Debug.Log($"Joining client id: {request.ClientNetworkId}; Local/host client id: {NetworkManager.Singleton.LocalClientId}");
+        if (request.ClientNetworkId == NetworkManager.Singleton.LocalClientId)
+        {
+            Debug.Log("Stopped connection approval callback, as the client in question was the host!");
+            return;
+        }
+        bool flag = !disallowConnection;
+        if (flag)
+        {
+            string @string = Encoding.ASCII.GetString(request.Payload);
+            string[] array = @string.Split(",");
+            if (string.IsNullOrEmpty(@string))
+            {
+                response.Reason = "Unknown; please verify your game files.";
+                flag = false;
+            }
+            else if (Instance.totalPlayerCount >= 4)
+            {
+                response.Reason = "Lobby is full!";
+                flag = false;
+            }
+            else if (Instance.gameStarted)
+            {
+                response.Reason = "Game has already started!";
+                flag = false;
+            }
+            else if (Instance.gameVersionNumber.ToString() != array[0])
+            {
+                response.Reason = $"Game version mismatch! Their version: {gameVersionNumber}. Your version: {array[0]}";
+                flag = false;
+            }
+            // else if (!disableSteam && *hasBeenKickedBefore*)
+            // {
+            // 	response.Reason = "You cannot rejoin after being kicked.";
+            // 	flag = false;
+            // }
+        }
+        else
+        {
+            response.Reason = "The host was not accepting connections.";
+        }
+        Debug.Log($"Approved connection?: {flag}. Connected players #: {Instance.totalPlayerCount}");
+        Debug.Log("Disapproval reason: " + response.Reason);
+        response.CreatePlayerObject = false;
+        response.Approved = flag;
+        response.Pending = false;
+    }
+
     private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
     {
 		Debug.Log("Disconnect callback called");
@@ -626,25 +691,35 @@ public class GameNetworkManager : MonoBehaviour
 			OnLocalClientJoinRequestDisapproved(clientId);
 			return;
 		}
-		if (NetworkManager.Singleton.IsServer)
+
+        if (clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            Disconnect();
+            return;
+        }
+
+        if (NetworkManager.Singleton.IsServer)
 		{
 			Debug.Log($"Disconnect callback called in gamenetworkmanager; disconnecting clientId: {clientId}");
-
-			if (clientId == NetworkManager.Singleton.LocalClientId)
+            if (GameSessionManager.Instance != null && !GameSessionManager.Instance.ClientPlayerList.ContainsKey(clientId))
+            {
+                Debug.Log("A Player disconnected but they were not in clientplayerlist");
+                return;
+            }
+            /*if (clientId == NetworkManager.Singleton.LocalClientId)
 			{
 				Debug.Log("Disconnect callback called for local client; ignoring.");
 				return;
-			}
-			if (NetworkManager.Singleton.IsServer)
-			{
-				connectedPlayerNumber--;
-			}
-		}
-		if (GameSessionManager.Instance != null)
-		{
-			GameSessionManager.Instance.OnClientDisconnectedGameSession(clientId);
-		}
-		Debug.Log("Disconnect callback from networkmanager in gamenetworkmanager");
+			}*/
+
+			totalPlayerCount--;
+        }
+
+        if (GameSessionManager.Instance != null)
+        {
+            GameSessionManager.Instance.OnClientDisconnectedGameSession(clientId);
+        }
+        Debug.Log("Disconnect callback from networkmanager in gamenetworkmanager");
 	}
 
 	private void OnLocalClientJoinRequestDisapproved(ulong clientId)
@@ -667,8 +742,6 @@ public class GameNetworkManager : MonoBehaviour
     
 	private void ResetGameValues()
 	{
-		// ResetUnlockablesListValues();
-		// ResetStaticVariables();
 		// if (GameSessionManager.Instance != null)
 		// {
 		// 	GameSessionManager.Instance.OnLocalDisconnect();
@@ -678,9 +751,9 @@ public class GameNetworkManager : MonoBehaviour
 
 	private void ResetNetworkManagerValues()
 	{
-		//isDisconnecting = false;
+		isDisconnecting = false;
 		disallowConnection = false;
-		connectedPlayerNumber = 0;
+		totalPlayerCount = 0;
 		localPlayerController = null;
 		gameStarted = false;
 		// if (SoundManager.Instance != null)
@@ -690,56 +763,6 @@ public class GameNetworkManager : MonoBehaviour
         UnsubscribeToNetworkManagerCallbacks();
 	}
 
-	private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
-	{
-		Debug.Log("Connection approval callback! Game version of client request: " + Encoding.ASCII.GetString(request.Payload).ToString());
-		Debug.Log($"Joining client id: {request.ClientNetworkId}; Local/host client id: {NetworkManager.Singleton.LocalClientId}");
-		if (request.ClientNetworkId == NetworkManager.Singleton.LocalClientId)
-		{
-			Debug.Log("Stopped connection approval callback, as the client in question was the host!");
-			return;
-		}
-		bool flag = !disallowConnection;
-		if (flag)
-		{
-			string @string = Encoding.ASCII.GetString(request.Payload);
-			string[] array = @string.Split(",");
-			if (string.IsNullOrEmpty(@string))
-			{
-				response.Reason = "Unknown; please verify your game files.";
-				flag = false;
-			}
-			else if (Instance.connectedPlayerNumber >= 4)
-			{
-				response.Reason = "Lobby is full!";
-				flag = false;
-			}
-			else if (Instance.gameStarted)
-			{
-				response.Reason = "Game has already started!";
-				flag = false;
-			}
-			else if (Instance.gameVersionNumber.ToString() != array[0])
-			{
-				response.Reason = $"Game version mismatch! Their version: {gameVersionNumber}. Your version: {array[0]}";
-				flag = false;
-			}
-            // else if (!disableSteam && *hasBeenKickedBefore*)
-            // {
-            // 	response.Reason = "You cannot rejoin after being kicked.";
-            // 	flag = false;
-            // }
-        }
-        else
-		{
-			response.Reason = "The host was not accepting connections.";
-		}
-		Debug.Log($"Approved connection?: {flag}. Connected players #: {Instance.connectedPlayerNumber}");
-		Debug.Log("Disapproval reason: " + response.Reason);
-		response.CreatePlayerObject = false;
-		response.Approved = flag;
-		response.Pending = false;
-	}
     #endregion
 }
 

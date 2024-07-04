@@ -17,10 +17,20 @@ public class I_InventoryItem : Interactable
 	{
 		if (owner != null)
 		{
-            Transform targetTransform = owner.equippedTransform;
-			base.transform.position = targetTransform.position + itemData.equipPosition;
-			base.transform.rotation = targetTransform.rotation;
-            base.transform.Rotate(itemData.equipRotation);
+            if (owner.isPlayerControlled) 
+            {
+                Transform targetTransform = owner.equippedTransform;
+                base.transform.position = targetTransform.position + itemData.equipPosition;
+                base.transform.rotation = targetTransform.rotation;
+                base.transform.Rotate(itemData.equipRotation);
+            }
+            else
+            {
+                owner = null;
+                inventorySlot = null;
+                EnableItemMeshes(true);
+                EnableItemPhysics(true);
+            }
         }
     }
 

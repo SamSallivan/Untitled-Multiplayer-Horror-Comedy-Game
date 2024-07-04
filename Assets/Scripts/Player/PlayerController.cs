@@ -322,6 +322,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
     public void ConnectClientToPlayerObject()
     {
         localClientId = NetworkManager.Singleton.LocalClientId;
+        Debug.Log("localClientId:   " + NetworkManager.Singleton.LocalClientId + "   " + localClientId);
         if (GameNetworkManager.Instance != null)
         {
             GameNetworkManager.Instance.localPlayerController = this;

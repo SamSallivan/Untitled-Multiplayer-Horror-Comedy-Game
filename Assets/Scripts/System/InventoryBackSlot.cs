@@ -74,11 +74,11 @@ public class InventoryBackSlot : MonoBehaviour, IPointerEnterHandler, IPointerCl
 
             else
             {
-                if (InventoryManager.instance.inventoryItemList.Count > GetIndex())
+                /*if (InventoryManager.instance.inventoryItemList.Count > GetIndex())
                 {
                     I_InventoryItem item = InventoryManager.instance.inventoryItemList[GetIndex()];
                     InventoryManager.instance.EquipItem(item);
-                }
+                }*/
             }
         }
 

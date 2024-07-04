@@ -17,12 +17,12 @@ public class ItemData : ScriptableObject
         //Fish,
         //Key
     }
-    public enum EquipType
+/*    public enum EquipType
     {
         Left,
         Right,
         Both
-    }
+    }*/
 
     [Foldout("Base Info", true)]
     public ItemType type;
@@ -37,10 +37,9 @@ public class ItemData : ScriptableObject
     public int maxStackAmount = 1;
     public bool isEquippable;
     [ConditionalField(nameof(isEquippable))]
-    public EquipType equipType;
+    //public EquipType equipType;
     public Vector3 equipPosition;
     public Vector3 equipRotation;
-    //public GameObject equipObject;
 
     public bool isDroppable;
     [ConditionalField(nameof(isDroppable))]
@@ -81,7 +80,7 @@ public struct ItemStatus
     }
 }
 
-[System.Serializable]
+/*[System.Serializable]
 public class InventoryItem
 {
     public ItemData itemData;
@@ -98,4 +97,4 @@ public class InventoryItem
         this.itemStatus = status;
         this.inventorySlot = slot;
     }
-}
+}*/

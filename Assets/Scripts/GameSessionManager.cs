@@ -10,12 +10,11 @@ using MyBox;
 public class GameSessionManager : NetworkBehaviour
 {
 	public static GameSessionManager Instance { get; private set; }
-	public int connectedPlayerNumber;
+	public int connectedClientCount;
 	public int alivePlayerNumber;
 	public bool hasHostSpawned;
     public PlayerController localPlayerController;
     public Dictionary<ulong, int> ClientPlayerList = new Dictionary<ulong, int>();
-    //public List<GameObject> playerGameObjectList = new List<GameObject>();
     public List<PlayerController> playerControllerList = new List<PlayerController>();
 
 
@@ -58,10 +57,10 @@ public class GameSessionManager : NetworkBehaviour
 		if (base.IsServer && !hasHostSpawned)
 		{
 			hasHostSpawned = true;
-			ClientPlayerList.Add(NetworkManager.Singleton.LocalClientId, connectedPlayerNumber);
+			ClientPlayerList.Add(NetworkManager.Singleton.LocalClientId, connectedClientCount);
 			playerControllerList[0].GetComponent<NetworkObject>().ChangeOwnership(NetworkManager.Singleton.LocalClientId);
 			playerControllerList[0].GetComponent<PlayerController>().isPlayerControlled = true;
-			alivePlayerNumber = connectedPlayerNumber + 1;
+			alivePlayerNumber = connectedClientCount + 1;
 
             //Teleport player controller to its spawn position.
             playerControllerList[0].TeleportPlayer(playerControllerList[0].gameObject.transform.position + new Vector3(0, 10, 0));
@@ -85,7 +84,7 @@ public class GameSessionManager : NetworkBehaviour
 			return;
 		}
 		Debug.Log("player connected");
-		Debug.Log($"connected players #: {connectedPlayerNumber}");
+		Debug.Log($"connected players #: {connectedClientCount}");
 		try
 		{
 			Debug.Log($"Connecting new player on host; clientId: {clientId}");
@@ -124,7 +123,7 @@ public class GameSessionManager : NetworkBehaviour
 				}
 			}
 
-			OnClientConnectedGameSessionClientRpc(clientId, connectedPlayerNumber, connectedPlayerIdList.ToArray(), targetlocalPlayerIndex);
+			OnClientConnectedGameSessionClientRpc(clientId, connectedClientCount, connectedPlayerIdList.ToArray(), targetlocalPlayerIndex);
 			ClientPlayerList.Add(clientId, targetlocalPlayerIndex);
 			Debug.Log($"client id connecting: {clientId} ; their corresponding player object id: {targetlocalPlayerIndex}");
 		}
@@ -180,7 +179,7 @@ public class GameSessionManager : NetworkBehaviour
 				Debug.Log($"clientplayerlist count for client: {ClientPlayerList.Count}");
 				
 			}
-			this.connectedPlayerNumber = connectedPlayerNumber + 1;
+			this.connectedClientCount = connectedPlayerNumber + 1;
 			Debug.Log("New player: " + playerControllerList[connectedLocalPlayerIndex].name);
 
 			PlayerController playerController = playerControllerList[connectedLocalPlayerIndex];
@@ -189,7 +188,7 @@ public class GameSessionManager : NetworkBehaviour
             //Teleport player controller to its spawn position.
             playerControllerList[connectedLocalPlayerIndex].TeleportPlayer(playerControllerList[connectedLocalPlayerIndex].gameObject.transform.position + new Vector3(0, 15, 0));
 
-            for (int j = 0; j < this.connectedPlayerNumber + 1; j++)
+            for (int j = 0; j < this.connectedClientCount + 1; j++)
 			{
 				if (j == 0 || !playerControllerList[j].IsOwnedByServer)
 				{
@@ -197,8 +196,8 @@ public class GameSessionManager : NetworkBehaviour
 				}
 			}
 			playerController.isPlayerControlled = true;
-            alivePlayerNumber = this.connectedPlayerNumber + 1;
-            Debug.Log($"Connected players after connection: {this.connectedPlayerNumber}");
+            alivePlayerNumber = this.connectedClientCount + 1;
+            Debug.Log($"Connected players after connection: {this.connectedClientCount}");
 
 
             if (NetworkManager.Singleton.LocalClientId == clientId)
@@ -212,7 +211,7 @@ public class GameSessionManager : NetworkBehaviour
 			GameNetworkManager.Instance.Disconnect();
 		}
 	}
-    
+
 	public void OnClientDisconnectedGameSession(ulong clientId)
 	{
 		if (ClientPlayerList == null || !ClientPlayerList.ContainsKey(clientId))
@@ -223,19 +222,20 @@ public class GameSessionManager : NetworkBehaviour
 		{
 			GameNetworkManager.Instance.Disconnect();
 			return;
-		}
-		if (clientId == NetworkManager.Singleton.LocalClientId || clientId == GameNetworkManager.Instance.localPlayerController.localClientId)
+        }
+        Debug.Log(clientId + "   " + NetworkManager.Singleton.LocalClientId + "   " + GameNetworkManager.Instance.localPlayerController.localClientId);
+        /*if (clientId == NetworkManager.Singleton.LocalClientId || clientId == GameNetworkManager.Instance.localPlayerController.localClientId)
 		{
 			Debug.Log("Disconnect callback called for local client; ignoring.");
-			return;
-		}
+            return;
+		}*/
 
-		Debug.Log("Client disconnected from server");
-		if (!ClientPlayerList.TryGetValue(clientId, out var value))
+        /*if (!ClientPlayerList.TryGetValue(clientId, out var value))
 		{
 			Debug.LogError("Could not get player object number from client id on disconnect!");
-		}
-		if (!base.IsServer)
+			return;
+		}*/
+        /*if (!base.IsServer)
 		{
 			Debug.Log($"player disconnected c; {clientId}");
 			Debug.Log(ClientPlayerList.Count);
@@ -256,29 +256,58 @@ public class GameSessionManager : NetworkBehaviour
 					return;
 				}
 			}
-			OnLocalClientDisconnect(value, clientId);
-			return;
+			OnClientDisconnect(value, clientId);
 		}
 
-		List<ulong> list = new List<ulong>();
-		foreach (KeyValuePair<ulong, int> clientPlayer in ClientPlayerList)
+		else
 		{
-			if (clientPlayer.Key != clientId)
+			List<ulong> list = new List<ulong>();
+			foreach (KeyValuePair<ulong, int> clientPlayer in ClientPlayerList)
 			{
-				list.Add(clientPlayer.Key);
+				if (clientPlayer.Key != clientId)
+				{
+					list.Add(clientPlayer.Key);
+				}
 			}
+			ClientRpcParams clientRpcParams = default(ClientRpcParams);
+			clientRpcParams.Send = new ClientRpcSendParams
+			{
+				TargetClientIds = list.ToArray()
+			};
+			ClientRpcParams clientRpcParams2 = clientRpcParams;
+			OnClientDisconnect(value, clientId);
+			OnClientDisconnectClientRpc(value, clientId, clientRpcParams2);
+		}*/
+
+        for (int i = 0; i < ClientPlayerList.Count; i++)
+        {
+            ClientPlayerList.TryGetValue((ulong)i, out var value2);
+            Debug.Log($"client id: {i} ; player object id: {value2}");
+        }
+
+        ClientPlayerList.TryGetValue(clientId, out var value);
+
+		if (base.IsServer)
+        {
+            OnClientDisconnectClientRpc(value, clientId);
 		}
-		ClientRpcParams clientRpcParams = default(ClientRpcParams);
-		clientRpcParams.Send = new ClientRpcSendParams
+		else
 		{
-			TargetClientIds = list.ToArray()
-		};
-		ClientRpcParams clientRpcParams2 = clientRpcParams;
-		OnLocalClientDisconnect(value, clientId);
-		OnClientDisconnectClientRpc(value, clientId, clientRpcParams2);
+            /*if (value == 0 && !GameNetworkManager.Instance.isDisconnecting)
+            {
+                Debug.Log("Host disconnected!");
+                Debug.Log(clientId + " " + value);
+                Debug.Log(GameNetworkManager.Instance.isDisconnecting);
+                Debug.Log("Host quit! Ending game for client.");
+                GameNetworkManager.Instance.Disconnect();
+                return;
+            }*/
+
+            OnClientDisconnect(value, clientId);
+        }
     }
 
-    public void OnLocalClientDisconnect(int playerObjectNumber, ulong clientId)
+    public void OnClientDisconnect(int playerObjectNumber, ulong clientId)
     {
         if (!ClientPlayerList.ContainsKey(clientId))
         {
@@ -298,7 +327,7 @@ public class GameSessionManager : NetworkBehaviour
         Debug.Log("Player DC'ing 2");
         //Update alivePlayerNumber
         ClientPlayerList.Remove(clientId);
-        connectedPlayerNumber--;
+        connectedClientCount--;
 
 		//Reset PlayerController values
         PlayerController playerController = playerControllerList[playerObjectNumber].GetComponent<PlayerController>();
@@ -307,11 +336,12 @@ public class GameSessionManager : NetworkBehaviour
             playerController.isPlayerControlled = false;
 			//Drop all inventory items
 			playerController.TeleportPlayer(despawnTransform.position);
+            StartCoroutine(DelayedDespawnTeleport(playerController));
             if (!NetworkManager.Singleton.ShutdownInProgress && base.IsServer)
             {
                 playerController.gameObject.GetComponent<NetworkObject>().RemoveOwnership();
             }
-            Debug.Log($"Current players after dc: {connectedPlayerNumber}");
+            Debug.Log($"Current players after dc: {connectedClientCount}");
         }
         catch (Exception arg)
         {
@@ -322,13 +352,12 @@ public class GameSessionManager : NetworkBehaviour
     [ClientRpc]
 	public void OnClientDisconnectClientRpc(int playerObjectNumber, ulong clientId, ClientRpcParams clientRpcParams = default(ClientRpcParams))
 	{
-		NetworkManager networkManager = base.NetworkManager;
-		if ((object)networkManager != null && networkManager.IsListening)
-		{
-			if (networkManager.IsClient || networkManager.IsHost)
-			{
-				OnLocalClientDisconnect(playerObjectNumber, clientId);
-			}
-		}
-	}
+		OnClientDisconnect(playerObjectNumber, clientId);
+    }
+    private IEnumerator DelayedDespawnTeleport(PlayerController playerController)
+    {
+        yield return null;
+        yield return null;
+        playerController.TeleportPlayer(despawnTransform.position);
+    }
 }
