@@ -25,9 +25,6 @@ public class SteamLobbyManager : MonoBehaviour
     public GameObject LobbySlotPrefab;
 
 
-    public GameObject LobbySlotPrefabChallenge;
-
-
     private float lobbySlotPositionOffset;
 
 

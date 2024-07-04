@@ -1,8 +1,9 @@
-using Netcode.Transports.Facepunch;
 using Steamworks;
 using Steamworks.Data;
+using Unity.VisualScripting;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Netcode.Transports.Facepunch;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
@@ -10,7 +11,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using Unity.VisualScripting;
 
 public class GameNetworkManager : MonoBehaviour
 {
@@ -110,11 +110,6 @@ public class GameNetworkManager : MonoBehaviour
 	{
         UnsubscribeToSteamMatchmakingCallbacks();
 	}
-
-	//public void SetSteamFriendGroupStatus(string status)
-	//{
-		//SteamFriends.SetRichPresence("string key, string value");
-    //}
 
 	private void OnApplicationQuit()
 	{
@@ -219,7 +214,7 @@ public class GameNetworkManager : MonoBehaviour
 
         SubscribeToNetworkManagerCallbacks();
         NetworkManager.Singleton.ConnectionApprovalCallback = NetworkManager_ConnectionApprovalCallback;
-			
+		
 		if (!disableSteam)
 		{
 			steamIdsInCurrentSteamLobby.Add(SteamClient.SteamId);
@@ -230,18 +225,19 @@ public class GameNetworkManager : MonoBehaviour
 	
 	private IEnumerator DelayLoadLobbyScene()
 	{
-		yield return new WaitForSeconds(1f);
+		//yield return new WaitForSeconds(1f);
 		yield return new WaitForSeconds(0.1f);
 		NetworkManager.Singleton.SceneManager.LoadScene("Lobby", LoadSceneMode.Single);
 	}
 
 	public void StartClient(SteamId id)
 	{
-
-		Debug.Log($"CC {id}");
-		transport.targetSteamId = id;
+		Debug.Log($"Joining room hosted by {id}", this);
 
         localClientJoinRequestPending = true;
+		
+		transport.targetSteamId = id;
+
 		if (disableSteam)
 		{
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(Instance.gameVersionNumber.ToString());
@@ -250,8 +246,6 @@ public class GameNetworkManager : MonoBehaviour
 		{
 			NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(Instance.gameVersionNumber + "," + (ulong)SteamClient.SteamId);
 		}
-
-		Debug.Log($"Joining room hosted by {transport.targetSteamId}", this);
 
 		if (NetworkManager.Singleton.StartClient()){
 			Debug.Log("Client has joined!", this);
