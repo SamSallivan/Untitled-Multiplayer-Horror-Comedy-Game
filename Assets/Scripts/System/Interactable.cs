@@ -61,8 +61,8 @@ public class Interactable : NetworkBehaviour
     public ItemStatus itemStatus;
     [ConditionalField(nameof(interactionType), false, InteractionType.InventoryItem)]//, InteractionType.ExamineAndInventory)]
     public bool openInventoryOnPickUp;
-    [ConditionalField(nameof(interactionType), false, InteractionType.InventoryItem)]//, InteractionType.ExamineAndInventory)]
-    public bool equipOnPickUp;
+    //[ConditionalField(nameof(interactionType), false, InteractionType.InventoryItem)]//, InteractionType.ExamineAndInventory)]
+    //public bool equipOnPickUp;
 
     [ConditionalField(nameof(interactionType), false, InteractionType.CustomToggle)]
     [ReadOnly]

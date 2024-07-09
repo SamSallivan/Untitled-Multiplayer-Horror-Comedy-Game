@@ -18,6 +18,7 @@ public class GameNetworkManager : MonoBehaviour
 
     public int gameVersionNumber = 1;
 
+    [Header("Switches")]
 	public bool disableSteam;
 	public bool isHostingGame;
 	public bool disallowConnection;
@@ -28,6 +29,8 @@ public class GameNetworkManager : MonoBehaviour
 
     private bool networkManagerCallbacksSubscribed;
 
+    [Header("Values")]
+
 	public int totalPlayerCount;
     public int maxPlayerNumber = 4;
 
@@ -35,16 +38,16 @@ public class GameNetworkManager : MonoBehaviour
 	public string username;
 
     public HostSettings lobbySettings;
+	
+    [Header("References")]
 
     public PlayerController localPlayerController;
 	private Coroutine lobbyRefreshTimeOutCoroutine;
-
-
 	private FacepunchTransport transport;
 
-	public List<Lobby> Lobbies { get; private set; } = new List<Lobby>(capacity: 100);
-	public Lobby? currentSteamLobby { get; private set; }
 	public string currentSteamLobbyName;
+	public Lobby? currentSteamLobby { get; private set; }
+	public List<Lobby> Lobbies { get; private set; } = new List<Lobby>(capacity: 100);
 	public List<SteamId> steamIdsInCurrentSteamLobby = new List<SteamId>();
 
 	private void Awake()
@@ -276,6 +279,7 @@ public class GameNetworkManager : MonoBehaviour
 		}
 		
 	}
+
 	public void LeaveCurrentSteamLobby()
 	{
 		try
@@ -682,12 +686,14 @@ public class GameNetworkManager : MonoBehaviour
 		}
 		if (clientId == NetworkManager.Singleton.LocalClientId && localClientJoinRequestPending)
 		{
+			Debug.Log("Join request disapproved!");
 			OnLocalClientJoinRequestDisapproved(clientId);
 			return;
 		}
 
         if (clientId == NetworkManager.Singleton.LocalClientId)
         {
+			Debug.Log("Local client disconnected, returning to main menu!");
             Disconnect();
             return;
         }

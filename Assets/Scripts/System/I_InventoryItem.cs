@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Steamworks;
+using Unity.Netcode;
 
 public class I_InventoryItem : Interactable
 {
@@ -12,26 +13,41 @@ public class I_InventoryItem : Interactable
     public PlayerController owner;
     public bool isCurrentlyEquipped;
     public InventorySlot inventorySlot;
+    public bool enableItemMeshes = true;
+    public bool enableItemPhysics = true;
     
+    public override void  OnNetworkSpawn(){
+        base.OnNetworkSpawn();
+
+        if(IsServer){
+            SyncItemStateClientRpc(enableItemMeshes, enableItemPhysics);
+        }
+        else{
+            SyncItemStateServerRpc();
+        }
+    }
+
 	public virtual void LateUpdate()
 	{
-		if (owner != null)
-		{
-            if (owner.isPlayerControlled) 
+        //if(IsOwner){
+            if (owner != null)
             {
-                Transform targetTransform = owner.equippedTransform;
-                base.transform.position = targetTransform.position + itemData.equipPosition;
-                base.transform.rotation = targetTransform.rotation;
-                base.transform.Rotate(itemData.equipRotation);
+                if (owner.isPlayerControlled) 
+                {
+                    Transform targetTransform = owner.equippedTransform;
+                    base.transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
+                    base.transform.rotation = targetTransform.rotation;
+                    base.transform.Rotate(itemData.equipRotation);
+                }
+                else
+                {
+                    owner = null;
+                    inventorySlot = null;
+                    EnableItemMeshes(true);
+                    EnableItemPhysics(true);
+                }
             }
-            else
-            {
-                owner = null;
-                inventorySlot = null;
-                EnableItemMeshes(true);
-                EnableItemPhysics(true);
-            }
-        }
+        //}
     }
 
     public override IEnumerator InteractionEvent()
@@ -64,6 +80,8 @@ public class I_InventoryItem : Interactable
 
 	public void EnableItemMeshes(bool enable)
 	{
+        enableItemMeshes = enable;
+
 		MeshRenderer[] meshRenderers = base.gameObject.GetComponentsInChildren<MeshRenderer>();
 		for (int i = 0; i < meshRenderers.Length; i++)
 		{
@@ -76,10 +94,17 @@ public class I_InventoryItem : Interactable
 			skinnedMeshRenderers[j].enabled = enable;
 			Debug.Log("DISABLING/ENABLING SKINNEDMESH: " + skinnedMeshRenderers[j].gameObject.name);
 		}
+
+		Light[] lights = base.gameObject.GetComponentsInChildren<Light>();
+		for (int j = 0; j < lights.Length; j++)
+		{
+			lights[j].enabled = enable;
+		}
 	}
     
 	public void EnableItemPhysics(bool enable)
 	{
+        enableItemPhysics = enable;
         base.gameObject.GetComponent<Rigidbody>().isKinematic = !enable;
         Collider[] colliders = base.gameObject.GetComponentsInChildren<Collider>();
 		for (int i = 0; i < colliders.Length; i++)
@@ -110,5 +135,18 @@ public class I_InventoryItem : Interactable
             //enable button prompt image instead
             //UIManager.instance.interactionPromptAnimation.Play("PromptButtonAppear");
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SyncItemStateServerRpc(){
+        SyncItemStateClientRpc(enableItemMeshes, enableItemPhysics);
+    }
+
+    [ClientRpc]
+    public void SyncItemStateClientRpc(bool enableMeshes, bool enablePhysics){
+        enableItemMeshes = enableMeshes;
+        enableItemPhysics = enablePhysics;
+        EnableItemMeshes(enableItemMeshes);
+        EnableItemPhysics(enableItemPhysics);
     }
 }

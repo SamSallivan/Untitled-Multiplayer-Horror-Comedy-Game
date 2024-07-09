@@ -5,11 +5,13 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Linq;
 using MyBox;
+//using NaughtyAttributes;
 using Steamworks;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using TMPro;
 using Unity.Netcode.Components;
+using Dissonance;
 
 
 //Added Function Die(), Damage(),
@@ -18,6 +20,17 @@ using Unity.Netcode.Components;
 public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 {
     public static PlayerController instance;
+
+    [Foldout("Voice", true)]
+
+    public VoicePlayerState voicePlayerState;
+
+    public AudioSource currentVoiceChatAudioSource;
+
+    public PlayerVoiceIngameSettings currentVoiceChatIngameSettings;
+
+    private float voiceChatUpdateInterval;
+
 
     [Foldout("Networks", true)]
 
@@ -234,12 +247,16 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
                     cam.enabled = true;
                 }
 
-                Debug.Log("Taking control of player " + base.gameObject.name + " and enabling camera!");
+                GameSessionManager.Instance.audioListener = GetComponentInChildren<AudioListener>(true);
+                GameSessionManager.Instance.audioListener.enabled = true;
+
+                Debug.Log("Taken control of player " + base.gameObject.name + " and enabling camera!");
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
                 ConnectClientToPlayerObject();
                 onAssignPlayerControllerToClient = false;
             }
+
             InputUpdate();
 
             if(mouseLookX.enabled)

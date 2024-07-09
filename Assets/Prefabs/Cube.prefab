@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 1275581107906427253}
   - component: {fileID: 3564717958884952853}
   - component: {fileID: 4667212973006905732}
-  - component: {fileID: 7043989726722096091}
   - component: {fileID: 2035924991986039603}
   - component: {fileID: 4267976058939923075}
   m_Layer: 7
@@ -179,10 +178,10 @@ MonoBehaviour:
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
-  PositionThreshold: 0.001
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.0025
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 0
@@ -203,18 +202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7043989726722096091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4062514989801116217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ef4cc8d44cc3d488f9c18f1424ffe1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &2035924991986039603
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -232,7 +219,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1.25, y: 1.25, z: 1.25}
   m_Center: {x: 0, y: 0, z: 0}
@@ -262,6 +249,10 @@ MonoBehaviour:
     amount: 1
     durability: 0
   openInventoryOnPickUp: 0
-  equipOnPickUp: 1
   activated: 0
   excludeOtherInteraction: 0
+  owner: {fileID: 0}
+  isCurrentlyEquipped: 0
+  inventorySlot: {fileID: 0}
+  enableItemMeshes: 1
+  enableItemPhysics: 1

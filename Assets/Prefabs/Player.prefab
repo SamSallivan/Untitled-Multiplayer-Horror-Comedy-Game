@@ -92,7 +92,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 260959856801526487}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!114 &605246363167573235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,7 +229,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2685188269002877208}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
   m_Name: 
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 5718124912878033312}
   - component: {fileID: 234470645503231130}
   - component: {fileID: 201207271943062404}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -444,7 +444,7 @@ GameObject:
   - component: {fileID: 2134863249349384783}
   - component: {fileID: 5617010381775896590}
   - component: {fileID: 9231488772635220}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Username Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -533,7 +533,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 183
 --- !u!1 &4393038100937110496
 GameObject:
   m_ObjectHideFlags: 0
@@ -626,7 +626,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4393038100937110496}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!114 &2466022676466610438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -871,6 +871,8 @@ GameObject:
   - component: {fileID: 720128349723424855}
   - component: {fileID: 6708520134979418985}
   - component: {fileID: 6474330115237772916}
+  - component: {fileID: 6524721808081188451}
+  - component: {fileID: 7134348930457768367}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -929,6 +931,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09996860e76b82b45bd8e6b01ee69a32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentVoiceChatAudioSource: {fileID: 0}
+  currentVoiceChatIngameSettings: {fileID: 0}
   playerUsername: Player
   localClientId: 0
   localSteamId: 0
@@ -1188,6 +1192,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &6524721808081188451
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738643314197950141}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 7.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7134348930457768367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738643314197950141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b06a892ac1d6c864dad7c6c575b6e640, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6867382714877513452
 GameObject:
   m_ObjectHideFlags: 0
@@ -1345,7 +1382,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   xAmp: 0.04
   yAmp: 0.06
-  defaultFOV: 90
+  defaultFOV: 75
 --- !u!1 &7174032763702454894
 GameObject:
   m_ObjectHideFlags: 0
@@ -1357,6 +1394,7 @@ GameObject:
   - component: {fileID: 953704681069039082}
   - component: {fileID: 2805623632368853437}
   - component: {fileID: 4680189524970998394}
+  - component: {fileID: 2627575135617473334}
   m_Layer: 0
   m_Name: Head Pivot
   m_TagString: Untagged
@@ -1489,6 +1527,37 @@ MonoBehaviour:
   bounceTarget: 0
   slideTimer: 0
   bounceTimer: 1
+--- !u!114 &2627575135617473334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7174032763702454894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &7504456460518960923
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,7 +1583,7 @@ Transform:
   m_GameObject: {fileID: 7504456460518960923}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.551, y: -0.442, z: 0.504}
+  m_LocalPosition: {x: 0.3, y: -0.2, z: 0.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

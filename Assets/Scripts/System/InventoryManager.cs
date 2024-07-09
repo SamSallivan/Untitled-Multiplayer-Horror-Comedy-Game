@@ -347,6 +347,7 @@ public class InventoryManager : NetworkBehaviour//MonoBehaviour
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
             PocketItemClientRpc(inventoryItemObject, playerControllerObject);
+            //inventoryItemObject.ChangeOwnership(playerControllerObject.GetComponent<PlayerController>().localClientId);
         }
     }
     [ClientRpc]
@@ -539,6 +540,7 @@ public class InventoryManager : NetworkBehaviour//MonoBehaviour
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
             UnpocketItemClientRpc(inventoryItemObject, playerControllerObject);
+            //inventoryItemObject.RemoveOwnership();
         }
     }
 
@@ -570,6 +572,7 @@ public class InventoryManager : NetworkBehaviour//MonoBehaviour
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
         {
             inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(!hide);
+            inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = !hide;
         }
     }
 
@@ -689,10 +692,10 @@ public class InventoryManager : NetworkBehaviour//MonoBehaviour
             UnequipItem();
             return;
         }
-        if (!inventoryItem.itemData.isEquippable)
-        {
-            return;
-        }
+        // if (!inventoryItem.itemData.isEquippable)
+        // {
+        //     return;
+        // }
 
         if (equippedItem == inventoryItem)
         {

@@ -35,14 +35,14 @@ public class ItemData : ScriptableObject
     public bool isStackable;
     [ConditionalField(nameof(isStackable))]
     public int maxStackAmount = 1;
-    public bool isEquippable;
-    [ConditionalField(nameof(isEquippable))]
+    //public bool isEquippable;
+    //[ConditionalField(nameof(isEquippable))]
     //public EquipType equipType;
     public Vector3 equipPosition;
     public Vector3 equipRotation;
 
-    public bool isDroppable;
-    [ConditionalField(nameof(isDroppable))]
+    //public bool isDroppable;
+    //[ConditionalField(nameof(isDroppable))]
     public GameObject dropObject;
 
     //public bool isExaminable;
