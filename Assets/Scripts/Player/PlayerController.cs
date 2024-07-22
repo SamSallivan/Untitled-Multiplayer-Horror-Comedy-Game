@@ -29,24 +29,21 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
     public PlayerVoiceIngameSettings currentVoiceChatIngameSettings;
 
-    private float voiceChatUpdateInterval;
-
-
     [Foldout("Networks", true)]
 
     public string playerUsername = "Player";
 
+    public ulong localPlayerId;
+
     public ulong localClientId;
 
-    public ulong localSteamId;
+	public ulong localSteamId;
 
-    public ulong localPlayerIndex;
+    public bool controlledByClient;
 
-    public bool isPlayerControlled;
+    public bool awaitInitialization;
 
-    public bool isHostPlayerObject;
-
-    public bool onAssignPlayerControllerToClient;
+    public bool isPlayerDead;
 
     public Vector3 playerServerPosition;
 
@@ -63,23 +60,11 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
     public Transform equippedTransform;
 
-    public Transform equippedTransformLeft;
-
-    public Transform equippedTransformRight;
-
-    public Transform equippedTransformCenter;
-
     public Rigidbody rb;
 
     public CapsuleCollider playerCollider;
 
-    //public PlayerDecapitate playerDecapitate;
-
     private Grounder grounder;
-
-    //public PlayerSlide slide;
-
-    //public PlayerDash dash;
 
     public MouseLook mouseLookX;
     public MouseLook mouseLookY;
@@ -119,8 +104,6 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
     private Vector3 gDirCrossProject;
 
-    private Vector3 localVelo;
-
     private RaycastHit hit;
 
     private float airControl = 1f;
@@ -148,7 +131,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
     public Vector3 jumpForce = new Vector3(0f, 15f, 0f);
 
-    public float gTimer;
+    public float ungroundedJumpGraceTimer;
 
     public float gravity = -40f;
 
@@ -180,25 +163,11 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
     public float interactDistance = 5;
     public LayerMask interactableLayer;
 
-    [Foldout("Mist", true)]
-    public bool inMist = false;
-    public float mistTimer;
-    public float deathTime = 8;
-    public float replenishCoeffcient = 2;
-
-
-    /*	public PostProcessVolume volume;
-        public Bloom bloom;
-        public ChromaticAberration ca;
-        public ColorGrading cg;
-        public Vignette vg;*/
-
 
     private void Awake()
     {
-
         instance = this;
-        onAssignPlayerControllerToClient = true;
+        awaitInitialization = true;
         t = base.transform;
         tHead = t.Find("Head Pivot").transform;
 
@@ -213,48 +182,20 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
         mouseLookX = GetComponent<MouseLook>();
         mouseLookY = tHead.GetComponent<MouseLook>();
 
-        //slide = GetComponent<PlayerSlide>();
-        //dash = GetComponent<PlayerDash>();
-        //playerDecapitate = GetComponentInChildren<PlayerDecapitate>(true);
-        //equippedTransform = tHead.Find("Equip Pivot").transform;
+        playerUsername = $"Player #{localPlayerId}";
+        playerUsernameText.text = playerUsername;
 
-        /*
-		volume = FindObjectOfType<PostProcessVolume>();
-		volume.profile.TryGetSettings(out bloom);
-		volume.profile.TryGetSettings(out ca);
-		volume.profile.TryGetSettings(out cg);
-		volume.profile.TryGetSettings(out vg);
-
-		poofVFX = Instantiate(poofVFX, Vector3.zero, Quaternion.identity);
-		slamVFX = Instantiate(slamVFX, Vector3.zero, Quaternion.identity);
-		*/
     }
 
     private void Update()
     {
-        isHostPlayerObject = this == GameSessionManager.Instance.playerControllerList[0];
 
-        if (base.IsOwner && isPlayerControlled && (!base.IsServer || isHostPlayerObject))
+        if (base.IsOwner && controlledByClient)
         {
-            if (onAssignPlayerControllerToClient)
+            if (awaitInitialization)
             {
-                //GameSessionManager.Instance.spectateCamera.enabled = false;
-
-                cameraList = GetComponentsInChildren<Camera>(true).ToList<Camera>();
-                foreach (Camera cam in cameraList)
-                {
-                    //cam.gameObject.SetActive(true);
-                    cam.enabled = true;
-                }
-
-                GameSessionManager.Instance.audioListener = GetComponentInChildren<AudioListener>(true);
-                GameSessionManager.Instance.audioListener.enabled = true;
-
-                Debug.Log("Taken control of player " + base.gameObject.name + " and enabling camera!");
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
                 ConnectClientToPlayerObject();
-                onAssignPlayerControllerToClient = false;
+                awaitInitialization = false;
             }
 
             InputUpdate();
@@ -264,35 +205,16 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
             if (mouseLookY.enabled)
                 mouseLookY.UpdateCameraRotation();
 
-            WalkSoundUpdate();
+            //WalkSoundUpdate();
             BobUpdate();
             headPosition.PositionUpdate();
 
-            HandleInteractableCheck();
-            HandleInteraction();
-
-            // if (UIManager.instance.gameplayUI.activeInHierarchy && enableInteraction)
-            // {
-            //     HandleInteractableCheck();
-            //     HandleInteraction();
-            // }
+            InteractionUpdate();
 
             if (climbState > 0)
             {
                 ClimbingUpdate();
             }
-
-            /*
-            if (slide.slideState > 0)
-            {
-                slide.SlidingUpdate();
-            }
-
-            if (dash.state > 0)
-            {
-                dash.DashingUpdate();
-            }
-            */
 
             //counts down the timer that restricts air control 
             if (airControlBlockTimer > 0f)
@@ -307,39 +229,39 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
                 airControl = Mathf.MoveTowards(airControl, 1f, Time.deltaTime);
             }
 
-            if (gTimer > 0f)
+            if (ungroundedJumpGraceTimer > 0f)
             {
-                gTimer -= Time.deltaTime;
-            }
-
-            if (damageTimer != 0f)
-            {
-                damageTimer = Mathf.MoveTowards(damageTimer, 0f, Time.deltaTime);
-                /*			bloom.intensity.value = Mathf.Lerp(0, 10, damageTimer/3);
-                            ca.intensity.value = Mathf.Lerp(0, 1, damageTimer/3);
-                            cg.mixerGreenOutRedIn.value = Mathf.Lerp(0, -100, damageTimer/3);
-                            vg.intensity.value = Mathf.Lerp(0, 0.3f, damageTimer/3);*/
+                ungroundedJumpGraceTimer -= Time.deltaTime;
             }
         }
         else
         {
-            if (!onAssignPlayerControllerToClient)
+            if (!awaitInitialization)
             {
-                onAssignPlayerControllerToClient = true;
-                cameraList = GetComponentsInChildren<Camera>(true).ToList<Camera>();
-                foreach (Camera cam in cameraList)
-                {
-                    //cam.gameObject.SetActive(true);
-                    cam.enabled = true;
-                }
+                awaitInitialization = true;
+                DisconnectClientFromPlayerObject();
             }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        MovementUpdate();
+    }
+
+    private void LateUpdate() 
+    {
+        if (!base.IsOwner && GameNetworkManager.Instance.localPlayerController != null)
+        {
+            playerUsernameCanvasTransform.LookAt(GameNetworkManager.Instance.localPlayerController.cameraList[0].transform);
         }
     }
 
     public void ConnectClientToPlayerObject()
     {
         localClientId = NetworkManager.Singleton.LocalClientId;
-        Debug.Log("localClientId:   " + NetworkManager.Singleton.LocalClientId + "   " + localClientId);
+        Debug.Log("localClientId: " + NetworkManager.Singleton.LocalClientId + ", " + localPlayerId);
+
         if (GameNetworkManager.Instance != null)
         {
             GameNetworkManager.Instance.localPlayerController = this;
@@ -349,33 +271,43 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
             GameSessionManager.Instance.localPlayerController = this;
         }
 
-        foreach(PlayerController playerController in GameSessionManager.Instance.playerControllerList)
+        if (!GameNetworkManager.Instance.steamDisabled)
         {
-            if (!playerController.isPlayerControlled)
-            {
-                //Teleport playerController to despawn position.
-            }
-            if (playerController != GameSessionManager.Instance.localPlayerController)
-            {
-                //Add playerController to nonlocal client list.
-            }
+            GameNetworkManager.Instance.localSteamClientUsername = SteamClient.Name.ToString();
+            playerUsername = GameNetworkManager.Instance.localSteamClientUsername;
+            UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
         }
 
-        if (!GameNetworkManager.Instance.disableSteam)
+        //GameSessionManager.Instance.spectateCamera.enabled = false;
+
+        cameraList = GetComponentsInChildren<Camera>(true).ToList<Camera>();
+        cameraList[0].tag = "MainCamera";
+        foreach (Camera cam in cameraList)
         {
-            playerUsername = GameNetworkManager.Instance.username;
-            SendNewPlayerValuesServerRpc(SteamClient.SteamId);
+            cam.enabled = true;
         }
+
+        GameSessionManager.Instance.audioListener = GetComponentInChildren<AudioListener>(true);
+        GameSessionManager.Instance.audioListener.enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    public void DisconnectClientFromPlayerObject()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
     }
 
     [ServerRpc]
-    private void SendNewPlayerValuesServerRpc(ulong steamId)
+    private void UpdatePlayerSteamIdServerRpc(ulong steamId)
     {
-        if (!GameNetworkManager.Instance.disableSteam && GameNetworkManager.Instance.currentSteamLobby.HasValue)
+        if (!GameNetworkManager.Instance.steamDisabled && GameNetworkManager.Instance.currentSteamLobby.HasValue)
         {
             if (!GameNetworkManager.Instance.steamIdsInCurrentSteamLobby.Contains(steamId))
             {
-                NetworkManager.Singleton.DisconnectClient(localClientId);
+                NetworkManager.Singleton.DisconnectClient(localPlayerId);
                 return;
             }
         }
@@ -383,7 +315,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
         List<ulong> steamIdList = new List<ulong>();
         for (int i = 0; i < 4; i++)
         {
-            if (i == (int)localPlayerIndex)
+            if (i == (int)localPlayerId)
             {
                 steamIdList.Add(steamId);
             }
@@ -392,21 +324,17 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
                 steamIdList.Add(GameSessionManager.Instance.playerControllerList[i].localSteamId);
             }
         }
-        SendNewPlayerValuesClientRpc(steamIdList.ToArray());
+
+        UpdatePlayerSteamIdClientRpc(steamIdList.ToArray());
+
     }
 
     [ClientRpc]
-    private void SendNewPlayerValuesClientRpc(ulong[] steamIdList)
+    private void UpdatePlayerSteamIdClientRpc(ulong[] steamIdList)
     {
-        NetworkManager networkManager = base.NetworkManager;
-        if ((object)networkManager == null || !networkManager.IsListening)
-        {
-            return;
-        }
-
         for (int i = 0; i < steamIdList.Length; i++)
         {
-            if (GameSessionManager.Instance.playerControllerList[i].isPlayerControlled) // || GameSessionManager.Instance.playerControllerList[i].isPlayerSpectating)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient) // || GameSessionManager.Instance.playerControllerList[i].isPlayerSpectating)
             {
                 GameSessionManager.Instance.playerControllerList[i].localSteamId = steamIdList[i];
 
@@ -416,23 +344,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
             }
         }
-        if (GameNetworkManager.Instance != null && GameNetworkManager.Instance.localPlayerController != null)
-        {
-            //UpdatePlayerPositionServerRpc. To be created.
-            //UpdatePlayerPositionClientRpc. To be created.
-        }
-    }
 
-    private void LateUpdate() 
-    {
-        if (NetworkManager.Singleton == null)
-        {
-            return;
-        }
-        if (!base.IsOwner && GameNetworkManager.Instance.localPlayerController != null)
-        {
-            playerUsernameCanvasTransform.LookAt(GameNetworkManager.Instance.localPlayerController.cameraList[0].transform);
-        }
     }
 
     public void TeleportPlayer(Vector3 targetPosition)
@@ -446,21 +358,6 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
         return climbState;
     }
 
-    //Turns on Postprocessing. 
-    //Enables the camera that simulates the decapitated head.
-    //Disables Player.
-    public void Die(Vector3 dir)
-    {
-        /*		bloom.intensity.value = 10;
-                ca.intensity.value = 10;
-                cg.mixerGreenOutRedIn.value = -100;
-                vg.intensity.value = 0.3f;*/
-
-        //playerDecapitate.gameObject.SetActive(true);
-        //playerDecapitate.Decapitate(tHead, dir);
-        base.gameObject.SetActive(false);
-    }
-
     private void JumpOrClimb()
     {
         //if is climbing, return
@@ -472,7 +369,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
         //if grounded, or just ungrouned, or just finished climbing
         //jump
         if (grounder.grounded
-            || gTimer > 0f
+            || ungroundedJumpGraceTimer > 0f
             || (climbState == 2 && climbTimer > 0.8f)
             || GetComponentInChildren<WaterObject>().IsTouchingWater())
         {
@@ -485,63 +382,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
             return;
         }
 
-        //if not grounded, but there is prop or enemy below
-        //super jump
-        /*
-		Collider[] array = new Collider[1];
-		Physics.OverlapCapsuleNonAlloc(t.position, t.position + Vector3.down * 1.25f, 1f, array, 25600);
-		if (array[0] != null)
-		{
-			switch (array[0].gameObject.layer)
-			{
-			case 10:
-			if (array[0].attachedRigidbody.isKinematic)
-				{
-					Damage damage = new Damage();
-					damage.amount = 10f;
-					damage.dir = t.forward;
-					array[0].GetComponent<Damagable>().Damage(damage);
-				}
-				else
-				{
-					array[0].GetComponent<Slappable>().Slap(Vector3.down);
-				}
-				Jump(1.6f);
-				bob.Sway(new Vector4(Mathf.Clamp(vel.magnitude, 5f, 10f), 0f, 0f, 4f));
-				
-				slamVFX.transform.position = t.position;
-				slamVFX.transform.rotation = Quaternion.LookRotation(Vector3.up);
-				slamVFX.GetComponent<ParticleSystem>().Play();
-
-				break;
-			case 13:
-				weapons.Drop(Vector3.up + tHead.forward);
-				array[0].GetComponent<Weapon>().Interact(weapons);
-				//QuickEffectsPool.Get("Enemy Jump", t.position, Quaternion.LookRotation(Vector3.up)).Play();
-				//CameraController.shake.Shake(2);
-				bob.Sway(new Vector4(Mathf.Clamp(vel.magnitude, 5f, 10f), 0f, 0f, 4f));
-				Jump((rb.velocity.y > 1f) ? 1.75f : 1.5f);
-				//midairActionPossible = true;
-				break;
-			case 14:
-				if (!array[0].attachedRigidbody.isKinematic)
-				{
-					array[0].GetComponent<Slappable>().Slap(tHead.forward);
-				}
-				Jump((rb.velocity.y > 1f) ? 1.75f : 1.5f);
-				bob.Sway(new Vector4(Mathf.Clamp(vel.magnitude, 5f, 10f), 0f, 0f, 4f));
-				
-				slamVFX.transform.position = t.position;
-				slamVFX.transform.rotation = Quaternion.LookRotation(Vector3.up);
-				slamVFX.GetComponent<ParticleSystem>().Play(); 	
-				
-				break;
-			}
-			array[0] = null;
-		} 
-		*/
-
-        //if none, check if player can climb
+        //else check if player can climb
         else
         {
             Climb();
@@ -560,26 +401,21 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
         }
 
         //if jumping on top of props, push props away
-        if ((bool)grounder.groundCollider && grounder.groundCollider.gameObject.layer == 14)
-        {
-            Rigidbody attachedRigidbody = grounder.groundCollider.attachedRigidbody;
-            if ((bool)attachedRigidbody)
-            {
-                attachedRigidbody.AddForce(Vector3.up * (7f * attachedRigidbody.mass), ForceMode.Impulse);
-                attachedRigidbody.AddTorque(tHead.forward * 90f, ForceMode.Impulse);
-            }
-        }
+        // if ((bool)grounder.groundCollider && grounder.groundCollider.gameObject.layer == 14)
+        // {
+        //     Rigidbody attachedRigidbody = grounder.groundCollider.attachedRigidbody;
+        //     if ((bool)attachedRigidbody)
+        //     {
+        //         attachedRigidbody.AddForce(Vector3.up * (7f * attachedRigidbody.mass), ForceMode.Impulse);
+        //         attachedRigidbody.AddTorque(tHead.forward * 90f, ForceMode.Impulse);
+        //     }
+        // }
 
         //ungrounds and jumps
-        if (isNonPhysics)
-        {
-            DetachFromBoat();
-        }
         grounder.Unground();
-        gTimer = 0f;
+        ungroundedJumpGraceTimer = 0f;
         rb.velocity = new Vector3(0, 0, 0);
         rb.AddForce(jumpForce * multiplier, ForceMode.Impulse);
-        //AddForceServerRpc(jumpForce * multiplier);
         //playerAudio.PlayJumpSound();
     }
 
@@ -587,7 +423,7 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
     {   //if climbing, or no surface to climb up to, or surface too low, or obsticle on top of landing spot, too close to ground
         //no climbing
         if (climbState > 0
-            || !Physics.Raycast(t.position + Vector3.up * 3f + tHead.forward * 2f, Vector3.down, out hit, 4f, 1)
+            || !Physics.Raycast(t.position + Vector3.up * 3f + tHead.forward * 1f, Vector3.down, out hit, 4f, 1)
             || !(hit.point.y + 1f > t.position.y)
             || Physics.Raycast(new Vector3(t.position.x, hit.point.y + 1f, t.position.z), tHead.forward.normalized, 2f, 1)
             || Physics.Raycast(t.position, Vector3.down, 1.5f, 1)
@@ -646,17 +482,16 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
     private void InputUpdate()
     {
         vTemp = 0f;
-        vTemp += (Input.GetKey(KeyCode.W) ? 1 : 0);
-        vTemp += (Input.GetKey(KeyCode.S) ? (-1) : 0);
+        vTemp += Input.GetKey(KeyCode.W) ? 1 : 0;
+        vTemp += Input.GetKey(KeyCode.S) ? (-1) : 0;
         hTemp = 0f;
-        hTemp += (Input.GetKey(KeyCode.A) ? (-1) : 0);
-        hTemp += (Input.GetKey(KeyCode.D) ? 1 : 0);
+        hTemp += Input.GetKey(KeyCode.A) ? (-1) : 0;
+        hTemp += Input.GetKey(KeyCode.D) ? 1 : 0;
         v = vTemp;
         h = hTemp;
 
         if (enableMovement)
         {
-
             inputDir.x = h;
             inputDir.y = 0f;
             inputDir.z = v;
@@ -685,15 +520,6 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
             {
                 dynamicSpeed = 2.5f;
             }
-
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                //slide.Slide();
-            }
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                //dash.Dash();
-            }
         }
         else
         {
@@ -702,25 +528,23 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
     }
 
-    public void WalkSoundUpdate()
-    {
-
-        if (grounder.grounded && (inputDir != Vector3.zero))
-        {
-            //StartCoroutine(playerAudio.PlayWalkSound());
-        }
-        else
-        {
-            //StartCoroutine(playerAudio.StopWalkSound());
-        }
-    }
+    // public void WalkSoundUpdate()
+    // {
+    //     if (grounder.grounded && (inputDir != Vector3.zero))
+    //     {
+    //         StartCoroutine(playerAudio.PlayWalkSound());
+    //     }
+    //     else
+    //     {
+    //         StartCoroutine(playerAudio.StopWalkSound());
+    //     }
+    // }
 
     private void BobUpdate()
     {
 
         //tilts camera based on horizontal input
         if (climbState == 0)
-        //if (slide.slideState == 0 && climbState == 0)
         {
 
             bob.Angle(inputDir.x * -1f - damageTimer * 3f);
@@ -747,10 +571,9 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 
     }
 
-    private void FixedUpdate()
+    public void MovementUpdate()
     {
-        
-        if (base.IsOwner && isPlayerControlled && (!base.IsServer || isHostPlayerObject))
+        if (base.IsOwner && controlledByClient)
         {
             //recalculates the previous velocity based on new ground normals
             if (!isNonPhysics)
@@ -761,14 +584,10 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
             gVel = Vector3.ProjectOnPlane(vel, grounder.groundNormal);
 
             //recalculates direction based on new ground normals
-            //gDir = transform.TransformDirection(inputDir);
             gDir = tHead.TransformDirection(inputDir);
             gDirCross = Vector3.Cross(Vector3.up, gDir).normalized;
             gDirCrossProject = Vector3.ProjectOnPlane(grounder.groundNormal, gDirCross);
             gDir = Vector3.Cross(gDirCross, gDirCrossProject);
-
-            //if (slide.slideState == 0)
-            //{
 
             if (!isNonPhysics)
             {
@@ -780,89 +599,56 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
                     if (grounder.grounded)
                     {
                         rb.AddForce(gDir * 100f - gVel * 10f * dynamicSpeed);
-                        //AddForceServerRpc(gDir * 100f - gVel * 10f * dynamicSpeed);
                     }
                     else if (airControl > 0f)
                     {
                         rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * airControl);
-                        //AddForceServerRpc((gDir * 100f - gVel * 10f * dynamicSpeed) * airControl);
                     }
                 }
                 //if not fast, accelerates the slowing down process
                 else if (grounder.grounded && gVel.sqrMagnitude != 0f)
                 {
                     rb.AddForce(-gVel * 10f);
-                    //AddForceServerRpc(-gVel * 10f);
                 }
 
+                //applies gravity in the direction of ground normal
+                //so player does not slide off within the tolerable angle
                 rb.AddForce(grounder.groundNormal * gravity);
-                //AddForceServerRpc(grounder.groundNormal * gravity);
 
-                // if (extraUpForce)
-                // {
-                //     rb.AddForce(Vector3.up * 12f);
-                //     extraUpForce = false;
-                // }
             }
-            else if (isNonPhysics)
-            {
-                // Vector3 normalized = transform.TransformDirection(inputDir).normalized;
-                // normalized -= Vector3.Dot(normalized, base.transform.up) * base.transform.up;
+            // else if (isNonPhysics)
+            // {
+            //     Vector3 normalized = transform.TransformDirection(inputDir).normalized;
+            //     normalized -= Vector3.Dot(normalized, base.transform.up) * base.transform.up;
 
-                // localVelo += BoatController.instance.transform.InverseTransformDirection(normalized) * acceleration * Time.fixedDeltaTime;
-                // localVelo = Vector3.Lerp(localVelo, Vector3.zero, Time.fixedDeltaTime * deaccerlation);
-                // if (localVelo != Vector3.zero)
-                // {
-                //     Vector3 direction = BoatController.instance.transform.TransformDirection(localVelo);
-                //     if (Physics.SphereCast(base.transform.position + base.transform.up * 0.5f, radius, direction, out RaycastHit hitInfo, distance, nonPhysicsCollisions))
-                //     {
-                //         Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo.normal);
-                //         vector.y = 0f;
-                //         localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo.distance)) * collisionCoefficient *
-                //                      Time.fixedDeltaTime;
-                //     }
+            //     localVelo += BoatController.instance.transform.InverseTransformDirection(normalized) * acceleration * Time.fixedDeltaTime;
+            //     localVelo = Vector3.Lerp(localVelo, Vector3.zero, Time.fixedDeltaTime * deaccerlation);
+            //     if (localVelo != Vector3.zero)
+            //     {
+            //         Vector3 direction = BoatController.instance.transform.TransformDirection(localVelo);
+            //         if (Physics.SphereCast(base.transform.position + base.transform.up * 0.5f, radius, direction, out RaycastHit hitInfo, distance, nonPhysicsCollisions))
+            //         {
+            //             Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo.normal);
+            //             vector.y = 0f;
+            //             localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo.distance)) * collisionCoefficient *
+            //                          Time.fixedDeltaTime;
+            //         }
 
-                //     if (Physics.SphereCast(base.transform.position + base.transform.up * (-0.5f), radius, direction, out RaycastHit hitInfo2, distance, nonPhysicsCollisions))
-                //     {
-                //         Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo2.normal);
-                //         vector.y = 0f;
-                //         localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo2.distance)) * collisionCoefficient *
-                //                      Time.fixedDeltaTime;
-                //     }
+            //         if (Physics.SphereCast(base.transform.position + base.transform.up * (-0.5f), radius, direction, out RaycastHit hitInfo2, distance, nonPhysicsCollisions))
+            //         {
+            //             Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo2.normal);
+            //             vector.y = 0f;
+            //             localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo2.distance)) * collisionCoefficient *
+            //                          Time.fixedDeltaTime;
+            //         }
 
-                //     localVelo = new Vector3(localVelo.x, 0, localVelo.z);
-                //     transform.localPosition += localVelo * Time.fixedDeltaTime;
+            //         localVelo = new Vector3(localVelo.x, 0, localVelo.z);
+            //         transform.localPosition += localVelo * Time.fixedDeltaTime;
 
-                // }
-            }
-
-            /*
-            }
-            else if (slide.slideState == 2)
-            {
-                //if sliding, modifies the direction according to horizontal inputs
-                if (Mathf.Abs(h) > 0.1f)
-                {
-                    rb.AddForce(Vector3.Cross(slide.slideDir, grounder.groundNormal) * (15f * (0f - h)));
-                }
-                //slows down if player holds back
-                if (v < -0.5f)
-                {
-                    rb.AddForce(-vel.normalized * 20f);
-                }
-            }
-            */
-
-            //applies gravity in the direction of ground normal
-            //so player does not slide off within the tolerable angle
+            //     }
+            // }
         }
     }
-
-    [ServerRpc]
-    public void AddForceServerRpc(Vector3 force){
-        rb.AddForce(force);
-    }
-
     //Executes when taken damage from a source.
     /*
 	public void Damage(Damage damage)
@@ -902,9 +688,9 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 	}
 	*/
 
-    public void HandleInteractableCheck()
+    public void InteractionUpdate()
     {
-        if (Physics.Raycast(cameraList[0].ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance, interactableLayer))// && hitInfo.collider.gameObject.layer == 7)
+        if (Physics.Raycast(cameraList[0].ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
         {
             if (targetInteractable == null || targetInteractable.name != hitInfo.collider.name) // || targetInteractable.triggerZone)
             {
@@ -937,11 +723,8 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
             targetInteractable.UnTarget();
             targetInteractable = null;
         }
-    }
-
-    private void HandleInteraction()
-    {
-        if (Input.GetKeyDown(KeyCode.E) && targetInteractable != null)
+        
+        if (enableMovement && Input.GetKeyDown(KeyCode.E) && targetInteractable != null)
         {
             targetInteractable.Interact();
         }
@@ -956,11 +739,6 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
     {
         mouseLookX.enabled = !state;
         mouseLookY.enabled = !state;
-
-        /*foreach (MouseLook look in GetComponentsInChildren<MouseLook>())
-        {
-            look.enableLook = !state;
-        }*/
     }
 
     public void SetCameraClamp(float x1, float x2, float y1, float y2)

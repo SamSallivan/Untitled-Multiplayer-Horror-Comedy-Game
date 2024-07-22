@@ -489,7 +489,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 31262e10069fb74468dcbdae68faf429, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
-    ConnectionApproval: 0
+    ConnectionApproval: 1
     ConnectionData: 
     EnableTimeResync: 0
     TimeResyncInterval: 30
@@ -533,17 +533,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameVersionNumber: 1
-  disableSteam: 0
-  isHostingGame: 0
-  disallowConnection: 0
-  gameStarted: 0
-  isDisconnecting: 0
-  localClientJoinRequestPending: 0
-  isWaitingForLobbyDataRefresh: 0
-  totalPlayerCount: 0
   maxPlayerNumber: 4
+  steamDisabled: 0
+  gameStarted: 0
+  disconnecting: 0
+  localClientJoinRequestPending: 0
+  waitingForLobbyDataRefresh: 0
+  connectedPlayerCount: 0
   disconnectionReasonText: 
-  username: 
+  localSteamClientUsername: 
   localPlayerController: {fileID: 0}
   currentSteamLobbyName: 
 --- !u!1 &655630356
@@ -1543,6 +1541,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 224005418473288314, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 224091110387865490, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1569,7 +1571,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000030517578
+      value: 0.000091552734
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2205,7 +2207,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 183
 --- !u!114 &1165842333
 MonoBehaviour:
   m_ObjectHideFlags: 0

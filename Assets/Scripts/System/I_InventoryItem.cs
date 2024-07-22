@@ -19,10 +19,13 @@ public class I_InventoryItem : Interactable
     public override void  OnNetworkSpawn(){
         base.OnNetworkSpawn();
 
-        if(IsServer){
-            SyncItemStateClientRpc(enableItemMeshes, enableItemPhysics);
+        if(IsServer)
+        {
+            int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
+            SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics);
         }
-        else{
+        else
+        {
             SyncItemStateServerRpc();
         }
     }
@@ -32,7 +35,7 @@ public class I_InventoryItem : Interactable
         //if(IsOwner){
             if (owner != null)
             {
-                if (owner.isPlayerControlled) 
+                if (owner.controlledByClient) 
                 {
                     Transform targetTransform = owner.equippedTransform;
                     base.transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
@@ -95,11 +98,11 @@ public class I_InventoryItem : Interactable
 			Debug.Log("DISABLING/ENABLING SKINNEDMESH: " + skinnedMeshRenderers[j].gameObject.name);
 		}
 
-		Light[] lights = base.gameObject.GetComponentsInChildren<Light>();
-		for (int j = 0; j < lights.Length; j++)
-		{
-			lights[j].enabled = enable;
-		}
+		// Light[] lights = base.gameObject.GetComponentsInChildren<Light>();
+		// for (int j = 0; j < lights.Length; j++)
+		// {
+		// 	lights[j].enabled = enable;
+		// }
 	}
     
 	public void EnableItemPhysics(bool enable)
@@ -138,12 +141,24 @@ public class I_InventoryItem : Interactable
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SyncItemStateServerRpc(){
-        SyncItemStateClientRpc(enableItemMeshes, enableItemPhysics);
+    public void SyncItemStateServerRpc()
+    {
+        int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
+        SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics);
     }
 
     [ClientRpc]
-    public void SyncItemStateClientRpc(bool enableMeshes, bool enablePhysics){
+    public void SyncItemStateClientRpc(int ownerPlayerId, bool isCurrentlyEquipped, bool enableMeshes, bool enablePhysics)
+    {
+        if(ownerPlayerId != -1)
+        {
+            this.owner = GameSessionManager.Instance.playerControllerList[ownerPlayerId];
+        }
+        else
+        {
+            this.owner = null;
+        }
+        this.isCurrentlyEquipped = isCurrentlyEquipped;
         enableItemMeshes = enableMeshes;
         enableItemPhysics = enablePhysics;
         EnableItemMeshes(enableItemMeshes);

@@ -7,6 +7,8 @@ public class OccludeAudio : MonoBehaviour
 
 	private AudioReverbFilter reverbFilter;
 
+	public LayerMask occluderMask;
+
 	public bool useReverb;
 
 	private bool occluded;
@@ -43,7 +45,7 @@ public class OccludeAudio : MonoBehaviour
 			reverbFilter.room = -2300f;
 		}
 		thisAudio = base.gameObject.GetComponent<AudioSource>();
-		if (GameSessionManager.Instance != null && Physics.Linecast(base.transform.position, GameSessionManager.Instance.audioListener.transform.position, 256, QueryTriggerInteraction.Ignore))
+		if (GameSessionManager.Instance != null && Physics.Linecast(base.transform.position, GameSessionManager.Instance.audioListener.transform.position, occluderMask, QueryTriggerInteraction.Ignore))
 		{
 			occluded = true;
 		}

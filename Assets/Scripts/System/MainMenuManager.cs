@@ -32,50 +32,54 @@ public class MainMenuManager : MonoBehaviour
 
 		Cursor.visible = true;
 		Cursor.lockState = CursorLockMode.None;
+
 		if (GameNetworkManager.Instance != null)
 		{
-			GameNetworkManager.Instance.isDisconnecting = false;
-			GameNetworkManager.Instance.isHostingGame = false;
+			GameNetworkManager.Instance.disconnecting = false;
 		}
 
-		if (gameVersionNumberText != null)
-		{
-            gameVersionNumberText.text = $"v{GameNetworkManager.Instance.gameVersionNumber}";
-		}
+		// if (string.IsNullOrEmpty(lobbyNameInputField.text))
+		// {
+		// 	lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
+		// }
+
+		// if (gameVersionNumberText != null)
+		// {
+        //     gameVersionNumberText.text = $"v{GameNetworkManager.Instance.gameVersionNumber}";
+		// }
 		
-		if (string.IsNullOrEmpty(lobbyNameInputField.text))
-		{
-			lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
-		}
-
 	}
 
 	public void ConfirmHostButton()
 	{
 		if (string.IsNullOrEmpty(lobbyNameInputField.text))
 		{
-			lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
+			if(!GameNetworkManager.Instance.steamDisabled)
+			{
+				lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
+			}
 		}
 
 		if (lobbyNameInputField.text.Length > 40)
 		{
 			lobbyNameInputField.text = lobbyNameInputField.text.Substring(0, 40);
 		}
-		GameNetworkManager.Instance.lobbySettings = new HostSettings(lobbyNameInputField.text, lobbyIsPublicToggle.isOn, lobbyTagInputField.text);
+		
+		GameNetworkManager.Instance.lobbySettings = new LobbySettings(lobbyNameInputField.text, lobbyIsPublicToggle.isOn, lobbyTagInputField.text);
 		GameNetworkManager.Instance.StartHost();
     }
 
 	public void JoinLocalButton(){
-		GameNetworkManager.Instance.disableSteam = true;
+		GameNetworkManager.Instance.steamDisabled = true;
 		Destroy(NetworkManager.Singleton.GetComponent<FacepunchTransport>());
 		if(!NetworkManager.Singleton.GetComponent<UnityTransport>()){
 			NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<UnityTransport>();
 		}
-		GameNetworkManager.Instance.StartLocalClient();
+		GameNetworkManager.Instance.StartClientLAN();
 	}
 
 	public void OnLocalToggle(){
-		GameNetworkManager.Instance.disableSteam = lobbyIsLocalToggle.isOn;
+		GameNetworkManager.Instance.steamDisabled = lobbyIsLocalToggle.isOn;
 		if(lobbyIsLocalToggle.isOn){
 			Destroy(NetworkManager.Singleton.GetComponent<FacepunchTransport>());
 			if (!NetworkManager.Singleton.GetComponent<UnityTransport>())

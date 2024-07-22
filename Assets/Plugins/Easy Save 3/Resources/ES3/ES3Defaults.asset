@@ -30,10 +30,19 @@ MonoBehaviour:
     referenceMode: 2
     serializationDepthLimit: 64
     assemblyNames:
+    - AITree
+    - AITree.Demo
+    - AITree.EQS
+    - AITree.Nodes
+    - AITree.PerceptionSystem
+    - Apex
+    - Apex.Demo
+    - Apex.Serialization
     - Assembly-CSharp
     - Assembly-CSharp-firstpass
     - DissonanceVoip
     - Enviro3.Runtime
+    - ExLib
     - Facepunch Transport for Netcode for GameObjects
     - MyBox
     - NaughtyAttributes.Core

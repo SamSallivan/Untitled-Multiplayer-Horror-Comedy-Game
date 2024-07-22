@@ -20,18 +20,12 @@ public class FlashlightController : NetworkBehaviour
     }
     
     void Update()
-    {
-        if(light.activeInHierarchy != activated)
-        {
-            light.SetActive(activated);
-        }
-
+    {   
         if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameNetworkManager.Instance.localPlayerController)
         {
             
-            if (GetComponent<I_InventoryItem>().owner.isPlayerControlled && GetComponent<I_InventoryItem>().isCurrentlyEquipped) 
+            if (GetComponent<I_InventoryItem>().isCurrentlyEquipped && GetComponent<I_InventoryItem>().owner.enableMovement) 
             {
-
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     if(IsServer){
@@ -40,9 +34,11 @@ public class FlashlightController : NetworkBehaviour
                     else{
                         ToggleLightServerRpc();
                     }
-                    /*transform.position = Vector3.Lerp(transform.position, PlayerController.instance.tHead.GetChild(2).position, Time.fixedDeltaTime * 5);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, PlayerController.instance.tHead.GetChild(2).rotation, Time.fixedDeltaTime * 5);*/
                 }
+            }
+            else if(light.activeInHierarchy)
+            {
+                ToggleLightServerRpc();
             }
         }
     }

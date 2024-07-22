@@ -32,7 +32,7 @@ public class SteamLobbySlot : MonoBehaviour
 
     public void JoinButton()
     {
-        if (!GameNetworkManager.Instance.isWaitingForLobbyDataRefresh)
+        if (!GameNetworkManager.Instance.waitingForLobbyDataRefresh)
         {
             GameNetworkManager.Instance.VerifyLobbyJoinRequest(thisLobby, lobbyId);
         }

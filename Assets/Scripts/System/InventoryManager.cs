@@ -12,7 +12,7 @@ using Steamworks;
 using Steamworks.Data;
 using UnityEngine.UIElements;
 
-public class InventoryManager : NetworkBehaviour//MonoBehaviour
+public class InventoryManager : NetworkBehaviour
 {
     public static InventoryManager instance;
     public bool activated;
@@ -558,16 +558,16 @@ public class InventoryManager : NetworkBehaviour//MonoBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void HideItemServerRpc(NetworkObjectReference inventoryItem, bool hide)
+    public void EquipItemServerRpc(NetworkObjectReference inventoryItem, bool hide)
     {
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
         {
-            HideItemClientRpc(inventoryItemObject, hide);
+            EquipItemClientRpc(inventoryItemObject, hide);
         }
     }
 
     [ClientRpc]
-    public void HideItemClientRpc(NetworkObjectReference inventoryItem, bool hide)
+    public void EquipItemClientRpc(NetworkObjectReference inventoryItem, bool hide)
     {
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
         {
@@ -716,11 +716,11 @@ public class InventoryManager : NetworkBehaviour//MonoBehaviour
 
             if (IsHost)
             {
-                HideItemClientRpc(inventoryItem.NetworkObject, false);
+                EquipItemClientRpc(inventoryItem.NetworkObject, false);
             }
             else
             {
-                HideItemServerRpc(inventoryItem.NetworkObject, false);
+                EquipItemServerRpc(inventoryItem.NetworkObject, false);
             }
 
         }
@@ -745,11 +745,11 @@ public class InventoryManager : NetworkBehaviour//MonoBehaviour
             }*/
             if (IsHost)
             {
-                HideItemClientRpc(equippedItem.NetworkObject, true);
+                EquipItemClientRpc(equippedItem.NetworkObject, true);
             }
             else
             {
-                HideItemServerRpc(equippedItem.NetworkObject, true);
+                EquipItemServerRpc(equippedItem.NetworkObject, true);
             }
         }
         equippedItem = null;

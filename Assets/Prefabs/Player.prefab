@@ -872,7 +872,7 @@ GameObject:
   - component: {fileID: 6708520134979418985}
   - component: {fileID: 6474330115237772916}
   - component: {fileID: 6524721808081188451}
-  - component: {fileID: 7134348930457768367}
+  - component: {fileID: 5510620420523601156}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -910,7 +910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 733293365
+  GlobalObjectIdHash: 88465425
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -934,12 +934,12 @@ MonoBehaviour:
   currentVoiceChatAudioSource: {fileID: 0}
   currentVoiceChatIngameSettings: {fileID: 0}
   playerUsername: Player
+  localPlayerId: 0
   localClientId: 0
   localSteamId: 0
-  localPlayerIndex: 0
-  isPlayerControlled: 0
-  isHostPlayerObject: 0
-  onAssignPlayerControllerToClient: 0
+  controlledByClient: 0
+  awaitInitialization: 0
+  isPlayerDead: 0
   playerServerPosition: {x: 0, y: 0, z: 0}
   playerUsernameCanvasTransform: {fileID: 15498366079930494}
   playerUsernameText: {fileID: 234470645503231130}
@@ -947,9 +947,6 @@ MonoBehaviour:
   t: {fileID: 0}
   tHead: {fileID: 0}
   equippedTransform: {fileID: 2944472136624858675}
-  equippedTransformLeft: {fileID: 2944472136624858675}
-  equippedTransformRight: {fileID: 2944472136624858675}
-  equippedTransformCenter: {fileID: 2944472136624858675}
   rb: {fileID: 0}
   playerCollider: {fileID: 0}
   mouseLookX: {fileID: 0}
@@ -972,11 +969,29 @@ MonoBehaviour:
   enableMovement: 1
   enableJump: 1
   jumpForce: {x: 0, y: 8, z: 0}
-  gTimer: 0
+  ungroundedJumpGraceTimer: 0
   gravity: -25
   climbCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -990,10 +1005,6 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 128
-  inMist: 0
-  mistTimer: 0
-  deathTime: 8
-  replenishCoeffcient: 2
 --- !u!114 &8793975911923707449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1008,7 +1019,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
   boatMask:
     serializedVersion: 2
     m_Bits: 0
@@ -1213,14 +1224,14 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 7.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7134348930457768367
+--- !u!114 &5510620420523601156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6738643314197950141}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b06a892ac1d6c864dad7c6c575b6e640, type: 3}
   m_Name: 

@@ -88,7 +88,7 @@ public class SteamLobbyManager : MonoBehaviour
 
     public async void LoadServerList()
     {
-        if (GameNetworkManager.Instance.isWaitingForLobbyDataRefresh)
+        if (GameNetworkManager.Instance.waitingForLobbyDataRefresh)
         {
          return;
         }
@@ -118,7 +118,7 @@ public class SteamLobbyManager : MonoBehaviour
         }
         currentLobbyList = null;
         Debug.Log("Requested server list");
-        GameNetworkManager.Instance.isWaitingForLobbyDataRefresh = true;
+        GameNetworkManager.Instance.waitingForLobbyDataRefresh = true;
         LobbyQuery lobbyQuery = sortByDistanceSetting switch
         {
             0 => SteamMatchmaking.LobbyList.FilterDistanceClose().WithSlotsAvailable(1).WithKeyValue("vers", GameNetworkManager.Instance.gameVersionNumber.ToString()),
@@ -130,7 +130,7 @@ public class SteamLobbyManager : MonoBehaviour
             lobbyQuery = lobbyQuery.WithKeyValue("tag", serverTagInputField.text.Substring(0, Mathf.Min(19, serverTagInputField.text.Length)).ToLower());
         }
         currentLobbyList = await lobbyQuery.RequestAsync();
-        GameNetworkManager.Instance.isWaitingForLobbyDataRefresh = false;
+        GameNetworkManager.Instance.waitingForLobbyDataRefresh = false;
         if (currentLobbyList != null)
         {
             Debug.Log("Got lobby list!");

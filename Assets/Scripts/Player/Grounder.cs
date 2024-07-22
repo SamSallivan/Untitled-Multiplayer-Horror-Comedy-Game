@@ -67,7 +67,7 @@ public class Grounder : MonoBehaviour
 
 		grounded = true;
 		stepSinceUngrounded = 0;
-		pc.gTimer = 0f;
+		pc.ungroundedJumpGraceTimer = 0f;
         pc.headPosition.Bounce((0f - jumpHeight) / 12f);
 
         //if not climbing
@@ -97,7 +97,7 @@ public class Grounder : MonoBehaviour
 			groundNormal = Vector3.up;
 			
 			//sets a timeframe that allows player to jump after ungrounding
-            pc.gTimer = 0.2f;
+            pc.ungroundedJumpGraceTimer = 0.2f;
         }
 
         if (pc.isNonPhysics)
@@ -212,7 +212,7 @@ public class Grounder : MonoBehaviour
 					grounded = false;
 					highestPoint = transform.position.y;
 
-                    pc.gTimer = 0.2f;
+                    pc.ungroundedJumpGraceTimer = 0.2f;
 
                     if (pc.isNonPhysics)
                     {
@@ -258,8 +258,6 @@ public class Grounder : MonoBehaviour
 			return;
 		}
 
-        bool onBoat = false;
-
         //for each contact point, add to the temporary ground value.
         //adds to ground contact count.
         for (int i = 0; i < c.contactCount; i++)
@@ -270,11 +268,6 @@ public class Grounder : MonoBehaviour
 				groundCollider = c.collider;
 				tempGroundNormal += contactPoint.normal;
 				groundContactCount++;
-
-                /*if ((boatMask.value & 1 << c.gameObject.layer) > 0)
-                {
-					onBoat = true;
-                }*/
             }
         }
 		

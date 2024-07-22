@@ -8,7 +8,6 @@ using UnityEngine;
 using MyBox;
 using Dissonance;
 using Dissonance.Integrations.Unity_NFGO;
-using Unity.VisualScripting;
 
 public class GameSessionManager : NetworkBehaviour
 {
@@ -21,7 +20,7 @@ public class GameSessionManager : NetworkBehaviour
 	public int connectedClientCount;
 	//public int alivePlayerNumber;
     public PlayerController localPlayerController;
-    public Dictionary<ulong, int> ClientPlayerList = new Dictionary<ulong, int>();
+    public Dictionary<ulong, int> ClientIdToPlayerIdDictionary = new Dictionary<ulong, int>();
     public List<PlayerController> playerControllerList = new List<PlayerController>();
 	private float updatePlayerVoiceInterval;
 
@@ -54,162 +53,9 @@ public class GameSessionManager : NetworkBehaviour
 			networkObject.DontDestroyWithOwner = true;
 		}
 
-		StartCoroutine(StartSpatialVoiceChat());
+		StartCoroutine(InitializeVoiceChat());
 
 	}
-	private IEnumerator StartSpatialVoiceChat()
-	{
-		yield return new WaitUntil(() =>  localPlayerController != null && localPlayerController.isPlayerControlled);
-
-		foreach (PlayerController playerController in playerControllerList)
-		{
-			if ((bool)playerController.GetComponent<NfgoPlayer>() && !playerController.GetComponent<NfgoPlayer>().IsTracking)
-			{
-				playerController.GetComponent<NfgoPlayer>().VoiceChatTrackingStart();
-			}
-		}
-		
-		UpdatePlayerVoiceEffects();
-
-	}
-
-	public void UpdatePlayerVoiceEffects()
-	{
-		if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
-		{
-			return;
-		}
-		updatePlayerVoiceInterval = 2f;
-		//PlayerController playerControllerB = ((!GameNetworkManager.Instance.localPlayerController.isPlayerDead || !(GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript != null)) ? GameNetworkManager.Instance.localPlayerController : GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript);
-		for (int i = 0; i < playerControllerList.Count; i++)
-		{
-			PlayerController playerControllerB2 = playerControllerList[i];
-			//if ((!playerControllerB2.isPlayerControlled && !playerControllerB2.isPlayerDead) || playerControllerB2 == GameNetworkManager.Instance.localPlayerController)
-			if (playerControllerB2 == GameNetworkManager.Instance.localPlayerController)
-			{
-				continue;
-			}
-			if (playerControllerB2.voicePlayerState == null || playerControllerB2.currentVoiceChatIngameSettings._playerState == null || playerControllerB2.currentVoiceChatAudioSource == null)
-			{
-				RefreshPlayerVoicePlaybackObjects();
-				if (playerControllerB2.voicePlayerState == null || playerControllerB2.currentVoiceChatAudioSource == null)
-				{
-					Debug.Log($"Was not able to access voice chat object for player #{i}; {playerControllerB2.voicePlayerState == null}; {playerControllerB2.currentVoiceChatAudioSource == null}");
-					continue;
-				}
-			}
-			AudioSource currentVoiceChatAudioSource = playerControllerList[i].currentVoiceChatAudioSource;
-			bool flag = false;//playerControllerB2.speakingToWalkieTalkie && playerControllerB.holdingWalkieTalkie && playerControllerB2 != playerControllerB;
-			// if (playerControllerB2.isPlayerDead)
-			// {
-			// 	currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>().enabled = false;
-			// 	currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = false;
-			// 	currentVoiceChatAudioSource.panStereo = 0f;
-			// 	SoundManager.Instance.playerVoicePitchTargets[playerControllerB2.playerClientId] = 1f;
-			// 	SoundManager.Instance.SetPlayerPitch(1f, (int)playerControllerB2.playerClientId);
-			// 	if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
-			// 	{
-			// 		currentVoiceChatAudioSource.spatialBlend = 0f;
-			// 		playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
-			// 		playerControllerB2.voicePlayerState.Volume = 1f;
-			// 	}
-			// 	else
-			// 	{
-			// 		currentVoiceChatAudioSource.spatialBlend = 1f;
-			// 		playerControllerB2.currentVoiceChatIngameSettings.set2D = false;
-			// 		playerControllerB2.voicePlayerState.Volume = 0f;
-			// 	}
-			// 	continue;
-			// }
-			AudioLowPassFilter component = currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>();
-			OccludeAudio component2 = currentVoiceChatAudioSource.GetComponent<OccludeAudio>();
-			component.enabled = true;
-			//component2.overridingLowPass = flag || playerControllerList[i].voiceMuffledByEnemy;
-			currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = flag;
-			if (!flag)
-			{
-				currentVoiceChatAudioSource.spatialBlend = 1f;
-				playerControllerB2.currentVoiceChatIngameSettings.set2D = false;
-				currentVoiceChatAudioSource.bypassListenerEffects = false;
-				currentVoiceChatAudioSource.bypassEffects = false;
-				//currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerControllerB2.playerClientId];
-				component.lowpassResonanceQ = 1f;
-			}
-			// else
-			// {
-			// 	currentVoiceChatAudioSource.spatialBlend = 0f;
-			// 	playerControllerB2.currentVoiceChatIngameSettings.set2D = true;
-			// 	if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
-			// 	{
-			// 		currentVoiceChatAudioSource.panStereo = 0f;
-			// 		currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerControllerB2.playerClientId];
-			// 		currentVoiceChatAudioSource.bypassListenerEffects = false;
-			// 		currentVoiceChatAudioSource.bypassEffects = false;
-			// 	}
-			// 	else
-			// 	{
-			// 		currentVoiceChatAudioSource.panStereo = 0.4f;
-			// 		currentVoiceChatAudioSource.bypassListenerEffects = false;
-			// 		currentVoiceChatAudioSource.bypassEffects = false;
-			// 		currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerControllerB2.playerClientId];
-			// 	}
-			// 	component2.lowPassOverride = 4000f;
-			// 	component.lowpassResonanceQ = 3f;
-			// }
-			// if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
-			// {
-			// 	playerControllerB2.voicePlayerState.Volume = 0.8f;
-			// }
-			// else
-			// {
-			// 	playerControllerB2.voicePlayerState.Volume = 1f;
-			// }
-		}
-	}
-
-	public void RefreshPlayerVoicePlaybackObjects()
-	{
-		if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
-		{
-			return;
-		}
-		PlayerVoiceIngameSettings[] array = UnityEngine.Object.FindObjectsOfType<PlayerVoiceIngameSettings>(includeInactive: true);
-		Debug.Log($"Refreshing voice playback objects. Number of voice objects found: {array.Length}");
-		for (int i = 0; i < playerControllerList.Count; i++)
-		{
-			PlayerController playerController = playerControllerList[i];
-			if (!playerController.isPlayerControlled)// && !playerController.isPlayerDead)
-			{
-				Debug.Log($"Skipping player #{i} as they are not controlled or dead");
-				continue;
-			}
-			for (int j = 0; j < array.Length; j++)
-			{
-				if (array[j]._playerState == null)
-				{
-					array[j].FindPlayerIfNull();
-					if (array[j]._playerState == null)
-					{
-						Debug.LogError($"Unable to connect player to voice B #{i}; {array[j].isActiveAndEnabled}; {array[j]._playerState == null}");
-					}
-				}
-				else if (!array[j].isActiveAndEnabled)
-				{
-					Debug.LogError($"Unable to connect player to voice A #{i}; {array[j].isActiveAndEnabled}; {array[j]._playerState == null}");
-				}
-				else if (array[j]._playerState.Name == playerController.gameObject.GetComponentInChildren<NfgoPlayer>().PlayerId)
-				{
-					Debug.Log($"Found a match for voice object #{j} and player object #{i}");
-					playerController.voicePlayerState = array[j]._playerState;
-					playerController.currentVoiceChatAudioSource = array[j].voiceAudio;
-					playerController.currentVoiceChatIngameSettings = array[j];
-					//playerController.currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
-					//Debug.Log($"player voice chat audiosource: {playerController.currentVoiceChatAudioSource}; set audiomixer to {SoundManager.Instance.playerVoiceMixers[playerController.playerClientId]} ; {playerController.currentVoiceChatAudioSource.outputAudioMixerGroup} ; {playerController.playerClientId}");
-				}
-			}
-		}
-	}
-
 
     private void Update() 
     {
@@ -225,6 +71,7 @@ public class GameSessionManager : NetworkBehaviour
 		}
         
     }
+
 	public void LateUpdate()
     {
 		if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
@@ -235,7 +82,7 @@ public class GameSessionManager : NetworkBehaviour
 		if (updatePlayerVoiceInterval > 5f)
 		{
 			updatePlayerVoiceInterval = 0f;
-			UpdatePlayerVoiceEffects();
+			UpdatePlayerVoicePlayback();
 		}
 		else
 		{
@@ -243,19 +90,22 @@ public class GameSessionManager : NetworkBehaviour
 		}
 
     }
+	
+
+	#region OnConnection
 
 	public void OnHostConnectedGameSession()
 	{
-		ClientPlayerList.Add(NetworkManager.Singleton.LocalClientId, connectedClientCount);
+		ClientIdToPlayerIdDictionary.Add(NetworkManager.Singleton.LocalClientId, 0);
 		playerControllerList[0].GetComponent<NetworkObject>().ChangeOwnership(NetworkManager.Singleton.LocalClientId);
-		playerControllerList[0].GetComponent<PlayerController>().isPlayerControlled = true;
+		playerControllerList[0].GetComponent<PlayerController>().controlledByClient = true;
+		connectedClientCount = 1;
 		//alivePlayerNumber = connectedClientCount + 1;
 
 		//Teleport player controller to its spawn position.
-		//playerControllerList[0].TeleportPlayer(playerControllerList[0].gameObject.transform.position + new Vector3(0, 10, 0));
 		playerControllerList[0].TeleportPlayer(spawnTransform.position);
 
-		if (!GameNetworkManager.Instance.disableSteam)
+		if (!GameNetworkManager.Instance.steamDisabled)
 		{
 			GameNetworkManager.Instance.currentSteamLobby.Value.SetJoinable(true);
 		}
@@ -268,49 +118,54 @@ public class GameSessionManager : NetworkBehaviour
 			return;
 		}
 		
-		Debug.Log("player connected");
-		Debug.Log($"connected players #: {connectedClientCount}");
 		try
 		{
-			Debug.Log($"Connecting new player on host; clientId: {clientId}");
+			Debug.Log($"Connecting new player to host; clientId: {clientId}");
 
-			List<int> occupiedPlayerSlotList = ClientPlayerList.Values.ToList();
-			int targetlocalPlayerIndex = 0;
+			List<int> existingPlayerIdList = ClientIdToPlayerIdDictionary.Values.ToList();
+			int targetPlayerId = 0;
+
 			for (int i = 1; i < GameNetworkManager.Instance.maxPlayerNumber; i++)
 			{
-				if (!occupiedPlayerSlotList.Contains(i))
+				if (!existingPlayerIdList.Contains(i))
 				{
-					targetlocalPlayerIndex = i;
+					targetPlayerId = i;
 					break;
 				}
 			}
 
-            PlayerController newPlayerController = playerControllerList[targetlocalPlayerIndex];
-			newPlayerController.localClientId = clientId;
-			newPlayerController.GetComponent<NetworkObject>().ChangeOwnership(clientId);
-			Debug.Log($"New player assigned object id: {newPlayerController}");
+			if (targetPlayerId == 0)
+			{
+				Debug.Log($"No available player object found, disconnecting");
+				GameNetworkManager.Instance.Disconnect();
+				return;
+			}
 
-			List<ulong> connectedPlayerIdList = new List<ulong>();
+            PlayerController playerController = playerControllerList[targetPlayerId];
+			playerController.localClientId = clientId;
+			playerController.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+			Debug.Log($"New player assigned PlayerController: {playerController}");
+
+            //Teleport player controller to its spawn position.
+            StartCoroutine(DelayedSpawnTeleport(playerController));
+
+			List<ulong> connectedClientIdList = new List<ulong>();
 			for (int j = 0; j < playerControllerList.Count; j++)
 			{
 				NetworkObject component = playerControllerList[j].GetComponent<NetworkObject>();
 				if (!component.IsOwnedByServer)
 				{
-					connectedPlayerIdList.Add(component.OwnerClientId);
+					connectedClientIdList.Add(component.OwnerClientId);
 				}
 				else if (j == 0)
 				{
-					connectedPlayerIdList.Add(NetworkManager.Singleton.LocalClientId);
-				}
-				else
-				{
-					connectedPlayerIdList.Add(999uL);
+					connectedClientIdList.Add(NetworkManager.Singleton.LocalClientId);
 				}
 			}
 
-			OnClientConnectedGameSessionClientRpc(clientId, connectedClientCount, connectedPlayerIdList.ToArray(), targetlocalPlayerIndex);
-			ClientPlayerList.Add(clientId, targetlocalPlayerIndex);
-			Debug.Log($"client id connecting: {clientId} ; their corresponding player object id: {targetlocalPlayerIndex}");
+			OnClientConnectedGameSessionClientRpc(clientId, connectedClientCount, connectedClientIdList.ToArray(), targetPlayerId);
+
+			ClientIdToPlayerIdDictionary.Add(clientId, targetPlayerId);
 		}
 		catch (Exception arg)
 		{
@@ -321,75 +176,89 @@ public class GameSessionManager : NetworkBehaviour
     }
 
 	[ClientRpc]
-	private void OnClientConnectedGameSessionClientRpc(ulong clientId, int connectedPlayerNumber, ulong[] connectedPlayerIds, int connectedLocalPlayerIndex)
+	private void OnClientConnectedGameSessionClientRpc(ulong clientId, int connectedPlayerNumber, ulong[] connectedClientIds, int targetPlayerId)
 	{
 		NetworkManager networkManager = base.NetworkManager;
+
 		if ((object)networkManager == null || !networkManager.IsListening)
 		{
 			return;
 		}
+
 		try
 		{
 			Debug.Log($"NEW CLIENT JOINED THE SERVER!!; clientId: {clientId}");
+
 			if (NetworkManager.Singleton == null)
 			{
 				return;
 			}
+
 			if (clientId == NetworkManager.Singleton.LocalClientId && GameNetworkManager.Instance.localClientJoinRequestPending)
 			{
 				GameNetworkManager.Instance.localClientJoinRequestPending = false;
 			}
+
+			//Reconstructing ClientIdToPlayerIdDictionary on all clients
 			if (!base.IsServer)
 			{
-				ClientPlayerList.Clear();
-				for (int i = 0; i < connectedPlayerIds.Length; i++)
+				ClientIdToPlayerIdDictionary.Clear();
+				for (int i = 0; i < connectedClientIds.Length; i++)
 				{
-					if (connectedPlayerIds[i] == 999)
+					if (connectedClientIds[i] == 999)
 					{
 						Debug.Log($"Skipping at index {i}");
 						continue;
 					}
-					ClientPlayerList.Add(connectedPlayerIds[i], i);
-					Debug.Log($"adding value to ClientPlayerList at value of index {i}: {connectedPlayerIds[i]}");
+					ClientIdToPlayerIdDictionary.Add(connectedClientIds[i], i);
+					Debug.Log($"adding value to ClientPlayerList at value of index {i}: {connectedClientIds[i]}");
 				}
-				if (!ClientPlayerList.ContainsKey(clientId))
+				if (!ClientIdToPlayerIdDictionary.ContainsKey(clientId))
 				{
-					Debug.Log($"Successfully added new client id {clientId} and connected to object {connectedLocalPlayerIndex}");
-					ClientPlayerList.Add(clientId, connectedLocalPlayerIndex);
+					Debug.Log($"Successfully added new client id {clientId} and connected to object {targetPlayerId}");
+					ClientIdToPlayerIdDictionary.Add(clientId, targetPlayerId);
 				}
 				else
 				{
 					Debug.Log("ClientId already in ClientPlayerList!");
 				}
-				Debug.Log($"clientplayerlist count for client: {ClientPlayerList.Count}");
-				
+				Debug.Log($"clientplayerlist count for client: {ClientIdToPlayerIdDictionary.Count}");
+			
 			}
-			this.connectedClientCount = connectedPlayerNumber + 1;
-			Debug.Log("New player: " + playerControllerList[connectedLocalPlayerIndex].name);
 
-			PlayerController playerController = playerControllerList[connectedLocalPlayerIndex];
+			connectedClientCount = connectedPlayerNumber + 1;
+			Debug.Log("New player: " + playerControllerList[targetPlayerId].name);
+
+			PlayerController playerController = playerControllerList[targetPlayerId];
 			playerController.localClientId = clientId;
 
-            //Teleport player controller to its spawn position.
-            //playerControllerList[connectedLocalPlayerIndex].TeleportPlayer(playerControllerList[connectedLocalPlayerIndex].gameObject.transform.position + new Vector3(0, 15, 0));
-			playerControllerList[connectedLocalPlayerIndex].TeleportPlayer(spawnTransform.position);
-
-            for (int j = 0; j < this.connectedClientCount + 1; j++)
+            for (int j = 0; j < this.connectedClientCount; j++)
 			{
 				if (j == 0 || !playerControllerList[j].IsOwnedByServer)
 				{
-                    playerControllerList[j].isPlayerControlled = true;
+                    playerControllerList[j].controlledByClient = true;
 				}
 			}
-			playerController.isPlayerControlled = true;
+			playerController.controlledByClient = true;
             //alivePlayerNumber = this.connectedClientCount + 1;
             Debug.Log($"Connected players after connection: {this.connectedClientCount}");
 
-
-            // if (NetworkManager.Singleton.LocalClientId == clientId)
-            // {
-            //     //Detected same client as previous, sync back inventory, progress and stuff.
-            // }
+			//Do stuff if I am the client who just join
+            if (NetworkManager.Singleton.LocalClientId == clientId)
+            {
+            }
+			else
+			{
+			}
+			
+			//Reinitialize NfgoPlayer Component Tracking for every PlayerController on all clients
+			foreach (PlayerController playerController1 in playerControllerList)
+			{
+				if (playerController1.GetComponent<NfgoPlayer>() && !playerController.GetComponent<NfgoPlayer>().IsTracking)
+				{
+					playerController1.GetComponent<NfgoPlayer>().InitializeVoiceChatTracking();
+				}
+			}
         }
         catch (Exception arg)
 		{
@@ -398,139 +267,77 @@ public class GameSessionManager : NetworkBehaviour
 		}
 	}
 
+	#endregion
+
+	#region OnDisconnection
+
 	public void OnClientDisconnectedGameSession(ulong clientId)
 	{
-		if (ClientPlayerList == null || !ClientPlayerList.ContainsKey(clientId))
+        Debug.Log($"Disconnecting Client #{clientId}");
+
+		if (ClientIdToPlayerIdDictionary == null || !ClientIdToPlayerIdDictionary.ContainsKey(clientId))
 		{
 			return;
 		}
+
 		if (NetworkManager.Singleton == null || GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
 		{
 			GameNetworkManager.Instance.Disconnect();
 			return;
         }
-        Debug.Log(clientId + "   " + NetworkManager.Singleton.LocalClientId + "   " + GameNetworkManager.Instance.localPlayerController.localClientId);
 
-        /*if (clientId == NetworkManager.Singleton.LocalClientId || clientId == GameNetworkManager.Instance.localPlayerController.localClientId)
-		{
-			Debug.Log("Disconnect callback called for local client; ignoring.");
-            return;
-		}*/
-
-        /*if (!ClientPlayerList.TryGetValue(clientId, out var value))
+		//Print all players
+        for (int i = 0; i < ClientIdToPlayerIdDictionary.Count; i++)
+        {
+            ClientIdToPlayerIdDictionary.TryGetValue((ulong)i, out var value);
+            Debug.Log($"client id: {i} ; player object id: {value}");
+        }
+		
+        if (!ClientIdToPlayerIdDictionary.TryGetValue(clientId, out var playerId))
 		{
 			Debug.LogError("Could not get player object number from client id on disconnect!");
 			return;
-		}*/
-
-        /*if (!base.IsServer)
-		{
-			Debug.Log($"player disconnected c; {clientId}");
-			Debug.Log(ClientPlayerList.Count);
-			for (int i = 0; i < ClientPlayerList.Count; i++)
-			{
-				ClientPlayerList.TryGetValue((ulong)i, out var value2);
-				Debug.Log($"client id: {i} ; player object id: {value2}");
-			}
-			Debug.Log($"disconnecting client id: {clientId}");
-			if (ClientPlayerList.TryGetValue(clientId, out var value3) && value3 == 0)
-			{
-				Debug.Log("Host disconnected!");
-				Debug.Log(GameNetworkManager.Instance.isDisconnecting);
-				if (!GameNetworkManager.Instance.isDisconnecting)
-				{
-					Debug.Log("Host quit! Ending game for client.");
-					GameNetworkManager.Instance.Disconnect();
-					return;
-				}
-			}
-			OnClientDisconnect(value, clientId);
 		}
-
-		else
-		{
-			List<ulong> list = new List<ulong>();
-			foreach (KeyValuePair<ulong, int> clientPlayer in ClientPlayerList)
-			{
-				if (clientPlayer.Key != clientId)
-				{
-					list.Add(clientPlayer.Key);
-				}
-			}
-			ClientRpcParams clientRpcParams = default(ClientRpcParams);
-			clientRpcParams.Send = new ClientRpcSendParams
-			{
-				TargetClientIds = list.ToArray()
-			};
-			ClientRpcParams clientRpcParams2 = clientRpcParams;
-			OnClientDisconnect(value, clientId);
-			OnClientDisconnectClientRpc(value, clientId, clientRpcParams2);
-		}*/
-
-        for (int i = 0; i < ClientPlayerList.Count; i++)
-        {
-            ClientPlayerList.TryGetValue((ulong)i, out var value2);
-            Debug.Log($"client id: {i} ; player object id: {value2}");
-        }
-
-        ClientPlayerList.TryGetValue(clientId, out var value);
 
 		if (base.IsServer)
         {
-            OnClientDisconnectClientRpc(value, clientId);
+            OnClientDisconnectedGameSessionClientRpc(clientId, playerId);
 		}
-		else
-		{
-            /*if (value == 0 && !GameNetworkManager.Instance.isDisconnecting)
-            {
-                Debug.Log("Host disconnected!");
-                Debug.Log(clientId + " " + value);
-                Debug.Log(GameNetworkManager.Instance.isDisconnecting);
-                Debug.Log("Host quit! Ending game for client.");
-                GameNetworkManager.Instance.Disconnect();
-                return;
-            }*/
-
-            OnClientDisconnect(value, clientId);
-        }
     }
 
     [ClientRpc]
-	public void OnClientDisconnectClientRpc(int playerObjectNumber, ulong clientId, ClientRpcParams clientRpcParams = default(ClientRpcParams))
+	public void OnClientDisconnectedGameSessionClientRpc(ulong clientId, int playerId)
 	{
-		OnClientDisconnect(playerObjectNumber, clientId);
-    }
-
-    public void OnClientDisconnect(int playerObjectNumber, ulong clientId)
-    {
-        if (!ClientPlayerList.ContainsKey(clientId))
+        if (!ClientIdToPlayerIdDictionary.ContainsKey(clientId))
         {
-            Debug.Log("disconnect: clientId key already removed!");
+            Debug.Log("OnClientDisconnectClientRpc: Target clientId key already removed, ignoring");
             return;
         }
-        if (GameNetworkManager.Instance.localPlayerController != null && clientId == GameNetworkManager.Instance.localPlayerController.localClientId)
+        if (GameNetworkManager.Instance.localPlayerController != null && clientId == GameNetworkManager.Instance.localPlayerController.localPlayerId)
         {
-            Debug.Log("OnLocalClientDisconnect: Local client is disconnecting so return.");
+            Debug.Log("OnClientDisconnectClientRpc: Local client disconnecting, ignoring");
             return;
         }
         if (base.NetworkManager.ShutdownInProgress || NetworkManager.Singleton == null)
         {
-            Debug.Log("Shutdown is in progress, returning");
+            Debug.Log("OnClientDisconnectClientRpc: Shutdown in progress, returning");
             return;
         }
-        Debug.Log("Player DC'ing 2");
+
         //Update alivePlayerNumber
-        ClientPlayerList.Remove(clientId);
+        ClientIdToPlayerIdDictionary.Remove(clientId);
         connectedClientCount--;
 
 		//Reset PlayerController values
-        PlayerController playerController = playerControllerList[playerObjectNumber].GetComponent<PlayerController>();
+        PlayerController playerController = playerControllerList[playerId].GetComponent<PlayerController>();
         try
         {
-            playerController.isPlayerControlled = false;
+			playerController.GetComponent<NfgoPlayer>().StopTracking();
+            playerController.controlledByClient = false;
 			//Drop all inventory items
 			//playerController.TeleportPlayer(despawnTransform.position);
             StartCoroutine(DelayedDespawnTeleport(playerController));
+			Destroy(playerController.currentVoiceChatIngameSettings.gameObject);
             if (!NetworkManager.Singleton.ShutdownInProgress && base.IsServer)
             {
                 playerController.gameObject.GetComponent<NetworkObject>().RemoveOwnership();
@@ -543,10 +350,186 @@ public class GameSessionManager : NetworkBehaviour
         }
     }
 
+	#endregion
+
+    private IEnumerator DelayedSpawnTeleport(PlayerController playerController)
+    {
+        yield return null;
+        yield return null;
+        playerController.TeleportPlayer(spawnTransform.position);
+    }
+
     private IEnumerator DelayedDespawnTeleport(PlayerController playerController)
     {
         yield return null;
         yield return null;
         playerController.TeleportPlayer(despawnTransform.position);
     }
+
+	#region Voice Chat
+
+	private IEnumerator InitializeVoiceChat()
+	{
+		yield return new WaitUntil(() =>  localPlayerController != null && localPlayerController.controlledByClient);
+
+		foreach (PlayerController playerController in playerControllerList)
+		{
+			if (playerController.GetComponent<NfgoPlayer>() && !playerController.GetComponent<NfgoPlayer>().IsTracking)
+			{
+				playerController.GetComponent<NfgoPlayer>().InitializeVoiceChatTracking();
+			}
+		}
+		
+		UpdatePlayerVoicePlayback();
+
+	}
+
+	public void UpdatePlayerVoicePlayback()
+	{
+		if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
+		{
+			return;
+		}
+		
+		//PlayerController playerControllerB = ((!GameNetworkManager.Instance.localPlayerController.isPlayerDead || !(GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript != null)) ? GameNetworkManager.Instance.localPlayerController : GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript);
+		foreach (PlayerController playerController in playerControllerList)
+		{
+			//if ((!playerController.isPlayerControlled && !playerController.isPlayerDead) || playerController == GameNetworkManager.Instance.localPlayerController)
+			if (!playerController.controlledByClient || playerController == GameNetworkManager.Instance.localPlayerController)
+			{
+				continue;
+			}
+
+			if (playerController.voicePlayerState == null || playerController.currentVoiceChatIngameSettings._playerState == null || playerController.currentVoiceChatAudioSource == null)
+			{
+				RefreshPlayerVoicePlaybackObjects();
+				if (playerController.voicePlayerState == null || playerController.currentVoiceChatAudioSource == null)
+				{
+					Debug.Log($"Unable to access voice chat object for {playerController.name}");
+					continue;
+				}
+			}
+			AudioSource currentVoiceChatAudioSource = playerController.currentVoiceChatAudioSource;
+
+			// if (playerController.isPlayerDead)
+			// {
+			// 	currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>().enabled = false;
+			// 	currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = false;
+			// 	currentVoiceChatAudioSource.panStereo = 0f;
+			// 	SoundManager.Instance.playerVoicePitchTargets[playerController.playerClientId] = 1f;
+			// 	SoundManager.Instance.SetPlayerPitch(1f, (int)playerController.playerClientId);
+			// 	if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
+			// 	{
+			// 		currentVoiceChatAudioSource.spatialBlend = 0f;
+			// 		playerController.currentVoiceChatIngameSettings.set2D = true;
+			// 		playerController.voicePlayerState.Volume = 1f;
+			// 	}
+			// 	else
+			// 	{
+			// 		currentVoiceChatAudioSource.spatialBlend = 1f;
+			// 		playerController.currentVoiceChatIngameSettings.set2D = false;
+			// 		playerController.voicePlayerState.Volume = 0f;
+			// 	}
+			// 	continue;
+			// }
+
+			bool flag = false;//playerController.speakingToWalkieTalkie && playerControllerB.holdingWalkieTalkie && playerController != playerControllerB;
+			AudioLowPassFilter component = currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>();
+			OccludeAudio component2 = currentVoiceChatAudioSource.GetComponent<OccludeAudio>();
+			component.enabled = true;
+			component2.overridingLowPass = flag;// || playerController.voiceMuffledByEnemy;
+			currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = flag;
+			if (!flag)
+			{
+				currentVoiceChatAudioSource.spatialBlend = 1f;
+				playerController.currentVoiceChatIngameSettings.set2D = false;
+				currentVoiceChatAudioSource.bypassListenerEffects = false;
+				currentVoiceChatAudioSource.bypassEffects = false;
+				//currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
+				component.lowpassResonanceQ = 1f;
+			}
+			// else
+			// {
+			// 	currentVoiceChatAudioSource.spatialBlend = 0f;
+			// 	playerController.currentVoiceChatIngameSettings.set2D = true;
+			// 	if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
+			// 	{
+			// 		currentVoiceChatAudioSource.panStereo = 0f;
+			// 		currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
+			// 		currentVoiceChatAudioSource.bypassListenerEffects = false;
+			// 		currentVoiceChatAudioSource.bypassEffects = false;
+			// 	}
+			// 	else
+			// 	{
+			// 		currentVoiceChatAudioSource.panStereo = 0.4f;
+			// 		currentVoiceChatAudioSource.bypassListenerEffects = false;
+			// 		currentVoiceChatAudioSource.bypassEffects = false;
+			// 		currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
+			// 	}
+			// 	component2.lowPassOverride = 4000f;
+			// 	component.lowpassResonanceQ = 3f;
+			// }
+
+			// if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
+			// {
+			// 	playerController.voicePlayerState.Volume = 0.8f;
+			// }
+			// else
+			// {
+			// 	playerController.voicePlayerState.Volume = 1f;
+			// }
+		}
+	}
+
+	public void RefreshPlayerVoicePlaybackObjects()
+	{
+		if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
+		{
+			return;
+		}
+
+		PlayerVoiceIngameSettings[] array = UnityEngine.Object.FindObjectsOfType<PlayerVoiceIngameSettings>(includeInactive: true);
+		Debug.Log($"Refreshing voice playback objects. Number of voice objects found: {array.Length}");
+
+		foreach (PlayerController playerController in playerControllerList)
+		{
+			if (!playerController.controlledByClient && !playerController.isPlayerDead)
+			{
+				Debug.Log($"Skipping {playerController.name} as they are not controlled or dead");
+				continue;
+			}
+
+			for (int j = 0; j < array.Length; j++)
+			{
+				if (array[j]._playerState == null)
+				{
+					array[j].FindPlayerIfNull();
+					if (array[j]._playerState == null)
+					{
+						Debug.LogError($"Unable to connect {playerController.name} to voice");
+						return;
+					}
+				}
+
+				if (!array[j].isActiveAndEnabled)
+				{
+					Debug.LogError($"Unable to connect {playerController.name} to voice");
+					return;
+				}
+				
+				Debug.Log(array[j]._playerState.Name + ", " + playerController.gameObject.GetComponentInChildren<NfgoPlayer>().PlayerId);
+				if (array[j]._playerState.Name == playerController.gameObject.GetComponentInChildren<NfgoPlayer>().PlayerId)
+				{
+					Debug.Log($"Found a match for voice object #{j} and player object {playerController.name}");
+					playerController.voicePlayerState = array[j]._playerState;
+					playerController.currentVoiceChatAudioSource = array[j].voiceAudio;
+					playerController.currentVoiceChatIngameSettings = array[j];
+					//playerController.currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
+				}
+			}
+		}
+	}
+
+	#endregion
+
 }
