@@ -647,10 +647,10 @@ MonoBehaviour:
   m_RendererIndex: 1
   m_VolumeLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 32
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -910,7 +910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 88465425
+  GlobalObjectIdHash: 733293365
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -953,20 +953,12 @@ MonoBehaviour:
   mouseLookY: {fileID: 0}
   bob: {fileID: 0}
   headPosition: {fileID: 0}
+  enableMovement: 1
+  isNonPhysics: 0
   dynamicSpeed: 2.5
   dynamicSpeedSprint: 1
   vel: {x: 0, y: 0, z: 0}
   waterObject: {fileID: 0}
-  isNonPhysics: 0
-  acceleration: 30
-  deaccerlation: 10
-  distance: 0.5
-  radius: 0.1
-  collisionCoefficient: 5
-  nonPhysicsCollisions:
-    serializedVersion: 2
-    m_Bits: 0
-  enableMovement: 1
   enableJump: 1
   jumpForce: {x: 0, y: 8, z: 0}
   ungroundedJumpGraceTimer: 0
@@ -995,9 +987,14 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  poofVFX: {fileID: 0}
-  slamVFX: {fileID: 0}
-  extraUpForce: 0
+  acceleration: 30
+  deaccerlation: 10
+  distance: 0.5
+  radius: 0.1
+  collisionCoefficient: 5
+  nonPhysicsCollisions:
+    serializedVersion: 2
+    m_Bits: 0
   enableInteraction: 1
   targetInteractable: {fileID: 0}
   exclusiveInteractable: {fileID: 0}

@@ -7,14 +7,14 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
+public class 
+InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
 {
     public event Action<I_InventoryItem> OnReturnRequiredType = delegate { };
 
     public TMP_Text name;
     public TMP_Text amount;
     public Image image;
-    public Image leftHandIcon;
     public Image rightHandIcon;
 
     public I_InventoryItem inventoryItem;
@@ -60,7 +60,7 @@ public class InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHa
     {
         Vector2 mouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
-        if (mouseInput != Vector2.zero && InventoryManager.instance.hoveredIndex != GetIndex())
+        if (mouseInput != Vector2.zero && InventoryManager.instance.hoveredSlot != this)
         {
             foreach (Transform child in transform.parent)
             {
@@ -69,11 +69,21 @@ public class InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHa
 
             outline.SetActive(true);
 
-            InventoryManager.instance.hoveredIndex = GetIndex();
-            //InventoryManager.instance.selectedPosition = InventoryManager.instance.GetGridPosition(GetIndex());
-
-            //InventoryManager.instance.UpdateSelection(false);
+            InventoryManager.instance.hoveredSlot = this;
         }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // Vector2 mouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+
+        // if (mouseInput != Vector2.zero && InventoryManager.instance.hoveredIndex != GetIndex())
+        // {
+        //     outline.SetActive(false);
+
+        //     InventoryManager.instance.hoveredIndex = -1;
+        // }
+
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -85,17 +95,9 @@ public class InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHa
 
         if (eventData.button == PointerEventData.InputButton.Left && eventData.clickCount == 1)
         {
-            //InventoryManager.instance.selectedIndex = GetIndex();
-            InventoryManager.instance.selectedPosition = InventoryManager.instance.GetGridPosition(GetIndex());
+            InventoryManager.instance.selectedSlot = this;
 
             InventoryManager.instance.UpdateSelection();
-
-            /*for (int i = 0; i < UIManager.instance.inventoryItemGrid.transform.childCount; i++)
-            {
-                UIManager.instance.inventoryItemGrid.transform.GetChild(i).GetComponent<InventorySlot>().background.color = new Color(0.085f, 0.085f, 0.085f, 0.5f);
-            }
-            UIManager.instance.inventoryItemGrid.transform.GetChild(GetIndex()).GetComponent<InventorySlot>().background.color = new Color(0.85f, 0.85f, 0.85f, 0.5f);*/
-
 
             if (InventoryManager.instance.requireItemType)
             {
@@ -139,21 +141,45 @@ public class InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHa
             }
             else
             {
-                InventorySlot targetSlot = InventoryManager.instance.inventorySlotList[InventoryManager.instance.hoveredIndex];
+                InventorySlot targetSlot = InventoryManager.instance.hoveredSlot;
                 if (targetSlot != this)
                 {
-                    I_InventoryItem temp = targetSlot.inventoryItem;
-                    targetSlot.inventoryItem = InventoryManager.instance.draggedItem;
-                    InventoryManager.instance.draggedItem.inventorySlot = targetSlot;
-                    inventoryItem = temp;
-                    if (temp != null)
+                    if(targetSlot.inventoryItem && targetSlot.inventoryItem.itemData == inventoryItem.itemData && inventoryItem.itemData.isStackable)
                     {
-                        temp.inventorySlot = this;
+                        
+                        while (targetSlot.inventoryItem.itemStatus.amount < inventoryItem.itemData.maxStackAmount && inventoryItem.itemStatus.amount > 0)
+                        {
+                            targetSlot.inventoryItem.itemStatus.amount++;
+                            inventoryItem.itemStatus.amount--;
+                        }
+
+                        if (inventoryItem.itemStatus.amount <= 0)
+                        {
+                            InventoryManager.instance.DestoryItemServerRpc(inventoryItem.NetworkObject);
+                            inventoryItem = null;
+                        }
+                        // else
+                        // {
+                        //     InventoryManager.instance.AddItemToInventory(inventoryItem);
+                        // }
+
+                    }
+                    else
+                    {
+                        I_InventoryItem temp = targetSlot.inventoryItem;
+                        targetSlot.inventoryItem = InventoryManager.instance.draggedItem;
+                        InventoryManager.instance.draggedItem.inventorySlot = targetSlot;
+                        inventoryItem = temp;
+                        if (temp != null)
+                        {
+                            temp.inventorySlot = this;
+                        }
                     }
 
                     UpdateInventorySlotDisplay();
                     targetSlot.UpdateInventorySlotDisplay();
-                    InventoryManager.instance.selectedPosition = InventoryManager.instance.GetGridPosition(targetSlot.GetIndex());
+
+                    InventoryManager.instance.selectedSlot = targetSlot;
 
                     InventoryManager.instance.UpdateSelection();
 
@@ -163,11 +189,6 @@ public class InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHa
         }
         InventoryManager.instance.draggedItem = null;
         UIManager.instance.draggedImage.enabled = false;
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-
     }
 
     public void ClearDelegate()

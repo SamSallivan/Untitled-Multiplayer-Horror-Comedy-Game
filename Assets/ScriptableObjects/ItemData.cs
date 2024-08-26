@@ -1,52 +1,62 @@
-using MyBox;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using UnityEngine;
-using UnityEngine.Events;
-using static Interactable;
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "ItemData", menuName = "ScriptableObjects/ItemData")]
 public class ItemData : ScriptableObject
 {
-    public enum ItemType
-    {
-        Standard,
-        //Tape,
-        //Fish,
-        //Key
-    }
-/*    public enum EquipType
-    {
-        Left,
-        Right,
-        Both
-    }*/
+    // public enum ItemType
+    // {
+    //     Standard,
+    //     Tape,
+    //     Fish,
+    //     Key
+    // }
 
-    [Foldout("Base Info", true)]
-    public ItemType type;
+    // public enum EquipType
+    // {
+    //     Left,
+    //     Right,
+    //     Both
+    // }
+
+    // [FoldoutGroup("Base Info")]
+    // public ItemType type;
+
+    [FoldoutGroup("Base Info")]
     public string title;
+
+    [FoldoutGroup("Base Info")]
     public Sprite sprite;
+
+    [FoldoutGroup("Base Info")]
     [TextArea(5, 5)]
     public string description;
 
-    [Foldout("Settings", true)]
+    [FoldoutGroup("Settings")]
     public bool isStackable;
-    [ConditionalField(nameof(isStackable))]
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf(nameof(isStackable))]
     public int maxStackAmount = 1;
+
     //public bool isEquippable;
+
     //[ConditionalField(nameof(isEquippable))]
     //public EquipType equipType;
+    
+    [FoldoutGroup("Settings")]
     public Vector3 equipPosition;
+    
+    [FoldoutGroup("Settings")]
     public Vector3 equipRotation;
-
-    //public bool isDroppable;
-    //[ConditionalField(nameof(isDroppable))]
+    
+    [FoldoutGroup("Settings")]
     public GameObject dropObject;
-
-    //public bool isExaminable;
+    
+    [FoldoutGroup("Settings")]
     public float examineScale = 1;
+    
+    [FoldoutGroup("Settings")]
     public Quaternion examineRotation;
 
     /*[ConditionalField(nameof(isExaminable))]

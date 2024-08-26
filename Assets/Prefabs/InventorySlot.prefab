@@ -295,7 +295,6 @@ GameObject:
   - component: {fileID: 7147813962492789788}
   - component: {fileID: 5436579008188676452}
   - component: {fileID: 3654968850620414369}
-  - component: {fileID: 6461440974038847836}
   m_Layer: 5
   m_Name: Outline
   m_TagString: Untagged
@@ -360,18 +359,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6461440974038847836
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6937287344986174507}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85e427e2ed8d45946923d4226167b002, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7185675182861520712
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,7 +653,6 @@ MonoBehaviour:
   name: {fileID: 8865148507167838187}
   amount: {fileID: 1707619877708639716}
   image: {fileID: 6013253618423580451}
-  leftHandIcon: {fileID: 3688811748454322074}
   rightHandIcon: {fileID: 8459054106828542698}
   inventoryItem: {fileID: 0}
   durability: {fileID: 0}

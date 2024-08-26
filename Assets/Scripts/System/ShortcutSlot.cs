@@ -9,9 +9,9 @@ using UnityEngine.UI;
 [System.Serializable]
 public class ShortcutSlot : MonoBehaviour
 {
-    public int shortcutId;
+    public int shortcutIndex;
 
-    public InventorySlot targetSlot;
+    public InventorySlot sourceInventorySlot;
     public TMP_Text name;
     public TMP_Text amount;
     public Image image;
@@ -21,8 +21,8 @@ public class ShortcutSlot : MonoBehaviour
 
     public void Start()
     {
-        shortcutId = transform.GetSiblingIndex();
-        targetSlot = InventoryManager.instance.inventorySlotList[shortcutId];
+        shortcutIndex = transform.GetSiblingIndex();
+        sourceInventorySlot = InventoryManager.instance.inventorySlotList[shortcutIndex];
     }
 
     public void Update()
@@ -32,7 +32,7 @@ public class ShortcutSlot : MonoBehaviour
 
     public void UpdateShortcutSlotDisplay()
     {
-        if (InventoryManager.instance.equippedSlotIndex == shortcutId)
+        if (InventoryManager.instance.equippedSlotIndex == shortcutIndex)
         {
             outline.SetActive(true);
         }
@@ -41,12 +41,12 @@ public class ShortcutSlot : MonoBehaviour
             outline.SetActive(false);
         }
 
-        if (targetSlot != null)
+        if (sourceInventorySlot != null)
         {
-            image.sprite = targetSlot.image.sprite;
-            image.color = targetSlot.image.color;
-            name.text = targetSlot.name.text;
-            amount.text = targetSlot.amount.text;
+            image.sprite = sourceInventorySlot.image.sprite;
+            image.color = sourceInventorySlot.image.color;
+            name.text = sourceInventorySlot.name.text;
+            amount.text = sourceInventorySlot.amount.text;
 
         }
         else

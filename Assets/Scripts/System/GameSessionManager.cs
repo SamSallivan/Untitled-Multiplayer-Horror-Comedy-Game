@@ -5,30 +5,50 @@ using System.Linq;
 using Steamworks;
 using Unity.Netcode;
 using UnityEngine;
-using MyBox;
-using Dissonance;
 using Dissonance.Integrations.Unity_NFGO;
+using Sirenix.OdinInspector;
 
 public class GameSessionManager : NetworkBehaviour
 {
 	public static GameSessionManager Instance { get; private set; }
 
-    [Foldout("Switches", true)]
+    [FoldoutGroup("Values")]
+	[ReadOnly]
 	public bool hasHostSpawned;
 	
-    [Foldout("Values", true)]
+    [FoldoutGroup("Values")]
+	[ReadOnly]
 	public int connectedClientCount;
+
+    // [FoldoutGroup("Values")]
+	// [ReadOnly]
 	//public int alivePlayerNumber;
+	
+    [FoldoutGroup("Values")]
+	[ReadOnly]
     public PlayerController localPlayerController;
+	
+    [FoldoutGroup("Values")]
+	[ReadOnly]
     public Dictionary<ulong, int> ClientIdToPlayerIdDictionary = new Dictionary<ulong, int>();
+	
+    [FoldoutGroup("Values")]
     public List<PlayerController> playerControllerList = new List<PlayerController>();
+	
+    [FoldoutGroup("Values")]
 	private float updatePlayerVoiceInterval;
 
-
-    [Foldout("References", true)]
+	
+    [FoldoutGroup("References")]
 	public ItemList itemList;
+	
+    [FoldoutGroup("References")]
     public Transform spawnTransform;
+	
+    [FoldoutGroup("References")]
     public Transform despawnTransform;
+	
+    [FoldoutGroup("References")]
 	public AudioListener audioListener;
 
 
@@ -54,6 +74,7 @@ public class GameSessionManager : NetworkBehaviour
 		}
 
 		StartCoroutine(InitializeVoiceChat());
+		StartCoroutine(Load());
 
 	}
 
@@ -91,6 +112,58 @@ public class GameSessionManager : NetworkBehaviour
 
     }
 	
+	#region Save&Load
+
+	public class InventoryItemSaveData
+	{
+		// public ItemData itemData;
+		// public ItemStatus itemStatus;
+		public int index = -1;
+		public int amount;
+	}
+
+	[Button("Save")]
+	public void Save()
+	{
+		List<InventoryItemSaveData> list = new List<InventoryItemSaveData>();
+		for(int i = 0; i < InventoryManager.instance.storageSlotList.Count; i++)
+		{
+			list.Add(new InventoryItemSaveData());
+			if(InventoryManager.instance.storageSlotList[i].inventoryItem)
+			{
+				
+				for(int j = 0; j < itemList.itemDataList.Count; j++)
+				{
+					if(InventoryManager.instance.storageSlotList[i].inventoryItem.itemData == itemList.itemDataList[j])
+					{
+						Debug.Log(InventoryManager.instance.storageSlotList[i].inventoryItem.itemData.name + " " + j);
+						list[i].index = j;
+						list[i].amount = InventoryManager.instance.storageSlotList[i].inventoryItem.itemStatus.amount;
+						break;
+					}
+				}
+			}
+		}
+		ES3.Save("StorageSlotSaveData", list.ToArray());
+	}
+
+	[Button("Load")]
+	public IEnumerator Load()
+	{
+		yield return new WaitUntil(() =>  localPlayerController != null && localPlayerController.controlledByClient);
+
+		InventoryItemSaveData[] list = ES3.Load<InventoryItemSaveData[]>("StorageSlotSaveData");
+
+		for(int i = 0; i < list.Length; i++)
+		{
+			if(list[i].index != -1)
+			{
+				InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, i);
+			}
+		}
+	}
+
+	#endregion Save&Load
 
 	#region OnConnection
 

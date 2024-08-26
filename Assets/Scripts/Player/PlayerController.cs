@@ -4,163 +4,204 @@ using NWH.DWP2.WaterObjects;
 using UnityEngine;
 using Unity.Netcode;
 using System.Linq;
-using MyBox;
-//using NaughtyAttributes;
 using Steamworks;
-using System.ComponentModel;
-using System.Text.RegularExpressions;
 using TMPro;
-using Unity.Netcode.Components;
 using Dissonance;
-
-
-//Added Function Die(), Damage(),
-//And postprocessing effect when taken damage.
+using Sirenix.OdinInspector;
 
 public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
 {
     public static PlayerController instance;
 
-    [Foldout("Voice", true)]
-
+    [FoldoutGroup("Voice Chat")]
     public VoicePlayerState voicePlayerState;
 
+    [FoldoutGroup("Voice Chat")]
     public AudioSource currentVoiceChatAudioSource;
 
+    [FoldoutGroup("Voice Chat")]
     public PlayerVoiceIngameSettings currentVoiceChatIngameSettings;
 
-    [Foldout("Networks", true)]
-
+    [FoldoutGroup("Networks")]
     public string playerUsername = "Player";
 
+    [FoldoutGroup("Networks")]
     public ulong localPlayerId;
 
+    [FoldoutGroup("Networks")]
     public ulong localClientId;
 
+    [FoldoutGroup("Networks")]
 	public ulong localSteamId;
 
+    [FoldoutGroup("Networks")]
     public bool controlledByClient;
 
+    [FoldoutGroup("Networks")]
     public bool awaitInitialization;
 
+    [FoldoutGroup("Networks")]
     public bool isPlayerDead;
 
+    [FoldoutGroup("Networks")]
     public Vector3 playerServerPosition;
 
-    [Foldout("References", true)]
-    
+    [FoldoutGroup("References")]
     public Transform playerUsernameCanvasTransform;
+
+    [FoldoutGroup("References")]
     public TMP_Text playerUsernameText;
 
+    [FoldoutGroup("References")]
     public List<Camera> cameraList = new List<Camera>();
 
+    [FoldoutGroup("References")]
     public Transform t;
 
+    [FoldoutGroup("References")]
     public Transform tHead;
 
+    [FoldoutGroup("References")]
     public Transform equippedTransform;
 
+    [FoldoutGroup("References")]
     public Rigidbody rb;
 
+    [FoldoutGroup("References")]
     public CapsuleCollider playerCollider;
 
+    [FoldoutGroup("References")]
     private Grounder grounder;
 
+    [FoldoutGroup("References")]
     public MouseLook mouseLookX;
+
+    [FoldoutGroup("References")]
     public MouseLook mouseLookY;
 
+    [FoldoutGroup("References")]
     public CameraBob bob;
+    
+    [FoldoutGroup("References")]
     public HeadPosition headPosition;
 
-    // public PlayerAudio playerAudio;
-
-    // public InventoryAudio inventoryAudio;
-
-    [Foldout("Inputs", true)]
-
+    [FoldoutGroup("Inputs")]
     private float hTemp;
 
+    [FoldoutGroup("Inputs")]
     private float vTemp;
 
+    [FoldoutGroup("Inputs")]
     private float h;
 
+    [FoldoutGroup("Inputs")]
     private float v;
 
+    [FoldoutGroup("Inputs")]
     private Vector3 inputDir;
 
-    [Foldout("Dynamic Movements", true)]
-
-    public float dynamicSpeed = 1f;
-
-    public float dynamicSpeedSprint = 1f;
-
-    public Vector3 vel;
-
-    private Vector3 gVel;
-
-    private Vector3 gDir;
-
-    private Vector3 gDirCross;
-
-    private Vector3 gDirCrossProject;
-
-    private RaycastHit hit;
-
-    private float airControl = 1f;
-
-    private float airControlBlockTimer;
-
-    public WaterObject waterObject;
-
-    [Foldout("Kinematic Movements", true)]
-
-    public bool isNonPhysics;
-    public float acceleration;
-    public float deaccerlation;
-
-    public float distance;
-    public float radius;
-    public float collisionCoefficient;
-
-    public LayerMask nonPhysicsCollisions;
-
-    [Foldout("Settings", true)]
+    [FoldoutGroup("Settings")]
     public bool enableMovement = true;
 
+    [FoldoutGroup("Settings")]
+    public bool isNonPhysics;
+
+    [FoldoutGroup("Physics Based Movements")]
+    public float dynamicSpeed = 1f;
+
+    [FoldoutGroup("Physics Based Movements")]
+    public float dynamicSpeedSprint = 1f;
+
+    [FoldoutGroup("Physics Based Movements")]
+    public Vector3 vel;
+
+    [FoldoutGroup("Physics Based Movements")]
+    private Vector3 gVel;
+
+    [FoldoutGroup("Physics Based Movements")]
+    private Vector3 gDir;
+
+    [FoldoutGroup("Physics Based Movements")]
+    private Vector3 gDirCross;
+
+    [FoldoutGroup("Physics Based Movements")]
+    private Vector3 gDirCrossProject;
+
+    [FoldoutGroup("Physics Based Movements")]
+    private RaycastHit hit;
+
+    [FoldoutGroup("Physics Based Movements")]
+    private float airControl = 1f;
+
+    [FoldoutGroup("Physics Based Movements")]
+    private float airControlBlockTimer;
+
+    [FoldoutGroup("Physics Based Movements")]
+    public WaterObject waterObject;
+
+    [FoldoutGroup("Physics Based Movements")]
     public bool enableJump = true;
 
+    [FoldoutGroup("Physics Based Movements")]
     public Vector3 jumpForce = new Vector3(0f, 15f, 0f);
 
+    [FoldoutGroup("Physics Based Movements")]
     public float ungroundedJumpGraceTimer;
 
+    [FoldoutGroup("Physics Based Movements")]
     public float gravity = -40f;
 
+    [FoldoutGroup("Physics Based Movements")]
     private int climbState;
 
+    [FoldoutGroup("Physics Based Movements")]
     private float climbTimer;
 
+    [FoldoutGroup("Physics Based Movements")]
     private Vector3 climbStartPos;
 
+    [FoldoutGroup("Physics Based Movements")]
     private Vector3 climbStartDir;
 
+    [FoldoutGroup("Physics Based Movements")]
     private Vector3 climbTargetPos;
 
+    [FoldoutGroup("Physics Based Movements")]
     public AnimationCurve climbCurve;
 
-    public GameObject poofVFX;
+    [FoldoutGroup("Kinematic Movements")]
+    public float acceleration;
 
-    public GameObject slamVFX;
+    [FoldoutGroup("Kinematic Movements")]
+    public float deaccerlation;
 
-    public bool extraUpForce;
+    [FoldoutGroup("Kinematic Movements")]
+    public float distance;
+
+    [FoldoutGroup("Kinematic Movements")]
+    public float radius;
+
+    [FoldoutGroup("Kinematic Movements")]
+    public float collisionCoefficient;
+
+    [FoldoutGroup("Kinematic Movements")]
+    public LayerMask nonPhysicsCollisions;
 
     private float damageTimer;
 
-
-    [Foldout("Interaction", true)]
+    [FoldoutGroup("Interaction")]
     public bool enableInteraction = true;
+    
+    [FoldoutGroup("Interaction")]
     public Interactable targetInteractable;
+    
+    [FoldoutGroup("Interaction")]
     public Interactable exclusiveInteractable;
+    
+    [FoldoutGroup("Interaction")]
     public float interactDistance = 5;
+    
+    [FoldoutGroup("Interaction")]
     public LayerMask interactableLayer;
 
 

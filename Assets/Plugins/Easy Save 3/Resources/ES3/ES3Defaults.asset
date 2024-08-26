@@ -44,9 +44,6 @@ MonoBehaviour:
     - Enviro3.Runtime
     - ExLib
     - Facepunch Transport for Netcode for GameObjects
-    - MyBox
-    - NaughtyAttributes.Core
-    - NaughtyAttributes.Test
     - NWH.Common
     - NWH.DWP2
     - QFSW.QC

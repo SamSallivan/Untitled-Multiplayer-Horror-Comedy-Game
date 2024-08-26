@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MyBox;
 using UnityEngine.Events;
 using System;
 using TMPro;
-using Unity.VisualScripting;
 using Unity.Netcode;
+using Sirenix.OdinInspector;
 
 public enum InteractionType
 {
@@ -20,57 +19,78 @@ public enum InteractionType
 [Serializable]
 public class MyEvent : UnityEvent<string, GameObject> { }
 
-public class Interactable : NetworkBehaviour
+public abstract class Interactable : NetworkBehaviour
 {
 
-    //[Separator("Base Info")]
-    [Foldout("Base Info", true)]
+    [FoldoutGroup("Base Info")]
     public string textName;
 
-    [ConditionalField(nameof(interactionType), true, InteractionType.None)]
+    [FoldoutGroup("Base Info")]
+    [HideIf(nameof(interactionType), InteractionType.None)]
     public string textPrompt;
 
-    [ConditionalField(nameof(interactionType), false, InteractionType.CustomToggle)]
+    [FoldoutGroup("Base Info")]
+    [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
     public string textPromptActivated;
 
+    [FoldoutGroup("Base Info")]
     public GameObject highlightTarget;
 
+    //[FoldoutGroup("Base Info")]
     //public DialogueData dialogueOnInteraction;
 
-
-    [Foldout("Settings", true)]
+    [FoldoutGroup("Settings")]
     public InteractionType interactionType;
 
-    [ConditionalField(nameof(interactionType), false, InteractionType.Examine, InteractionType.CustomToggle)]
+    [FoldoutGroup("Settings")]
     public bool onceOnly;
 
-    [ConditionalField(nameof(onceOnly))]
+    [ShowIf(nameof(onceOnly))]
     [ReadOnly]
     public bool interactedOnce;
     
-    [ConditionalField(nameof(interactionType), false, InteractionType.Examine)]//, InteractionType.ExamineAndInventory)]
-    //public bool hasText;
-    //[ConditionalField(nameof(hasText))]
-    [TextArea(10, 10)]
-    public string examineText;
+    [FoldoutGroup("Settings")]
+    [ShowIf(nameof(interactionType), InteractionType.Examine)]
     public Sprite examineImage;
 
-    [ConditionalField(nameof(interactionType), false, InteractionType.InventoryItem)]//, InteractionType.ExamineAndInventory)]
-    public ItemData itemData;
-    [ConditionalField(nameof(interactionType), false, InteractionType.InventoryItem)]//, InteractionType.ExamineAndInventory)]
-    public ItemStatus itemStatus;
-    [ConditionalField(nameof(interactionType), false, InteractionType.InventoryItem)]//, InteractionType.ExamineAndInventory)]
-    public bool openInventoryOnPickUp;
-    //[ConditionalField(nameof(interactionType), false, InteractionType.InventoryItem)]//, InteractionType.ExamineAndInventory)]
-    //public bool equipOnPickUp;
+    [FoldoutGroup("Settings")]
+    
+    [ShowIf(nameof(interactionType), InteractionType.Examine)]
+    public bool hasText;
+    
+    [FoldoutGroup("Settings")]
 
-    [ConditionalField(nameof(interactionType), false, InteractionType.CustomToggle)]
-    [ReadOnly]
-    public bool activated;
-    [ConditionalField(nameof(interactionType), false, InteractionType.CustomToggle)]
+    [ShowIf(nameof(hasText))]
+    [TextArea(10, 10)]
+    public string examineText;
+    
+    [FoldoutGroup("Settings")]
+
+    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
+    public ItemData itemData;
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
+    public ItemStatus itemStatus;
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
+    public bool openInventoryOnPickUp;
+
+    //[ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
+    //public bool equipOnPickUp;
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
     public bool excludeOtherInteraction;
     
+    //[FoldoutGroup("Settings")]
     //public Trigger triggerZone;
+
+    [FoldoutGroup("Values")]
+    [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
+    [ReadOnly]
+    public bool activated;
 
     public virtual IEnumerator InteractionEvent()
     {
@@ -160,30 +180,5 @@ public class Interactable : NetworkBehaviour
         //disable button prompt image here
         //UIManager.instance.interactionPromptAnimation.Play("PromptButtonDisappear");
     }
-    
-    [ServerRpc(RequireOwnership = false)]
-    public void SpawnServerRpc()
-    {
-        this.NetworkObject.Spawn();
-    }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void DestroyServerRpc()
-    {
-        Destroy(this.gameObject);
-    }
-
-    // [ServerRpc(RequireOwnership = false)]
-    // public void DespawnServerRpc()
-    // {
-    //     this.NetworkObject.Despawn();
-    //     DestroyClientRpc();
-    // }
-
-    // [ClientRpc]
-    // public void DestroyClientRpc()
-    // {
-    //     //this.NetworkObject.Despawn();
-    //     Destroy(this.gameObject);
-    // }
 }

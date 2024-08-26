@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
   m_Name: Bloom
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   skipIterations:
     m_OverrideState: 0
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 1.5
+    m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.25
+    m_Value: 0.75
   scatter:
     m_OverrideState: 1
-    m_Value: 0.75
+    m_Value: 0.7
   clamp:
     m_OverrideState: 1
     m_Value: 65472
@@ -32,8 +32,8 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: {r: 1, g: 1, b: 1, a: 1}
   highQualityFiltering:
-    m_OverrideState: 0
-    m_Value: 1
+    m_OverrideState: 1
+    m_Value: 0
   downscale:
     m_OverrideState: 0
     m_Value: 0
@@ -97,55 +97,6 @@ MonoBehaviour:
   colorPrecision:
     m_OverrideState: 1
     m_Value: 64
---- !u!114 &-6003029289609488709
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb18596b54f897e47b3e758ff2305d7f, type: 3}
-  m_Name: ColorSplit
-  m_EditorClassIdentifier: 
-  active: 0
-  mode:
-    m_OverrideState: 1
-    m_Value: 0
-  offset:
-    m_OverrideState: 1
-    m_Value: -0.59
-  edgeMasking:
-    m_OverrideState: 1
-    m_Value: 0
-  shader: {fileID: 4800000, guid: 0fd2fca24eaee21468e7f54b6ef8e2b9, type: 3}
---- !u!114 &-1099638556956292059
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a8c351b9ce52154fba0d0580007d570, type: 3}
-  m_Name: Kuwahara
-  m_EditorClassIdentifier: 
-  active: 0
-  mode:
-    m_OverrideState: 1
-    m_Value: 0
-  radius:
-    m_OverrideState: 1
-    m_Value: 5
-  startFadeDistance:
-    m_OverrideState: 0
-    m_Value: 100
-  endFadeDistance:
-    m_OverrideState: 0
-    m_Value: 500
-  shader: {fileID: 0}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +107,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: BaseCameraProfile
+  m_Name: OverlayCameraProfile
   m_EditorClassIdentifier: 
   components:
   - {fileID: 849379129802519247}
@@ -165,12 +116,8 @@ MonoBehaviour:
   - {fileID: 8363288345529198559}
   - {fileID: 7916315327482468062}
   - {fileID: 2763767640314403250}
-  - {fileID: -6003029289609488709}
   - {fileID: 8366821205967745645}
-  - {fileID: 9194957164746475820}
-  - {fileID: 5415013795254609796}
   - {fileID: 6468070253904921754}
-  - {fileID: -1099638556956292059}
 --- !u!114 &849379129802519247
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -183,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97c23e3b12dc18c42a140437e53d3951, type: 3}
   m_Name: Tonemapping
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   mode:
     m_OverrideState: 1
     m_Value: 2
@@ -227,35 +174,6 @@ MonoBehaviour:
   intensity:
     m_OverrideState: 1
     m_Value: 0.5
---- !u!114 &5415013795254609796
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36e21a9f18817d444b2c00478e04a58e, type: 3}
-  m_Name: Posterize
-  m_EditorClassIdentifier: 
-  active: 1
-  hsvMode:
-    m_OverrideState: 1
-    m_Value: 0
-  levels:
-    m_OverrideState: 1
-    m_Value: 32
-  hue:
-    m_OverrideState: 1
-    m_Value: 256
-  saturation:
-    m_OverrideState: 1
-    m_Value: 256
-  value:
-    m_OverrideState: 1
-    m_Value: 256
-  shader: {fileID: 4800000, guid: 40279b644fb7ed248b6b89369b5ae060, type: 3}
 --- !u!114 &6468070253904921754
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -268,10 +186,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fae979ba049e535429dde8ab92b28488, type: 3}
   m_Name: Scanlines
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.1
+    m_Value: 0.15
   amount:
     m_OverrideState: 1
     m_Value: 700
@@ -319,7 +237,7 @@ MonoBehaviour:
   active: 0
   temperature:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: -93
   tint:
     m_OverrideState: 1
     m_Value: 0
@@ -338,10 +256,10 @@ MonoBehaviour:
   active: 0
   type:
     m_OverrideState: 1
-    m_Value: 9
+    m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.347
   response:
     m_OverrideState: 1
     m_Value: 0.567
@@ -360,16 +278,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dfc0ecd934e74246bcf9791abe617b0, type: 3}
   m_Name: Pixelize
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   amount:
     m_OverrideState: 1
     m_Value: 1
   resolution:
     m_OverrideState: 1
-    m_Value: 240
+    m_Value: 640
   resolutionPreset:
     m_OverrideState: 1
-    m_Value: 240
+    m_Value: 1
   shader: {fileID: 4800000, guid: 418afc1867615f1408a4c6de9d799560, type: 3}
 --- !u!114 &8713469300237999870
 MonoBehaviour:
@@ -411,30 +329,3 @@ MonoBehaviour:
   noiseStrength:
     m_OverrideState: 1
     m_Value: 0
---- !u!114 &9194957164746475820
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90ce1611ace1a9a4a8284d45a924bdcd, type: 3}
-  m_Name: Dithering
-  m_EditorClassIdentifier: 
-  active: 0
-  lut:
-    m_OverrideState: 1
-    m_Value: {fileID: 2800000, guid: 7a95f13299f9b0948aff699c1881bfc6, type: 3}
-    dimension: 1
-  intensity:
-    m_OverrideState: 1
-    m_Value: 0.25
-  luminanceThreshold:
-    m_OverrideState: 1
-    m_Value: 0.195
-  tiling:
-    m_OverrideState: 1
-    m_Value: 1.21
-  shader: {fileID: 4800000, guid: 9dfd4d129fd660d43a2fb5c40d119ca4, type: 3}

@@ -21,24 +21,36 @@ public class GameNetworkManager : MonoBehaviour
     public int maxPlayerNumber = 4;
 
     [Header("Switches")]
+	[ReadOnly]
 	public bool steamDisabled;
+	[ReadOnly]
     public bool gameStarted;
+	[ReadOnly]
     public bool disconnecting;
+	[ReadOnly]
     public bool localClientJoinRequestPending;
+	[ReadOnly]
     public bool waitingForLobbyDataRefresh;
     private bool networkManagerCallbacksSubscribed;
 
     [Header("Values")]
+	[ReadOnly]
 	public int connectedPlayerCount;
+	[ReadOnly]
 	public string disconnectionReasonText;
+	[ReadOnly]
 	public string localSteamClientUsername;
+	[ReadOnly]
     public LobbySettings lobbySettings;
 	
     [Header("References")]
+	[ReadOnly]
     public PlayerController localPlayerController;
 	private Coroutine lobbyRefreshTimeOutCoroutine;
+	[ReadOnly]
 	public string currentSteamLobbyName;
 	public Lobby? currentSteamLobby { get; private set; }
+	[ReadOnly]
 	public List<SteamId> steamIdsInCurrentSteamLobby = new List<SteamId>();
 
 	private void Awake()
@@ -242,8 +254,7 @@ public class GameNetworkManager : MonoBehaviour
 	{
 		try
 		{
-			//Save
-			Disconnect();
+			//Disconnect();
 		}
 		catch (Exception arg)
 		{
@@ -256,6 +267,8 @@ public class GameNetworkManager : MonoBehaviour
 		if (!disconnecting && GameSessionManager.Instance != null)
 		{
 			disconnecting = true;
+
+			GameSessionManager.Instance.Save();
 
             if (!steamDisabled)
             {

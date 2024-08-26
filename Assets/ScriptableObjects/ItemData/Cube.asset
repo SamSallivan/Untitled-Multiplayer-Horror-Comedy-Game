@@ -12,17 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1856e6d548b6c4daf9c5787854b926, type: 3}
   m_Name: Cube
   m_EditorClassIdentifier: 
-  type: 0
   title: A Cube
   sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   description: For testing purpose
-  isStackable: 0
-  maxStackAmount: 1
-  isEquippable: 1
-  equipType: 1
+  isStackable: 1
+  maxStackAmount: 5
   equipPosition: {x: 0, y: 0, z: 0}
-  equipRotation: {x: 0, y: 0, z: 0, w: 0}
-  isDroppable: 1
+  equipRotation: {x: 0, y: 0, z: 0}
   dropObject: {fileID: 4062514989801116217, guid: a9a1617487fcdf44d9a215d8760f3f3b, type: 3}
   examineScale: 1
   examineRotation: {x: 0, y: 0, z: 0, w: 1}

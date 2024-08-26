@@ -1,34 +1,35 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
-using System;
-using MyBox;
-using Unity.VisualScripting;
-using Unity.Netcode;
-using Unity.Netcode.Components;
+using Sirenix.OdinInspector;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
-    [Foldout("Gameplay", true)]
+    [FoldoutGroup("Gameplay")]
     public GameObject gameplayUI;
 
-        [Header("Tips")]
-        public GameObject generalTips;
-        public GameObject notificationUI;
+    [FoldoutGroup("Gameplay")]
+    public GameObject generalTips;
 
-        // [Header("Objective")]
-        // public GameObject objectiveUI;
-        // public GameObject objectiveUIAnim;
+    [FoldoutGroup("Gameplay")]
+    public GameObject notificationUI;
 
-    [Header("Interaction")]
-        public TMP_Text interactionName;
-        public TMP_Text interactionPrompt;
-        public Animation interactionPromptAnimation;
+    // [Header("Objective")]
+    // public GameObject objectiveUI;
+    // public GameObject objectiveUIAnim;
+
+    [FoldoutGroup("Gameplay")]
+    public TMP_Text interactionName;
+
+    [FoldoutGroup("Gameplay")]
+    public TMP_Text interactionPrompt;
+
+    [FoldoutGroup("Gameplay")]
+    public Animation interactionPromptAnimation;
 
     // [Header("Subtitle")]
     //     public TMP_Text radioSubtitleUI;
@@ -39,37 +40,64 @@ public class UIManager : MonoBehaviour
     //     public Slider reelSlider;
     //     public Image reelImage;
 
-    [Foldout("Inventory", true)]
-        public GameObject inventoryUI;
-        public GameObject inventoryItemGrid;
-        public GameObject inventoryTypeGrid;
-        public GameObject inventoryBackGrid;
-        public Animation inventoryAnimation;
-        
-        public TMP_Text detailName;
-        public TMP_Text detailDescription;
-        public Transform detailObjectPivot;
-        public bool detailObjectInBound;
+    [FoldoutGroup("Inventory")]
+    public GameObject inventoryUI;
 
-        public GameObject draggedItemDisplay;
-        public Image draggedImage;
+    [FoldoutGroup("Inventory")]
+    public GameObject detailPanel;
+
+    [FoldoutGroup("Inventory")]
+    public GameObject StoragePanel;
+
+    [FoldoutGroup("Inventory")]
+    public GameObject inventorySlotGrid;
+
+    [FoldoutGroup("Inventory")]
+    public GameObject storageSlotGrid;
+
+    [FoldoutGroup("Inventory")]
+    public GameObject inventoryTypeGrid;
+    
+    [FoldoutGroup("Inventory")]
+    public TMP_Text detailName;
+
+    [FoldoutGroup("Inventory")]
+    public TMP_Text detailDescription;
+
+    [FoldoutGroup("Inventory")]
+    public Transform detailObjectPivot;
+
+    [FoldoutGroup("Inventory")]
+    public bool detailObjectInBound;
+
+    [FoldoutGroup("Inventory")]
+    public GameObject draggedItemDisplay;
+
+    [FoldoutGroup("Inventory")]
+    public Image draggedImage;
 
     // [Foldout("Upgrade", true)]
     // public GameObject upgradeUI;
     // public TMP_Text upgradeTitle;
     // public GameObject UpgradeOptionList;
 
-    [Foldout("Examine", true)]
+    [FoldoutGroup("Examine")]
     public GameObject examineUI;
+
+    [FoldoutGroup("Examine")]
     public TMP_Text examineText;
+
+    [FoldoutGroup("Examine")]
     public Image examineImage;
 
-    [Foldout("Game Over", true)]
+    [FoldoutGroup("Game Over")]
     public GameObject gameOverUI;
+
+    [FoldoutGroup("Game Over")]
     public TMP_Text deathText;
 
-    // [Foldout("Pause", true)]
-    // public GameObject pauseUI;
+    [FoldoutGroup("Pause Menu")]
+    public GameObject pauseUI;
 
     private void Awake()
     {

@@ -1,20 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6902214474231363405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3f44c99f39cf5a4e9cd4cd047b1e2b2, type: 3}
-  m_Name: AzureFogScatteringFeature
-  m_EditorClassIdentifier: 
-  m_Active: 0
-  blitMaterial: {fileID: 2100000, guid: cf6ab374e3080fa49b6f1077567c7ceb, type: 2}
-  renderPassEvent: 350
 --- !u!114 &-2704410504090354372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,6 +17,19 @@ MonoBehaviour:
     injectionPoint: 550
     alwaysEnable: 0
     cameraTypes: 5
+--- !u!114 &-250649568943541433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5beaef983462df4a944c521f9064a91, type: 3}
+  m_Name: EnviroURPRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42,7 +40,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de640fe3d0db1804a85f9fc8f5cadab6, type: 3}
-  m_Name: RendererUI
+  m_Name: RendererGameplay
   m_EditorClassIdentifier: 
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
@@ -53,7 +51,8 @@ MonoBehaviour:
   - {fileID: 2778186126716071367}
   - {fileID: 8921119208457087222}
   - {fileID: 138853701947654139}
-  m_RendererFeatureMap: 5ab030b5336cc47e3cfddba0f90078dac76dd41290198e26f6a8ff6aa72ece7bfb7f56ccb44eed01
+  - {fileID: -250649568943541433}
+  m_RendererFeatureMap: 5ab030b5336cc47e3cfddba0f90078dac76dd41290198e26f6a8ff6aa72ece7bfb7f56ccb44eed0147f303888b8385fc
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -75,10 +74,10 @@ MonoBehaviour:
   m_AssetVersion: 2
   m_OpaqueLayerMask:
     serializedVersion: 2
-    m_Bits: 32865
+    m_Bits: 1050771
   m_TransparentLayerMask:
     serializedVersion: 2
-    m_Bits: 32865
+    m_Bits: 1083539
   m_DefaultStencilState:
     overrideStencilState: 0
     stencilReference: 0
@@ -104,26 +103,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8173f089832511149b44a215bb4a2f39, type: 3}
   m_Name: DitheringRenderer
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0
     cameraTypes: 5
---- !u!114 &1126074398315881943
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c8d6ac66772e4185bd13920192d54b3, type: 3}
-  m_Name: VHSPro
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  settings:
-    renderPassEvent: 550
 --- !u!114 &2778186126716071367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
   m_Name: ScreenSpaceAmbientOcclusion
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1
   m_Settings:
     AOMethod: 0
     Downsample: 0
@@ -205,4 +189,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5beaef983462df4a944c521f9064a91, type: 3}
   m_Name: EnviroURPRenderFeature
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1

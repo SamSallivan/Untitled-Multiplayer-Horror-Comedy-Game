@@ -1,4 +1,3 @@
-using MyBox;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +15,7 @@ public class I_InventoryItem : Interactable
     public bool enableItemMeshes = true;
     public bool enableItemPhysics = true;
     
-    public override void  OnNetworkSpawn(){
+    public override void OnNetworkSpawn(){
         base.OnNetworkSpawn();
 
         if(IsServer)
@@ -71,8 +70,7 @@ public class I_InventoryItem : Interactable
                 if (openInventoryOnPickUp)
                 {
                     InventoryManager.instance.OpenInventory();
-                    InventoryManager.instance.selectedPosition =
-                    InventoryManager.instance.GetGridPosition(item.inventorySlot.GetIndex());
+                    InventoryManager.instance.selectedSlot = item.inventorySlot;
                 }
             }
             UnTarget();
