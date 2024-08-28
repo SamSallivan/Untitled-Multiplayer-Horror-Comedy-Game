@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cube
   m_EditorClassIdentifier: 
   title: A Cube
-  sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  sprite: {fileID: 21300000, guid: e08a3fbad4193cd47b4a741f3be76154, type: 3}
   description: For testing purpose
   isStackable: 1
   maxStackAmount: 5

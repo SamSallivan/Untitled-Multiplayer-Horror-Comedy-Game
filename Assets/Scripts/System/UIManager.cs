@@ -31,6 +31,21 @@ public class UIManager : MonoBehaviour
     [FoldoutGroup("Gameplay")]
     public Animation interactionPromptAnimation;
 
+    [FoldoutGroup("Gameplay")]
+    public GameObject ratingUI;
+
+    [FoldoutGroup("Gameplay")]
+    public TMP_Text ratingText;
+    
+    [FoldoutGroup("Gameplay")]
+    public Image ratingBar;
+
+    [FoldoutGroup("Gameplay")]
+    public TMP_Text scoreText;
+
+    [FoldoutGroup("Gameplay")]
+    public TMP_Text addScoreText;
+
     // [Header("Subtitle")]
     //     public TMP_Text radioSubtitleUI;
     //     public TMP_Text dialogueSubtitleUI;

@@ -74,7 +74,6 @@ public class GameSessionManager : NetworkBehaviour
 		}
 
 		StartCoroutine(InitializeVoiceChat());
-		StartCoroutine(Load());
 
 	}
 
@@ -116,8 +115,6 @@ public class GameSessionManager : NetworkBehaviour
 
 	public class InventoryItemSaveData
 	{
-		// public ItemData itemData;
-		// public ItemStatus itemStatus;
 		public int index = -1;
 		public int amount;
 	}
@@ -136,7 +133,6 @@ public class GameSessionManager : NetworkBehaviour
 				{
 					if(InventoryManager.instance.storageSlotList[i].inventoryItem.itemData == itemList.itemDataList[j])
 					{
-						Debug.Log(InventoryManager.instance.storageSlotList[i].inventoryItem.itemData.name + " " + j);
 						list[i].index = j;
 						list[i].amount = InventoryManager.instance.storageSlotList[i].inventoryItem.itemStatus.amount;
 						break;
@@ -145,6 +141,19 @@ public class GameSessionManager : NetworkBehaviour
 			}
 		}
 		ES3.Save("StorageSlotSaveData", list.ToArray());
+	}
+
+	
+	public int GetItemIndex(ItemData itemData)
+	{
+		for(int i = 0; i < itemList.itemDataList.Count; i++)
+		{
+			if(itemData == itemList.itemDataList[i])
+			{
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	[Button("Load")]
@@ -158,7 +167,7 @@ public class GameSessionManager : NetworkBehaviour
 		{
 			if(list[i].index != -1)
 			{
-				InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, i);
+				InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, i, NetworkManager.Singleton.LocalClientId);
 			}
 		}
 	}
@@ -174,6 +183,7 @@ public class GameSessionManager : NetworkBehaviour
 		playerControllerList[0].GetComponent<PlayerController>().controlledByClient = true;
 		connectedClientCount = 1;
 		//alivePlayerNumber = connectedClientCount + 1;
+		StartCoroutine(Load());
 
 		//Teleport player controller to its spawn position.
 		playerControllerList[0].TeleportPlayer(spawnTransform.position);
@@ -319,6 +329,8 @@ public class GameSessionManager : NetworkBehaviour
 			//Do stuff if I am the client who just join
             if (NetworkManager.Singleton.LocalClientId == clientId)
             {
+            	Debug.Log($"loaded");
+				StartCoroutine(Load());
             }
 			else
 			{

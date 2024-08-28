@@ -150,7 +150,9 @@ InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPoint
                         while (targetSlot.inventoryItem.itemStatus.amount < inventoryItem.itemData.maxStackAmount && inventoryItem.itemStatus.amount > 0)
                         {
                             targetSlot.inventoryItem.itemStatus.amount++;
+                            InventoryManager.instance.ModifyItemAmountServerRpc(targetSlot.inventoryItem.NetworkObject, targetSlot.inventoryItem.itemStatus.amount);
                             inventoryItem.itemStatus.amount--;
+                            InventoryManager.instance.ModifyItemAmountServerRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.amount);
                         }
 
                         if (inventoryItem.itemStatus.amount <= 0)

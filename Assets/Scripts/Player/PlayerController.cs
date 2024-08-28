@@ -733,9 +733,9 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
     {
         if (Physics.Raycast(cameraList[0].ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
         {
-            if (targetInteractable == null || targetInteractable.name != hitInfo.collider.name) // || targetInteractable.triggerZone)
+            if (targetInteractable == null || targetInteractable != hitInfo.collider.GetComponent<Interactable>()) // || targetInteractable.triggerZone)
             {
-                if (targetInteractable != null && targetInteractable.name != hitInfo.collider.name)
+                if (targetInteractable != null && targetInteractable != hitInfo.collider.GetComponent<Interactable>())
                 {
                     targetInteractable.UnTarget();
                 }

@@ -11,17 +11,57 @@ public class I_InventoryItem : Interactable
 
     public PlayerController owner;
     public bool isCurrentlyEquipped;
-    public InventorySlot inventorySlot;
+    public InventorySlot _inventorySlot;
+    public InventorySlot inventorySlot
+    {
+        get
+        {
+            return this._inventorySlot;
+        }
+        set
+        {
+            Debug.Log(value);
+            this._inventorySlot = value;
+            if(inventorySlot && InventoryManager.instance.storageSlotList.Contains(inventorySlot))
+            {
+                inStorageBox = true;
+            }
+            else
+            {
+                inStorageBox = false;
+            }
+            
+            if(IsServer)
+            {
+                int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
+                SetInStorageBoxClientRpc(inStorageBox);
+            }
+            else
+            {
+                SetInStorageBoxServerRpc(inStorageBox);
+            }
+        }
+    }
     public bool enableItemMeshes = true;
     public bool enableItemPhysics = true;
+    public bool inStorageBox = false;
     
+    void Start()
+    {
+        if (!IsHost)
+        {
+            if (!NetworkObject.IsSpawned)
+                Destroy(this.gameObject);
+        }
+    }
+
     public override void OnNetworkSpawn(){
         base.OnNetworkSpawn();
 
         if(IsServer)
         {
             int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
-            SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics);
+            SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics, itemStatus.amount, inStorageBox);
         }
         else
         {
@@ -34,7 +74,7 @@ public class I_InventoryItem : Interactable
         //if(IsOwner){
             if (owner != null)
             {
-                if (owner.controlledByClient) 
+                if (owner.controlledByClient && !owner.isPlayerDead) 
                 {
                     Transform targetTransform = owner.equippedTransform;
                     base.transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
@@ -43,6 +83,11 @@ public class I_InventoryItem : Interactable
                 }
                 else
                 {
+                    if(!owner.controlledByClient && inStorageBox && IsServer)
+                    {
+                        InventoryManager.instance.DestoryItemServerRpc(this.NetworkObject);
+                        return;
+                    }
                     owner = null;
                     inventorySlot = null;
                     EnableItemMeshes(true);
@@ -142,11 +187,11 @@ public class I_InventoryItem : Interactable
     public void SyncItemStateServerRpc()
     {
         int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
-        SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics);
+        SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics, itemStatus.amount, inStorageBox);
     }
 
     [ClientRpc]
-    public void SyncItemStateClientRpc(int ownerPlayerId, bool isCurrentlyEquipped, bool enableMeshes, bool enablePhysics)
+    public void SyncItemStateClientRpc(int ownerPlayerId, bool isCurrentlyEquipped, bool enableMeshes, bool enablePhysics, int amount, bool inStorageBox)
     {
         if(ownerPlayerId != -1)
         {
@@ -161,5 +206,19 @@ public class I_InventoryItem : Interactable
         enableItemPhysics = enablePhysics;
         EnableItemMeshes(enableItemMeshes);
         EnableItemPhysics(enableItemPhysics);
+        itemStatus.amount = amount;
+        this.inStorageBox = inStorageBox;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetInStorageBoxServerRpc(bool inStorageBox)
+    {
+        SetInStorageBoxClientRpc(inStorageBox);
+    }
+
+    [ClientRpc]
+    public void SetInStorageBoxClientRpc(bool inStorageBox)
+    {
+        this.inStorageBox = inStorageBox;
     }
 }

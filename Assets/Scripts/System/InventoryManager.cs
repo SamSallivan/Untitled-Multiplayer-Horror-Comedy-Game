@@ -313,7 +313,6 @@ public class InventoryManager : NetworkBehaviour
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
             PocketItemClientRpc(inventoryItemObject, playerControllerObject);
-            //inventoryItemObject.ChangeOwnership(playerControllerObject.GetComponent<PlayerController>().localClientId);
         }
     }
     [ClientRpc]
@@ -329,6 +328,8 @@ public class InventoryManager : NetworkBehaviour
 
     public I_InventoryItem AddItemToInventory(I_InventoryItem inventoryItem)
     {
+        RatingManager.instance.AddScore(50);
+
         if (IsHost)
         {
             PocketItemClientRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
@@ -351,6 +352,7 @@ public class InventoryManager : NetworkBehaviour
                     while (item.itemStatus.amount < item.itemData.maxStackAmount && temp > 0)
                     {
                         item.itemStatus.amount++;
+                        ModifyItemAmountServerRpc(item.NetworkObject, item.itemStatus.amount);
                         temp--;
                         item.inventorySlot.amount.text = "" + item.itemStatus.amount;
                     }
@@ -367,6 +369,7 @@ public class InventoryManager : NetworkBehaviour
         if (temp > 0)
         {
             inventoryItem.itemStatus.amount = temp;
+            ModifyItemAmountServerRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.amount);
 
             InventorySlot slot;
             if (inventorySlotList[equippedSlotIndex].inventoryItem == null)
@@ -409,11 +412,10 @@ public class InventoryManager : NetworkBehaviour
                 {
                     UnpocketItemServerRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
                 }
-                //DropItemFromInventory(inventoryItem, temp);
-                inventoryItem.itemStatus.amount = temp;
                 return null;
             }
         }
+
         return null;
         
         // while (temp > 0)
@@ -502,14 +504,45 @@ public class InventoryManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, int storageSlotIndex)
+    public void InstantiateUnpocketedItemServerRpc(int itemIndex, int amount, NetworkObjectReference playerController)
+    {
+        if (playerController.TryGet(out NetworkObject playerControllerObject))
+        {
+            var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject, position: playerControllerObject.GetComponent<PlayerController>().tHead.transform.position + playerControllerObject.GetComponent<PlayerController>().tHead.transform.forward * 0.5f, playerControllerObject.GetComponent<PlayerController>().tHead.transform.rotation);
+            gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
+            gameObject.GetComponent<NetworkObject>().Spawn();
+            InstantiateUnpocketedItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
+        }
+    }
+
+    [ClientRpc]
+    public void InstantiateUnpocketedItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject) && this.playerController == playerControllerObject.GetComponent<PlayerController>())
+        {
+            UnpocketItemServerRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerControllerObject);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, int storageSlotIndex, ulong clientId)
     {
         var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
         gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
         gameObject.GetComponent<NetworkObject>().Spawn();
-        PocketItemServerRpc(gameObject.GetComponent<NetworkObject>(), playerController.NetworkObject);
-        storageSlotList[storageSlotIndex].inventoryItem = gameObject.GetComponent<I_InventoryItem>();
-        storageSlotList[storageSlotIndex].UpdateInventorySlotDisplay();
+        InstantiatePocketedItemClientRpc(storageSlotIndex, gameObject.GetComponent<NetworkObject>(), clientId);
+    }
+    
+    [ClientRpc]
+    public void InstantiatePocketedItemClientRpc(int storageSlotIndex, NetworkObjectReference inventoryItem, ulong clientId)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            PocketItemServerRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerController.NetworkObject);
+            storageSlotList[storageSlotIndex].inventoryItem = inventoryItemObject.GetComponent<I_InventoryItem>();
+            storageSlotList[storageSlotIndex].UpdateInventorySlotDisplay();
+            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = storageSlotList[storageSlotIndex];
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -517,6 +550,7 @@ public class InventoryManager : NetworkBehaviour
     {
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
         {
+            inventoryItemObject.Despawn();
             Destroy(inventoryItemObject.gameObject);
         }
     }
@@ -596,8 +630,9 @@ public class InventoryManager : NetworkBehaviour
             if (inventoryItem.itemStatus.amount > amount)
             {
                 inventoryItem.itemStatus.amount -= amount;
+                ModifyItemAmountServerRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.amount);
                 inventoryItem.inventorySlot.amount.text = "" + inventoryItem.itemStatus.amount;
-                InstantiateUnpocketedItemServerRpc(inventoryItem.NetworkObject, amount);
+                InstantiateUnpocketedItemServerRpc(GameSessionManager.Instance.GetItemIndex(inventoryItem.itemData), amount, playerController.NetworkObject);
 
             }
             else
@@ -642,6 +677,7 @@ public class InventoryManager : NetworkBehaviour
                     while (item.itemStatus.amount > 0 && temp > 0)
                     {
                         item.itemStatus.amount--;
+                        ModifyItemAmountServerRpc(item.NetworkObject, item.itemStatus.amount);
                         temp--;
                         item.inventorySlot.amount.text = "" + item.itemStatus.amount;
 
@@ -738,6 +774,24 @@ public class InventoryManager : NetworkBehaviour
             }
         }
         equippedItem = null;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ModifyItemAmountServerRpc(NetworkObjectReference inventoryItem, int amount)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            ModifyItemAmountClientRpc(inventoryItemObject, amount);
+        }
+    }
+
+    [ClientRpc]
+    public void ModifyItemAmountClientRpc(NetworkObjectReference inventoryItem, int amount)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            inventoryItemObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
+        }
     }
 
     public I_InventoryItem FindInventoryItem(string name)

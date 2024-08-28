@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1856e6d548b6c4daf9c5787854b926, type: 3}
   m_Name: Flashlight
   m_EditorClassIdentifier: 
-  type: 0
   title: Flashlight
   sprite: {fileID: 21300000, guid: 6540b6a0ec6498a42b6489b8b7bb73d6, type: 3}
   description: A flashlight!
   isStackable: 0
   maxStackAmount: 1
-  equipPosition: {x: 0, y: 0, z: -0.1}
+  equipPosition: {x: 0, y: 0, z: -0.3}
   equipRotation: {x: 270, y: 0, z: 0}
   dropObject: {fileID: 7596440031121015847, guid: 146528c5bf0e5f643aa98f380a62ad2f, type: 3}
   examineScale: 1
