@@ -1016,7 +1016,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundMask:
     serializedVersion: 2
-    m_Bits: 129
+    m_Bits: 385
   boatMask:
     serializedVersion: 2
     m_Bits: 0

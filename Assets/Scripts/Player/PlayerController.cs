@@ -9,7 +9,7 @@ using TMPro;
 using Dissonance;
 using Sirenix.OdinInspector;
 
-public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
+public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
 {
     public static PlayerController instance;
 
@@ -846,5 +846,17 @@ public class PlayerController : NetworkBehaviour //, Damagable//, Slappable
         Gizmos.DrawSphere(base.transform.position + base.transform.up * -0.5f, radius);
     }
 
+    public void TakeDamage(float damage)
+    {
+        TakeDamageServerRpc(damage);
+    }
+
+    [ServerRpc]
+    public void TakeDamageServerRpc(float damage)
+    {
+        if (!IsOwner)
+            return;
+        Debug.Log(playerUsername + " took " + damage + " damage.");
+    }
 }
 
