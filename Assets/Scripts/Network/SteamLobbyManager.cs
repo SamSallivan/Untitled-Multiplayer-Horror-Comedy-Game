@@ -63,16 +63,16 @@ public class SteamLobbyManager : MonoBehaviour
         {
             for (int i = 0; i < currentLobbyList.Length; i++)
             {
-                Debug.Log($"Lobby #{i} id: {currentLobbyList[i].Id}; members: {currentLobbyList[i].MemberCount}");
+                Debug.Log($"DebugLogServerList: Lobby #{i} id: {currentLobbyList[i].Id}; members: {currentLobbyList[i].MemberCount}");
                 uint ip = 0u;
                 ushort port = 0;
                 SteamId serverId = default(SteamId);
-                Debug.Log($"Is lobby #{i} valid?: {currentLobbyList[i].GetGameServer(ref ip, ref port, ref serverId)}");
+                Debug.Log($"DebugLogServerList :Is lobby #{i} valid?: {currentLobbyList[i].GetGameServer(ref ip, ref port, ref serverId)}");
             }
         }
         else
         {
-            Debug.Log("Server list null");
+            Debug.Log("DebugLogServerList: Server list null");
         }
     }
 
@@ -117,7 +117,7 @@ public class SteamLobbyManager : MonoBehaviour
             break;
         }
         currentLobbyList = null;
-        Debug.Log("Requested server list");
+        Debug.Log("LoadServerList: Requested server list");
         GameNetworkManager.Instance.waitingForLobbyDataRefresh = true;
         LobbyQuery lobbyQuery = sortByDistanceSetting switch
         {
@@ -133,7 +133,7 @@ public class SteamLobbyManager : MonoBehaviour
         GameNetworkManager.Instance.waitingForLobbyDataRefresh = false;
         if (currentLobbyList != null)
         {
-            Debug.Log("Got lobby list!");
+            Debug.Log("LoadServerList: Got lobby list!");
             DebugLogServerList();
             if (currentLobbyList.Length == 0)
             {
@@ -148,7 +148,7 @@ public class SteamLobbyManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Lobby list is null after request.");
+            Debug.Log("LoadServerList: Lobby list is null after request.");
             serverListBlankText.text = "No available servers to join.";
         }
     }

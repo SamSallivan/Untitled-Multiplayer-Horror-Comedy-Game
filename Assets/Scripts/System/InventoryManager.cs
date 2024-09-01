@@ -456,40 +456,41 @@ public class InventoryManager : NetworkBehaviour
         return null;
     }
 
-    // public void RemoveItem(I_InventoryItem inventoryItem)
-    // {
-    //     if (inventoryItem.itemData.isStackable)
-    //     {
-    //         if (inventoryItem.itemStatus.amount > 1)
-    //         {
-    //             inventoryItem.itemStatus.amount--;
-    //             inventoryItem.inventorySlot.amount.text = "" + inventoryItem.itemStatus.amount;
+    public void RemoveItem(I_InventoryItem inventoryItem, int amount = 1)
+    {
+        if (inventoryItem.itemData.isStackable)
+        {
+            if (inventoryItem.itemStatus.amount > amount)
+            {
+                inventoryItem.itemStatus.amount -= amount;
+                ModifyItemAmountServerRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.amount);
+                inventoryItem.inventorySlot.amount.text = "" + inventoryItem.itemStatus.amount;
 
-    //         }
-    //         else
-    //         {
-    //             Destroy(inventoryItem.inventorySlot.gameObject);
-    //             if (equippedItem == inventoryItem)
-    //             {
-    //                 UnequipItem();
-    //             }
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Destroy(inventoryItem.inventorySlot.gameObject);
-    //         if (equippedItem == inventoryItem)
-    //         {
-    //             UnequipItem();
-    //         }
-    //     }
+            }
+            else
+            {
+                if (equippedItem == inventoryItem)
+                {
+                    UnequipItem();
+                }
 
-    //     UpdateSelection();
-    //     UpdateIcons();
+                ClearInventorySlot(inventoryItem.inventorySlot);
+                //Destory inventoryItem on server
+            }
+        }
+        else
+        {
+            if (equippedItem == inventoryItem)
+            {
+                UnequipItem();
+            }
 
-    //     //loop through items and organize inventory.
-    //     //perhaps a separate functions for this?
-    // }
+            ClearInventorySlot(inventoryItem.inventorySlot);
+            //Destory inventoryItem on server
+        }
+
+        UpdateSelection();
+    }
 
     [ServerRpc(RequireOwnership = false)]
     public void InstantiateUnpocketedItemServerRpc(NetworkObjectReference inventoryItem, int amount)
@@ -566,11 +567,24 @@ public class InventoryManager : NetworkBehaviour
     }
 
     [ClientRpc]
+    public void UnpocketItemClientRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            inventoryItemObject.GetComponent<I_InventoryItem>().owner = null;
+            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = null;
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(true);
+        }
+    }
+
+    [ClientRpc]
     public void UnpocketItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
     {
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
             inventoryItemObject.GetComponent<I_InventoryItem>().owner = null;
+            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = null;
             inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
             inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(true);
             inventoryItemObject.transform.position = playerControllerObject.GetComponent<PlayerController>().tHead.transform.position + playerControllerObject.GetComponent<PlayerController>().tHead.transform.forward * 0.5f;
@@ -599,7 +613,6 @@ public class InventoryManager : NetworkBehaviour
 
     public void ClearInventorySlot(InventorySlot slot)
     {
-        slot.inventoryItem.inventorySlot = null;
         slot.inventoryItem = null;
         slot.image.sprite = null;
         slot.image.color = new UnityEngine.Color(1, 1, 1, 0);

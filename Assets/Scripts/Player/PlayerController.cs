@@ -9,9 +9,15 @@ using TMPro;
 using Dissonance;
 using Sirenix.OdinInspector;
 
-public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
+public class PlayerController : NetworkBehaviour, IDamagable
 {
     public static PlayerController instance;
+
+    [FoldoutGroup("Inventory")]
+    public List<I_InventoryItem> inventoryItemList= new List<I_InventoryItem>();
+
+    [FoldoutGroup("Inventory")]
+    public List<I_InventoryItem> storageItemList= new List<I_InventoryItem>();
 
     [FoldoutGroup("Voice Chat")]
     public VoicePlayerState voicePlayerState;
@@ -209,17 +215,15 @@ public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
     {
         instance = this;
         awaitInitialization = true;
+
         t = base.transform;
         tHead = t.Find("Head Pivot").transform;
-
         rb = GetComponent<Rigidbody>();
         playerCollider = GetComponent<CapsuleCollider>();
         grounder = GetComponent<Grounder>();
-
         bob = tHead.GetComponentInChildren<CameraBob>();
         headPosition = tHead.GetComponentInChildren<HeadPosition>();
         waterObject = GetComponentInChildren<WaterObject>();
-
         mouseLookX = GetComponent<MouseLook>();
         mouseLookY = tHead.GetComponent<MouseLook>();
 
@@ -287,11 +291,15 @@ public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
 
     private void FixedUpdate()
     {
-        MovementUpdate();
+        if (base.IsOwner)
+        {
+            MovementUpdate();
+        }
     }
 
     private void LateUpdate() 
     {
+        //Rotate Username Canvas facing local player's camera
         if (!base.IsOwner && GameNetworkManager.Instance.localPlayerController != null)
         {
             playerUsernameCanvasTransform.LookAt(GameNetworkManager.Instance.localPlayerController.cameraList[0].transform);
@@ -301,7 +309,6 @@ public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
     public void ConnectClientToPlayerObject()
     {
         localClientId = NetworkManager.Singleton.LocalClientId;
-        Debug.Log("localClientId: " + NetworkManager.Singleton.LocalClientId + ", " + localPlayerId);
 
         if (GameNetworkManager.Instance != null)
         {
@@ -388,10 +395,15 @@ public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
 
     }
 
+    [Button]
     public void TeleportPlayer(Vector3 targetPosition)
     {
-        playerServerPosition = targetPosition;
-        base.transform.position = targetPosition;
+        // bool flag = rb.isKinematic;
+        // rb.isKinematic = true;
+        // playerServerPosition = targetPosition;
+        // base.transform.position = targetPosition;
+        // rb.isKinematic = flag;
+        rb.position = targetPosition;
     }
 
     public int GetClimbState()
@@ -594,7 +606,6 @@ public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
         //applies camera bob when grounded, walking, and not sliding
         //or sets camera position back to 0
         if (grounder.grounded && inputDir.sqrMagnitude > 0.25f)
-        //if (grounder.grounded && inputDir.sqrMagnitude > 0.25f && slide.slideState == 0)
         {
             if (gVel.sqrMagnitude > 1f)
             {
@@ -614,81 +625,78 @@ public class PlayerController : NetworkBehaviour, IDamagable//, Slappable
 
     public void MovementUpdate()
     {
-        if (base.IsOwner && controlledByClient)
+        //recalculates the previous velocity based on new ground normals
+        if (!isNonPhysics)
         {
-            //recalculates the previous velocity based on new ground normals
-            if (!isNonPhysics)
-            {
-                vel = rb.velocity;
-            }
-
-            gVel = Vector3.ProjectOnPlane(vel, grounder.groundNormal);
-
-            //recalculates direction based on new ground normals
-            gDir = tHead.TransformDirection(inputDir);
-            gDirCross = Vector3.Cross(Vector3.up, gDir).normalized;
-            gDirCrossProject = Vector3.ProjectOnPlane(grounder.groundNormal, gDirCross);
-            gDir = Vector3.Cross(gDirCross, gDirCrossProject);
-
-            if (!isNonPhysics)
-            {
-                //if moving fast, apply the calculated movement.
-                //based on new input subtracted by previous velocity
-                //so that player accelerates faster when start moving.
-                if (inputDir.sqrMagnitude > 0.25f)
-                {
-                    if (grounder.grounded)
-                    {
-                        rb.AddForce(gDir * 100f - gVel * 10f * dynamicSpeed);
-                    }
-                    else if (airControl > 0f)
-                    {
-                        rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * airControl);
-                    }
-                }
-                //if not fast, accelerates the slowing down process
-                else if (grounder.grounded && gVel.sqrMagnitude != 0f)
-                {
-                    rb.AddForce(-gVel * 10f);
-                }
-
-                //applies gravity in the direction of ground normal
-                //so player does not slide off within the tolerable angle
-                rb.AddForce(grounder.groundNormal * gravity);
-
-            }
-            // else if (isNonPhysics)
-            // {
-            //     Vector3 normalized = transform.TransformDirection(inputDir).normalized;
-            //     normalized -= Vector3.Dot(normalized, base.transform.up) * base.transform.up;
-
-            //     localVelo += BoatController.instance.transform.InverseTransformDirection(normalized) * acceleration * Time.fixedDeltaTime;
-            //     localVelo = Vector3.Lerp(localVelo, Vector3.zero, Time.fixedDeltaTime * deaccerlation);
-            //     if (localVelo != Vector3.zero)
-            //     {
-            //         Vector3 direction = BoatController.instance.transform.TransformDirection(localVelo);
-            //         if (Physics.SphereCast(base.transform.position + base.transform.up * 0.5f, radius, direction, out RaycastHit hitInfo, distance, nonPhysicsCollisions))
-            //         {
-            //             Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo.normal);
-            //             vector.y = 0f;
-            //             localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo.distance)) * collisionCoefficient *
-            //                          Time.fixedDeltaTime;
-            //         }
-
-            //         if (Physics.SphereCast(base.transform.position + base.transform.up * (-0.5f), radius, direction, out RaycastHit hitInfo2, distance, nonPhysicsCollisions))
-            //         {
-            //             Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo2.normal);
-            //             vector.y = 0f;
-            //             localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo2.distance)) * collisionCoefficient *
-            //                          Time.fixedDeltaTime;
-            //         }
-
-            //         localVelo = new Vector3(localVelo.x, 0, localVelo.z);
-            //         transform.localPosition += localVelo * Time.fixedDeltaTime;
-
-            //     }
-            // }
+            vel = rb.velocity;
         }
+
+        gVel = Vector3.ProjectOnPlane(vel, grounder.groundNormal);
+
+        //recalculates direction based on new ground normals
+        gDir = tHead.TransformDirection(inputDir);
+        gDirCross = Vector3.Cross(Vector3.up, gDir).normalized;
+        gDirCrossProject = Vector3.ProjectOnPlane(grounder.groundNormal, gDirCross);
+        gDir = Vector3.Cross(gDirCross, gDirCrossProject);
+
+        if (!isNonPhysics)
+        {
+            //if moving fast, apply the calculated movement.
+            //based on new input subtracted by previous velocity
+            //so that player accelerates faster when start moving.
+            if (inputDir.sqrMagnitude > 0.25f)
+            {
+                if (grounder.grounded)
+                {
+                    rb.AddForce(gDir * 100f - gVel * 10f * dynamicSpeed);
+                }
+                else if (airControl > 0f)
+                {
+                    rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * airControl);
+                }
+            }
+            //if not fast, accelerates the slowing down process
+            else if (grounder.grounded && gVel.sqrMagnitude != 0f)
+            {
+                rb.AddForce(-gVel * 10f);
+            }
+
+            //applies gravity in the direction of ground normal
+            //so player does not slide off within the tolerable angle
+            rb.AddForce(grounder.groundNormal * gravity);
+
+        }
+        // else if (isNonPhysics)
+        // {
+        //     Vector3 normalized = transform.TransformDirection(inputDir).normalized;
+        //     normalized -= Vector3.Dot(normalized, base.transform.up) * base.transform.up;
+
+        //     localVelo += BoatController.instance.transform.InverseTransformDirection(normalized) * acceleration * Time.fixedDeltaTime;
+        //     localVelo = Vector3.Lerp(localVelo, Vector3.zero, Time.fixedDeltaTime * deaccerlation);
+        //     if (localVelo != Vector3.zero)
+        //     {
+        //         Vector3 direction = BoatController.instance.transform.TransformDirection(localVelo);
+        //         if (Physics.SphereCast(base.transform.position + base.transform.up * 0.5f, radius, direction, out RaycastHit hitInfo, distance, nonPhysicsCollisions))
+        //         {
+        //             Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo.normal);
+        //             vector.y = 0f;
+        //             localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo.distance)) * collisionCoefficient *
+        //                          Time.fixedDeltaTime;
+        //         }
+
+        //         if (Physics.SphereCast(base.transform.position + base.transform.up * (-0.5f), radius, direction, out RaycastHit hitInfo2, distance, nonPhysicsCollisions))
+        //         {
+        //             Vector3 vector = BoatController.instance.transform.InverseTransformDirection(hitInfo2.normal);
+        //             vector.y = 0f;
+        //             localVelo += vector.normalized * (1f / Mathf.Max(0.1f, hitInfo2.distance)) * collisionCoefficient *
+        //                          Time.fixedDeltaTime;
+        //         }
+
+        //         localVelo = new Vector3(localVelo.x, 0, localVelo.z);
+        //         transform.localPosition += localVelo * Time.fixedDeltaTime;
+
+        //     }
+        // }
     }
     //Executes when taken damage from a source.
     /*

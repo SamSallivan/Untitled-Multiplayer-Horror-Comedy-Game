@@ -4,14 +4,18 @@ using UnityEngine;
 using System;
 using Steamworks;
 using Unity.Netcode;
+using System.Linq;
 
 public class I_InventoryItem : Interactable
 {
     public event Action OnPickUp = delegate { };
 
     public PlayerController owner;
+
     public bool isCurrentlyEquipped;
-    public InventorySlot _inventorySlot;
+
+    private InventorySlot _inventorySlot;
+
     public InventorySlot inventorySlot
     {
         get
@@ -20,30 +24,15 @@ public class I_InventoryItem : Interactable
         }
         set
         {
-            Debug.Log(value);
             this._inventorySlot = value;
-            if(inventorySlot && InventoryManager.instance.storageSlotList.Contains(inventorySlot))
-            {
-                inStorageBox = true;
-            }
-            else
-            {
-                inStorageBox = false;
-            }
-            
-            if(IsServer)
-            {
-                int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
-                SetInStorageBoxClientRpc(inStorageBox);
-            }
-            else
-            {
-                SetInStorageBoxServerRpc(inStorageBox);
-            }
+            OnSetInventorySlot();
         }
     }
+
     public bool enableItemMeshes = true;
+
     public bool enableItemPhysics = true;
+
     public bool inStorageBox = false;
     
     void Start()
@@ -210,15 +199,81 @@ public class I_InventoryItem : Interactable
         this.inStorageBox = inStorageBox;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetInStorageBoxServerRpc(bool inStorageBox)
+    public void OnSetInventorySlot()
     {
-        SetInStorageBoxClientRpc(inStorageBox);
+        if(inventorySlot)
+        {
+            if(InventoryManager.instance.storageSlotList.Contains(inventorySlot))
+            {
+                inStorageBox = true;
+                // owner.storageItemList.Add(this);
+                // owner.inventoryItemList.Remove(this);
+            }
+            else if(InventoryManager.instance.inventorySlotList.Contains(inventorySlot))
+            {
+                inStorageBox = false;
+                // owner.storageItemList.Remove(this);
+                // owner.inventoryItemList.Add(this);
+            }
+        }
+        else
+        {
+            // owner.storageItemList.Remove(this);
+            // owner.inventoryItemList.Remove(this);
+        }
+        
+        List<NetworkObjectReference> inventoryItemListNetworkObject = new List<NetworkObjectReference>();
+        // foreach(I_InventoryItem inventoryItem in owner.inventoryItemList)
+        // {
+        //     inventoryItemListNetworkObject.Add(inventoryItem.NetworkObject);
+        // }
+
+        List<NetworkObjectReference> storageItemListNetworkObject = new List<NetworkObjectReference>();
+        // foreach(I_InventoryItem storageItem in owner.storageItemList)
+        // {
+        //     storageItemListNetworkObject.Add(storageItem.NetworkObject);
+        // }
+
+        if(IsServer)
+        {
+            OnSetInventorySlotClientRpc(inStorageBox, inventoryItemListNetworkObject.ToArray(), storageItemListNetworkObject.ToArray());
+        }
+        else
+        {
+            OnSetInventorySlotServerRpc(inStorageBox, inventoryItemListNetworkObject.ToArray(), storageItemListNetworkObject.ToArray());
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void OnSetInventorySlotServerRpc(bool inStorageBox, NetworkObjectReference[] inventoryItemListReference, NetworkObjectReference[] storageItemListReference)
+    {
+        OnSetInventorySlotClientRpc(inStorageBox, inventoryItemListReference, storageItemListReference);
     }
 
     [ClientRpc]
-    public void SetInStorageBoxClientRpc(bool inStorageBox)
+    public void OnSetInventorySlotClientRpc(bool inStorageBox, NetworkObjectReference[] inventoryItemListReference, NetworkObjectReference[] storageItemListReference)
     {
         this.inStorageBox = inStorageBox;
+
+        // List<I_InventoryItem> inventoryItemList = new List<I_InventoryItem>();
+        // foreach(NetworkObjectReference inventoryItem in inventoryItemListReference)
+        // {
+        //     if(inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        //     {
+        //         inventoryItemList.Add(inventoryItemObject.GetComponent<I_InventoryItem>());
+        //     }
+        // }
+
+        // List<I_InventoryItem> storageItemList = new List<I_InventoryItem>();
+        // foreach(NetworkObjectReference inventoryItem in storageItemListReference)
+        // {
+        //     if(inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        //     {
+        //         storageItemList.Add(inventoryItemObject.GetComponent<I_InventoryItem>());
+        //     }
+        // }
+
+        // owner.inventoryItemList = inventoryItemList;
+        // owner.storageItemList = storageItemList;
     }
 }
