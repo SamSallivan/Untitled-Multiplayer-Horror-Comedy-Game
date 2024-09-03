@@ -18,6 +18,10 @@ public class MainMenuManager : MonoBehaviour
 	public Toggle lobbyIsLocalToggle;	
     public TMP_InputField lobbyTagInputField;
 	public TMP_Text gameVersionNumberText;
+	public GameObject loadingScreenUI;
+	public GameObject notificationUI;
+	public TMP_Text notificationText;
+	public TMP_Text notificationButtonText;
 
     private void Awake()
 	{
@@ -38,16 +42,20 @@ public class MainMenuManager : MonoBehaviour
 			GameNetworkManager.Instance.disconnecting = false;
 		}
 
-		// if (string.IsNullOrEmpty(lobbyNameInputField.text))
-		// {
-		// 	lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
-		// }
-
 		// if (gameVersionNumberText != null)
 		// {
         //     gameVersionNumberText.text = $"v{GameNetworkManager.Instance.gameVersionNumber}";
 		// }
 		
+	}
+
+	public void Start()
+	{
+		if (!string.IsNullOrEmpty(GameNetworkManager.Instance.disconnectionReasonText))
+		{
+			DisplayNotification(GameNetworkManager.Instance.disconnectionReasonText ?? "", "BACK");
+			GameNetworkManager.Instance.disconnectionReasonText = "";
+		}
 	}
 
 	public void ConfirmHostButton()
@@ -57,6 +65,10 @@ public class MainMenuManager : MonoBehaviour
 			if(!GameNetworkManager.Instance.steamDisabled)
 			{
 				lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
+			}
+			else
+			{
+				lobbyNameInputField.text = "Unnamed Lobby";
 			}
 		}
 
@@ -70,48 +82,77 @@ public class MainMenuManager : MonoBehaviour
     }
 
 	public void JoinLocalButton(){
-		GameNetworkManager.Instance.steamDisabled = true;
-		Destroy(NetworkManager.Singleton.GetComponent<FacepunchTransport>());
-		if(!NetworkManager.Singleton.GetComponent<UnityTransport>()){
-			NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<UnityTransport>();
-		}
 		GameNetworkManager.Instance.StartClientLAN();
 	}
 
 	public void OnLocalToggle(){
 		GameNetworkManager.Instance.steamDisabled = lobbyIsLocalToggle.isOn;
-		if(lobbyIsLocalToggle.isOn){
-			Destroy(NetworkManager.Singleton.GetComponent<FacepunchTransport>());
-			if (!NetworkManager.Singleton.GetComponent<UnityTransport>())
-			{
-				NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<UnityTransport>();
-                NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ServerListenAddress = "0.0.0.0";
-            }
-			GameNetworkManager.Instance.UnsubscribeToSteamMatchmakingCallbacks();
-		}
-		else{
-			Destroy(NetworkManager.Singleton.GetComponent<UnityTransport>());
-			if (!NetworkManager.Singleton.GetComponent<FacepunchTransport>())
-			{
-				NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<FacepunchTransport>();
-			}
-			GameNetworkManager.Instance.SubscribeToSteamMatchmakingCallbacks();
-		}
 	}
 
-/*    public void SetLoadingScreen(bool isLoading, RoomEnter result = RoomEnter.Error)
+    public void SetLoadingScreen(bool isLoading, RoomEnter result = RoomEnter.Error, string notificationText = "")
     {
-        Debug.Log("Displaying menu message");
-        if (isLoading)
-        {
-            //loadingScreen.SetActive(value: true);
-            return;
-        }
-        else
-        {
-            //loadingScreen.SetActive(value: false);
-        }
-        Debug.Log("result: " + result);
-    }*/
+		loadingScreenUI.SetActive(isLoading);
+
+		if(isLoading)
+		{
+			return;
+		}
+
+		if (!string.IsNullOrEmpty(notificationText))
+		{
+			DisplayNotification(notificationText, "BACK");
+			return;
+		}
+
+		// if (!string.IsNullOrEmpty(GameNetworkManager.Instance.disconnectionReasonText))
+		// {
+		// 	DisplayNotification(GameNetworkManager.Instance.disconnectionReasonText ?? "", "BACK");
+		// 	GameNetworkManager.Instance.disconnectionReasonText = "";
+		// 	return;
+		// }
+
+		switch (result)
+		{
+			case RoomEnter.Full:
+				DisplayNotification("The lobby is full!", "BACK");
+				break;
+			case RoomEnter.DoesntExist:
+				DisplayNotification("The server no longer exists!", "BACK");
+				break;
+			case RoomEnter.RatelimitExceeded:
+				DisplayNotification("You are joining/leaving too fast!", "BACK");
+				break;
+			case RoomEnter.MemberBlockedYou:
+				DisplayNotification("A member of the server has blocked you!", "BACK");
+				break;
+			case RoomEnter.Error:
+				DisplayNotification("An error occured!", "BACK");
+				break;
+			case RoomEnter.NotAllowed:
+				DisplayNotification("Connection was not approved!", "BACK");
+				break;
+			case RoomEnter.YouBlockedMember:
+				DisplayNotification("You have blocked someone in this server!", "BACK");
+				break;
+			case RoomEnter.Banned:
+				DisplayNotification("Unable to join because you have been banned!", "BACK");
+				break;
+			default:
+				DisplayNotification("Something went wrong!", "BACK");
+				break;
+		}
+		
+    }
+
+	public void DisplayNotification(string notificationText, string notificationButtonText)
+	{
+		this.notificationText.text = notificationText;
+		this.notificationButtonText.text = notificationButtonText;
+		notificationUI.SetActive(true);
+	}
+
+	public void NotificationButton(){
+		notificationUI.SetActive(false);
+	}
 
 }

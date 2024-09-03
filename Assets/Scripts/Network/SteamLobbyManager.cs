@@ -88,6 +88,9 @@ public class SteamLobbyManager : MonoBehaviour
 
     public async void LoadServerList()
     {
+		GameNetworkManager.Instance.steamDisabled = false;
+		GameNetworkManager.Instance.SwitchToFacepunchTransport();
+
         if (GameNetworkManager.Instance.waitingForLobbyDataRefresh)
         {
          return;

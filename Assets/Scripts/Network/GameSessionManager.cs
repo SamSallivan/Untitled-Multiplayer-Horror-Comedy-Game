@@ -130,7 +130,13 @@ public class GameSessionManager : NetworkBehaviour
 				}
 			}
 		}
-		ES3.Save("StorageSlotSaveData", list.ToArray());
+		try
+		{
+			ES3.Save("StorageSlotSaveData", list.ToArray());
+		}
+		catch (Exception arg)
+		{
+		}
 	}
 
 	[Button("Load")]
@@ -320,19 +326,31 @@ public class GameSessionManager : NetworkBehaviour
 
 		if (NetworkManager.Singleton == null || GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
 		{
+			GameNetworkManager.Instance.disconnectionReasonText = "Connection Timed Out.";
 			GameNetworkManager.Instance.Disconnect();
 			return;
         }
 		
-        if (!ClientIdToPlayerIdDictionary.TryGetValue(clientId, out var playerId))
+        if (!ClientIdToPlayerIdDictionary.TryGetValue(clientId, out var disconnectingPlayerId))
 		{
 			Debug.LogError("Could not get player object number from client id on disconnect!");
 			return;
 		}
 
-		if (base.IsServer)
+		if (!IsServer && disconnectingPlayerId == 0)
         {
-            OnClientDisconnectedGameSessionClientRpc(clientId, playerId);
+			if (!GameNetworkManager.Instance.disconnecting)
+			{
+				Debug.Log("OnClientDisconnectedGameSession: Host disconnected. Returning to Main Menu.");
+				GameNetworkManager.Instance.disconnectionReasonText = "Host Disconnected.";
+				GameNetworkManager.Instance.Disconnect();
+				return;
+			}
+		}
+
+		if (IsServer)
+        {
+            OnClientDisconnectedGameSessionClientRpc(clientId, disconnectingPlayerId);
 		}
     }
 
