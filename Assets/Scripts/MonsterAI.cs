@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -10,6 +11,20 @@ public class MonsterAI : NetworkBehaviour
     private NavMeshAgent _agent;
 
     public Transform target;
+
+    public float attackDamage;
+
+    public float maxAttackCD=3f;
+
+    public float currentAttackCD = 0f;
+
+    public Vector3 attackOffset;
+
+    public float attackRadius = 1f;
+
+    public LayerMask attackMask;
+    
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -22,14 +37,47 @@ public class MonsterAI : NetworkBehaviour
     {
         UpdateTarget();
         Chase();
-    }
 
+        Attack();
+        
+        
+    }
+    
+    public void Attack()
+    {
+        if(currentAttackCD<=0f)
+        {
+            if (Vector3.Distance(transform.position, target.position) <= 1f)
+            {
+                currentAttackCD = maxAttackCD;
+                Collider[] hits = Physics.OverlapSphere(transform.TransformPoint(attackOffset), attackRadius, attackMask);
+                foreach (var player in hits.Select(hit => hit.GetComponentInParent<PlayerController>()).Where(obj => obj != null).Where(obj => obj != this))
+                {
+                    player.TakeDamage(attackDamage);
+                }
+            }
+        }
+        else
+        {
+            currentAttackCD -= Time.deltaTime;
+        }
+    }
     public void Chase()
     {
-        if (target != null)
+        if (currentAttackCD>0f)
         {
-            _agent.SetDestination(target.position);
+            _agent.isStopped = true;
         }
+        else
+        {
+            _agent.isStopped = false;
+            if (target != null)
+            {
+                
+                _agent.SetDestination(target.position);
+            }
+        }
+
     }
 
     public void UpdateTarget()

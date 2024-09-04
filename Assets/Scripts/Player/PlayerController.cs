@@ -210,6 +210,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Interaction")]
     public LayerMask interactableLayer;
 
+    [FoldoutGroup("Health")] 
+    public float maxHp = 100f;
+    [FoldoutGroup("Health")] 
+    public NetworkVariable<float> currentHp = new NetworkVariable<float>();
+
 
     private void Awake()
     {
@@ -853,18 +858,28 @@ public class PlayerController : NetworkBehaviour, IDamagable
         Gizmos.DrawSphere(base.transform.position + base.transform.up * 0.5f, radius);
         Gizmos.DrawSphere(base.transform.position + base.transform.up * -0.5f, radius);
     }
-
+    
     public void TakeDamage(float damage)
     {
-        TakeDamageServerRpc(damage);
+        TakeDamageClientRpc(damage);
     }
 
-    [ServerRpc]
-    public void TakeDamageServerRpc(float damage)
+    [ClientRpc]
+    public void TakeDamageClientRpc(float damage)
     {
         if (!IsOwner)
             return;
+        currentHp.Value -= damage;
+        if (currentHp.Value <= 0)
+        {
+            Die();
+        }
         Debug.Log(playerUsername + " took " + damage + " damage.");
+    }
+
+    public void Die()
+    {
+        isPlayerDead = true;
     }
 }
 
