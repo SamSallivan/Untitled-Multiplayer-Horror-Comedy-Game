@@ -10,6 +10,7 @@ public class MonsterAI : NetworkBehaviour
 {
     private NavMeshAgent _agent;
 
+    Transform closestplayer;
     public Transform target;
 
     public float attackDamage;
@@ -23,6 +24,8 @@ public class MonsterAI : NetworkBehaviour
     public float attackRadius = 1f;
 
     public LayerMask attackMask;
+
+    public float chaseDistance = 10f;
     
     
     // Start is called before the first frame update
@@ -37,7 +40,6 @@ public class MonsterAI : NetworkBehaviour
     {
         UpdateTarget();
         Chase();
-
         Attack();
         
         
@@ -45,17 +47,22 @@ public class MonsterAI : NetworkBehaviour
     
     public void Attack()
     {
+
         if(currentAttackCD<=0f)
         {
-            if (Vector3.Distance(transform.position, target.position) <= 1f)
+            if (target != null)
             {
-                currentAttackCD = maxAttackCD;
-                Collider[] hits = Physics.OverlapSphere(transform.TransformPoint(attackOffset), attackRadius, attackMask);
-                foreach (var player in hits.Select(hit => hit.GetComponentInParent<PlayerController>()).Where(obj => obj != null).Where(obj => obj != this))
+                if (Vector3.Distance(transform.position, target.position) <= 1f)
                 {
-                    player.TakeDamage(attackDamage);
+                    currentAttackCD = maxAttackCD;
+                    Collider[] hits = Physics.OverlapSphere(transform.TransformPoint(attackOffset), attackRadius, attackMask);
+                    foreach (var player in hits.Select(hit => hit.GetComponentInParent<PlayerController>()).Where(obj => obj != null).Where(obj => obj != this))
+                    {
+                        player.TakeDamage(attackDamage);
+                    }
                 }
             }
+
         }
         else
         {
@@ -82,20 +89,24 @@ public class MonsterAI : NetworkBehaviour
 
     public void UpdateTarget()
     {
-        if (target != null)
+        
+        for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
         {
-            for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
             {
-                if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
-                {
-                    float dist= Vector3.Distance(transform.position,
-                        GameSessionManager.Instance.playerControllerList[i].transform.position);
+                float dist= Vector3.Distance(transform.position,
+                    GameSessionManager.Instance.playerControllerList[i].transform.position);
 
-                    if (dist < Vector3.Distance(transform.position,
-                            target.position))
-                    {
+                if (dist<chaseDistance)
+                {
+                    if(target==null)
                         target = GameSessionManager.Instance.playerControllerList[i].transform;
-                    }
+                    else if(dist < Vector3.Distance(transform.position,target.position))
+                        target = GameSessionManager.Instance.playerControllerList[i].transform;
+                }
+                else
+                {
+                    target = null;
                 }
             }
         }
