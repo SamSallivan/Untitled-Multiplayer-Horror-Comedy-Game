@@ -238,8 +238,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     }
 
-    private void OnConnectedToServer()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         currentHp.Value = maxHp;
     }
 
