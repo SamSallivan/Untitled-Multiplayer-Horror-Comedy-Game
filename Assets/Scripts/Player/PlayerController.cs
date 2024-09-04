@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NWH.DWP2.WaterObjects;
@@ -235,6 +236,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerUsername = $"Player #{localPlayerId}";
         playerUsernameText.text = playerUsername;
 
+    }
+
+    private void OnConnectedToServer()
+    {
+        currentHp.Value = maxHp;
     }
 
     private void Update()

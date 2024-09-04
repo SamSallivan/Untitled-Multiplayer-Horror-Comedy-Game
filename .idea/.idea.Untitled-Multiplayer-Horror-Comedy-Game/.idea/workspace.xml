@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ae88ff3d-798b-444a-9315-8e5f906c02c9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/URP-HighFidelity.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/URP-HighFidelity.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +56,14 @@
   }
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../builds\Horror Show.exe" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="C:\Users\yilai\OneDrive\Desktop\Capstone2024\HorrorGameNew\builds" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <method v="2" />
+    </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.33f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath C:\Users\yilai\OneDrive\Desktop\Capstone2024\HorrorGameNew\Untitled-Multiplayer-Horror-Comedy-Game -debugCodeOptimization" />
@@ -104,7 +111,7 @@
       <updated>1724904705804</updated>
       <workItem from="1724904709325" duration="7204000" />
       <workItem from="1725354632183" duration="4129000" />
-      <workItem from="1725428975394" duration="6350000" />
+      <workItem from="1725428975394" duration="6744000" />
     </task>
     <servers />
   </component>
