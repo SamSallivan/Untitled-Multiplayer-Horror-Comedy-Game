@@ -703,6 +703,7 @@ public class GameNetworkManager : MonoBehaviour
 			return;
 		}
 
+		//
 		if (clientId == NetworkManager.Singleton.LocalClientId)
 		{
 			Debug.Log("NetworkManager_OnClientDisconnectCallback: Local client disconnected, returning to main menu.");
@@ -714,6 +715,7 @@ public class GameNetworkManager : MonoBehaviour
 		{
 			connectedClientCount--;
 
+			// //
 			// if (clientId == NetworkManager.Singleton.LocalClientId)
 			// {
 			// 	Debug.Log("NetworkManager_OnClientDisconnectCallback: Local server disconnected, ignoring.");

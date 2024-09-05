@@ -23,7 +23,7 @@ public class I_Door : Interactable
 
     public override void OnNetworkDespawn()
     {
-        base.OnNetworkSpawn();
+        base.OnNetworkDespawn();
         open.OnValueChanged -= OnStateChanged;
     }
 

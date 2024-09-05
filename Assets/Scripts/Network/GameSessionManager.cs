@@ -326,11 +326,17 @@ public class GameSessionManager : NetworkBehaviour
 
 		if (NetworkManager.Singleton == null || GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
 		{
-			GameNetworkManager.Instance.disconnectionReasonText = "Connection Timed Out.";
+			GameNetworkManager.Instance.disconnectionReasonText = "Host Disconnected.";
 			GameNetworkManager.Instance.Disconnect();
 			return;
         }
 		
+		if (clientId == NetworkManager.Singleton.LocalClientId)
+		{
+			Debug.Log("NetworkManager_OnClientDisconnectCallback: Local client disconnected, returning to main menu.");
+			return;
+		}
+
         if (!ClientIdToPlayerIdDictionary.TryGetValue(clientId, out var disconnectingPlayerId))
 		{
 			Debug.LogError("Could not get player object number from client id on disconnect!");
