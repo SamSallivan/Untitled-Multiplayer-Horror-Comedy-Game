@@ -53,7 +53,6 @@ public class SteamLobbyManager : MonoBehaviour
     private void OnEnable()
     {
         serverTagInputField.text = string.Empty;
-        LoadServerList();
     }
 
 

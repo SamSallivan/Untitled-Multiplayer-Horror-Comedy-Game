@@ -178,19 +178,27 @@ public class GameSessionManager : NetworkBehaviour
 
 	public void OnHostConnectedGameSession()
 	{
-		ClientIdToPlayerIdDictionary.Add(NetworkManager.Singleton.LocalClientId, 0);
-		playerControllerList[0].GetComponent<NetworkObject>().ChangeOwnership(NetworkManager.Singleton.LocalClientId);
-		playerControllerList[0].GetComponent<PlayerController>().controlledByClient = true;
-		connectedPlayerCount = 1;
-		//alivePlayerNumber = connectedClientCount + 1;
-		StartCoroutine(LoadCoroutine());
-
-		//Teleport player controller to its spawn position.
-		playerControllerList[0].TeleportPlayer(spawnTransform.position);
-
-		if (!GameNetworkManager.Instance.steamDisabled)
+		try
 		{
-			GameNetworkManager.Instance.currentSteamLobby.Value.SetJoinable(true);
+			ClientIdToPlayerIdDictionary.Add(NetworkManager.Singleton.LocalClientId, 0);
+			playerControllerList[0].GetComponent<NetworkObject>().ChangeOwnership(NetworkManager.Singleton.LocalClientId);
+			playerControllerList[0].GetComponent<PlayerController>().controlledByClient = true;
+			connectedPlayerCount = 1;
+			//alivePlayerNumber = connectedClientCount + 1;
+			StartCoroutine(LoadCoroutine());
+
+			//Teleport player controller to its spawn position.
+			playerControllerList[0].TeleportPlayer(spawnTransform.position);
+
+			if (!GameNetworkManager.Instance.steamDisabled)
+			{
+				GameNetworkManager.Instance.currentSteamLobby.Value.SetJoinable(true);
+			}
+		}
+		catch (Exception arg)
+		{
+			Debug.LogError($"OnHostConnectedGameSession: Error: {arg}. Shutting server down.");
+			GameNetworkManager.Instance.Disconnect();
 		}
 	}
 
@@ -324,12 +332,11 @@ public class GameSessionManager : NetworkBehaviour
 			return;
 		}
 
-		if (NetworkManager.Singleton == null || GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
-		{
-			GameNetworkManager.Instance.disconnectionReasonText = "Host Disconnected.";
-			GameNetworkManager.Instance.Disconnect();
-			return;
-        }
+		// if (NetworkManager.Singleton == null || GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
+		// {
+		// 	GameNetworkManager.Instance.Disconnect("Host Disconnected.");
+		// 	return;
+        // }
 		
 		if (clientId == NetworkManager.Singleton.LocalClientId)
 		{
@@ -348,8 +355,7 @@ public class GameSessionManager : NetworkBehaviour
 			if (!GameNetworkManager.Instance.disconnecting)
 			{
 				Debug.Log("OnClientDisconnectedGameSession: Host disconnected. Returning to Main Menu.");
-				GameNetworkManager.Instance.disconnectionReasonText = "Host Disconnected.";
-				GameNetworkManager.Instance.Disconnect();
+				GameNetworkManager.Instance.Disconnect("Host Disconnected.");
 				return;
 			}
 		}

@@ -19,10 +19,10 @@ public class DetailPanelRaycast : MonoBehaviour, IPointerEnterHandler, IPointerU
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left && InventoryManager.instance.draggedItem != null)
-        {
-            InventoryManager.instance.DropItemFromInventory(InventoryManager.instance.draggedItem);
-        }
-        InventoryManager.instance.draggedItem = null;
+        // if (eventData.button == PointerEventData.InputButton.Left && InventoryManager.instance.draggedItem != null)
+        // {
+        //     InventoryManager.instance.DropItemFromInventory(InventoryManager.instance.draggedItem);
+        // }
+        // InventoryManager.instance.draggedItem = null;
     }
 }

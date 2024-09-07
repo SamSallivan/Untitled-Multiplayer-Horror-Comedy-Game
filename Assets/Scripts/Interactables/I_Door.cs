@@ -8,7 +8,6 @@ public class I_Door : Interactable
     private NetworkVariable<bool> open = new NetworkVariable<bool>();
     public Vector3 openRotation;
     public Vector3 closedRotation;
-
     
     public override void OnNetworkSpawn()
     {
@@ -18,16 +17,29 @@ public class I_Door : Interactable
             open.Value = false;
         }
 
-        open.OnValueChanged += OnStateChanged;
+        open.OnValueChanged += OnOpenChanged;
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        open.OnValueChanged -= OnStateChanged;
+        open.OnValueChanged -= OnOpenChanged;
     }
 
-    public void OnStateChanged(bool previous, bool current)
+    public override IEnumerator InteractionEvent()
+    {
+        ToggleDoorServerRPC();
+        
+        yield return null; 
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ToggleDoorServerRPC()
+    {
+        open.Value = !open.Value;
+    }
+
+    public void OnOpenChanged(bool previous, bool current)
     {
         // note: `State.Value` will be equal to `current` here
         if (open.Value)
@@ -41,17 +53,5 @@ public class I_Door : Interactable
             activated = false;
             transform.localEulerAngles = closedRotation;
         }
-    }
-    public override IEnumerator InteractionEvent()
-    {
-        ToggleDoorServerRPC();
-        
-        yield return null; 
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void ToggleDoorServerRPC()
-    {
-        open.Value = !open.Value;
     }
 }

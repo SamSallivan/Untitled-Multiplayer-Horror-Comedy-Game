@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8173f089832511149b44a215bb4a2f39, type: 3}
   m_Name: DitheringRenderer
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1
   settings:
     injectionPoint: 550
     alwaysEnable: 0

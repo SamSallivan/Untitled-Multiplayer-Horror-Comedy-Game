@@ -134,8 +134,11 @@ public class GameNetworkManager : MonoBehaviour
 
 		if (!steamDisabled)
 		{
-			GameNetworkManager instance = Instance;
-			instance.currentSteamLobby = await SteamMatchmaking.CreateLobbyAsync(maxPlayerNumber);
+			if(!SteamClient.IsLoggedOn)
+			{
+				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Could not connect to Steam.");
+			}
+			currentSteamLobby = await SteamMatchmaking.CreateLobbyAsync(maxPlayerNumber);
 		}
 
         SubscribeToNetworkManagerCallbacks();
@@ -152,16 +155,14 @@ public class GameNetworkManager : MonoBehaviour
 			else
 			{
 				Debug.Log("StartHost: Starting host failed");
-				MainMenuManager.Instance.SetLoadingScreen(isLoading: false);
-				//MainMenuManager.logText.text = "Failed to start server; 20";
+				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start server.");
 				return;
 			}
 		}
 		catch (Exception arg)
 		{
 			Debug.Log($"StartHost: Starting host failed: {arg}");
-			MainMenuManager.Instance.SetLoadingScreen(isLoading: false);
-			//MainMenuManager.logText.text = "Failed to start server; 30";
+			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start server.");
 		}
 
 		
@@ -198,8 +199,7 @@ public class GameNetworkManager : MonoBehaviour
 			else
 			{
 				Debug.Log("StartClient: Joined steam lobby successfully, but connection failed");
-				MainMenuManager.Instance.SetLoadingScreen(isLoading: false);
-				//MainMenuManager.logText.text = "Failed to start client";
+				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start client.");
 				LeaveCurrentSteamLobby();
 				ResetNetworkManagerValues();
 				return;
@@ -208,8 +208,7 @@ public class GameNetworkManager : MonoBehaviour
 		catch (Exception arg)
 		{
 			Debug.Log($"StartClient: Client connection failed: {arg}");
-			MainMenuManager.Instance.SetLoadingScreen(isLoading: false);
-			//MainMenuManager.logText.text = "Failed to start client";
+			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start client.");
 		}
 	}
 
@@ -232,15 +231,13 @@ public class GameNetworkManager : MonoBehaviour
 			else
 			{
 				Debug.Log("StartLocalClient: Local client could not start.");
-				MainMenuManager.Instance.SetLoadingScreen(isLoading: false);
-				//MainMenuManager.logText.text = "Failed to start client";
+				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start client.");
 			}
 		}
 		catch (Exception arg)
 		{
 			Debug.Log($"StartLocalClient: Client connection failed: {arg}");
-			MainMenuManager.Instance.SetLoadingScreen(isLoading: false);
-			//MainMenuManager.logText.text = "Failed to start client";
+			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start client.");
 		}
 		
 	}
@@ -277,9 +274,9 @@ public class GameNetworkManager : MonoBehaviour
 	// }
 
 	[Button("Disconnect")]
-	public void Disconnect()
+	public void Disconnect(string message = "")
 	{
-		if (disconnecting || !GameSessionManager.Instance)
+		if (disconnecting) // || !GameSessionManager.Instance)
 		{
 			return;
 		}
@@ -287,7 +284,15 @@ public class GameNetworkManager : MonoBehaviour
 		
 		disconnecting = true;
 
-		GameSessionManager.Instance.Save();
+		if(!string.IsNullOrEmpty(message))
+		{
+			disconnectionReasonText = message;
+		}
+
+		if (GameSessionManager.Instance)
+		{
+			GameSessionManager.Instance.Save();
+		}
 
 		if (!steamDisabled)
 		{
@@ -402,7 +407,7 @@ public class GameNetworkManager : MonoBehaviour
 		{
 			Debug.Log("VerifyLobbyJoinRequest: Could not refresh lobby");
 			SteamMatchmaking.OnLobbyDataChanged -= SteamMatchmaking_OnLobbyDataChanged;
-			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, RoomEnter.Error, "Error! Could not get the lobby data. Are you offline?");
+			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Error! Could not get the lobby data. Are you offline?");
 		}
 	}	
 
@@ -412,7 +417,7 @@ public class GameNetworkManager : MonoBehaviour
 		waitingForLobbyDataRefresh = false;
 		SteamMatchmaking.OnLobbyDataChanged -= SteamMatchmaking_OnLobbyDataChanged;
 		GetComponent<SteamLobbyManager>().serverListBlankText.text = "Could not get the lobby data.";
-        MainMenuManager.Instance.SetLoadingScreen(isLoading: false, RoomEnter.Error, "Error! Could not get the lobby data. Are you offline?");
+        MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Error! Could not get the lobby data. Are you offline?");
     }
 
     public void SteamMatchmaking_OnLobbyDataChanged(Lobby lobby)
@@ -443,7 +448,7 @@ public class GameNetworkManager : MonoBehaviour
 		if (version != Instance.gameVersionNumber.ToString())
 		{
 			Debug.Log($"IsLobbyJoinable: Lobby join denied! Attempted to join vers.{version}");
-			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, RoomEnter.DoesntExist, $"The server host is playing on version {version} while you are on version {gameVersionNumber}.");
+			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, $"The server host is playing on version {version} while you are on version {gameVersionNumber}.");
 			return false;
 		}
 
@@ -455,7 +460,7 @@ public class GameNetworkManager : MonoBehaviour
 				Debug.Log($"IsLobbyJoinable: blocked user: {friend.Name}; id: {friend.Id}");
 				if (lobby.IsOwnedBy(friend.Id))
 				{
-                    MainMenuManager.Instance.SetLoadingScreen(isLoading: false, RoomEnter.DoesntExist, "Lobby owned by a blocked user.");
+                    MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Lobby owned by a blocked user.");
                     return false;
 				}
 			}
@@ -464,14 +469,14 @@ public class GameNetworkManager : MonoBehaviour
 		if (lobby.GetData("joinable") == "false")
 		{
 			Debug.Log("IsLobbyJoinable: Lobby join denied! Host lobby is not joinable");
-            MainMenuManager.Instance.SetLoadingScreen(isLoading: false, RoomEnter.DoesntExist, "Lobby is not joinable. Game already started.");
+            MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Lobby is not joinable. Game already started.");
             return false;
 		}
 
 		if (lobby.MemberCount >= 4 || lobby.MemberCount < 1)
 		{
 			Debug.Log($"IsLobbyJoinable: Lobby join denied! Too many members in lobby! {lobby.Id}");
-            MainMenuManager.Instance.SetLoadingScreen(isLoading: false, RoomEnter.Full, "The server is full!");
+            MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "The server is full!");
             return false;
 		}
 
@@ -497,7 +502,7 @@ public class GameNetworkManager : MonoBehaviour
 			{
 				Debug.Log("JoinLobby: Failed to join steam lobby.");
 				LeaveCurrentSteamLobby();
-                MainMenuManager.Instance.SetLoadingScreen(isLoading: false, RoomEnter.Error, "Failed to join steam lobby.");
+                MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to join steam lobby.");
             }
         }
 		else
@@ -549,6 +554,7 @@ public class GameNetworkManager : MonoBehaviour
 		if (result != Result.OK)
         {
 			Debug.LogError($"SteamMatchmaking_OnLobbyCreated: Lobby couldn't be created!, {result}");
+			Disconnect($"Failed to create lobby: {result}.");
 			return;
 		}
 
@@ -707,8 +713,8 @@ public class GameNetworkManager : MonoBehaviour
 		if (clientId == NetworkManager.Singleton.LocalClientId)
 		{
 			Debug.Log("NetworkManager_OnClientDisconnectCallback: Local client disconnected, returning to main menu.");
-			disconnectionReasonText = "Disconnected.";
-			Disconnect();
+			Disconnect("You Have Disconnected.");
+			return;
 		}
 
         if (NetworkManager.Singleton.IsServer)

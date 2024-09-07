@@ -1061,7 +1061,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   maxHp: 100
-  currentHp: 100
+  currentHp:
+    m_InternalValue: 0
 --- !u!114 &8793975911923707449
 MonoBehaviour:
   m_ObjectHideFlags: 0

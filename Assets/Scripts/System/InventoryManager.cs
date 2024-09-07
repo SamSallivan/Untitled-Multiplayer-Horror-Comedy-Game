@@ -928,6 +928,8 @@ public class InventoryManager : NetworkBehaviour
             rotateValue.y = lookVector.y * 2.5f;
             UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.tHead.GetChild(0).transform.up, rotateValue.x, Space.World);
             UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.tHead.GetChild(0).transform.right, rotateValue.y, Space.World);
+            // UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(Vector3.up, rotateValue.x, Space.World);
+            // UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(Vector3.right, rotateValue.y, Space.World);
             detailRotationFix = true;
         }
         else
@@ -942,6 +944,7 @@ public class InventoryManager : NetworkBehaviour
             {
                 detailRotationFix = false;
                 UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.tHead.GetChild(0).transform.up, 0.2f, Space.World);
+                //UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(Vector3.up, 0.2f, Space.World);
             }
         }
     }

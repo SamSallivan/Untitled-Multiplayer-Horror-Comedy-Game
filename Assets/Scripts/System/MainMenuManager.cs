@@ -4,23 +4,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 using Steamworks;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
-using Netcode.Transports.Facepunch;
+using Sirenix.OdinInspector;
 
 public class MainMenuManager : MonoBehaviour
 {
     public static MainMenuManager Instance;
-	public TMP_InputField lobbyNameInputField;
-	public Toggle lobbyIsPublicToggle;	
-	public Toggle lobbyIsLocalToggle;	
-    public TMP_InputField lobbyTagInputField;
 	public TMP_Text gameVersionNumberText;
+
+    [FoldoutGroup("Title Page")]
+	public GameObject titlePageUI;
+
+    [FoldoutGroup("Join Page")]
+	public GameObject joinPageUI;
+
+    [FoldoutGroup("Host Page")]
+	public GameObject hostPageUI;
+
+    [FoldoutGroup("Host Page")]
+	public TMP_InputField lobbyNameInputField;
+
+    [FoldoutGroup("Host Page")]
+	public Toggle lobbyIsPublicToggle;	
+
+    [FoldoutGroup("Host Page")]
+	public Toggle lobbyIsLocalToggle;	
+
+    [FoldoutGroup("Host Page")]
+    public TMP_InputField lobbyTagInputField;
+
+    [FoldoutGroup("Loading Screen")]
 	public GameObject loadingScreenUI;
+
+    [FoldoutGroup("Notification")]
 	public GameObject notificationUI;
+
+    [FoldoutGroup("Notification")]
 	public TMP_Text notificationText;
+
+    [FoldoutGroup("Notification")]
 	public TMP_Text notificationButtonText;
 
     private void Awake()
@@ -42,10 +64,10 @@ public class MainMenuManager : MonoBehaviour
 			GameNetworkManager.Instance.disconnecting = false;
 		}
 
-		// if (gameVersionNumberText != null)
-		// {
-        //     gameVersionNumberText.text = $"v{GameNetworkManager.Instance.gameVersionNumber}";
-		// }
+		if (gameVersionNumberText != null)
+		{
+            gameVersionNumberText.text = $"v{GameNetworkManager.Instance.gameVersionNumber}";
+		}
 		
 	}
 
@@ -57,6 +79,51 @@ public class MainMenuManager : MonoBehaviour
 			GameNetworkManager.Instance.disconnectionReasonText = "";
 		}
 	}
+
+	public void HostButton()
+	{	
+
+		titlePageUI.SetActive(false);
+		hostPageUI.SetActive(true);
+
+		if(SteamClient.IsLoggedOn)
+		{
+			lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
+		}
+
+		OnLocalToggle();
+    }
+
+	public void JoinOnlineButton()
+	{
+		if (!SteamClient.IsLoggedOn)
+		{
+			DisplayNotification("Could not connect to Steam servers.");
+			return;
+		}
+
+		titlePageUI.SetActive(false);
+		joinPageUI.SetActive(true);
+		GetComponent<SteamLobbyManager>().LoadServerList();
+    }
+
+	public void JoinLocalButton()
+	{
+		GameNetworkManager.Instance.StartClientLAN();
+	}
+
+	public void QuitButton()
+	{
+		Application.Quit();
+	}
+
+	public void BackButton()
+	{
+		joinPageUI.SetActive(false);
+		hostPageUI.SetActive(false);
+		titlePageUI.SetActive(true);
+	}
+
 
 	public void ConfirmHostButton()
 	{
@@ -81,15 +148,19 @@ public class MainMenuManager : MonoBehaviour
 		GameNetworkManager.Instance.StartHost();
     }
 
-	public void JoinLocalButton(){
-		GameNetworkManager.Instance.StartClientLAN();
-	}
+	public void OnLocalToggle()
+	{
+		if (!lobbyIsLocalToggle.isOn && !SteamClient.IsLoggedOn)
+		{
+			DisplayNotification("Could not connect to Steam servers.");
+			lobbyIsLocalToggle.isOn = true;
+			return;
+		}
 
-	public void OnLocalToggle(){
 		GameNetworkManager.Instance.steamDisabled = lobbyIsLocalToggle.isOn;
 	}
 
-    public void SetLoadingScreen(bool isLoading, RoomEnter result = RoomEnter.Error, string notificationText = "")
+    public void SetLoadingScreen(bool isLoading, string notificationText = "", RoomEnter result = RoomEnter.Error)
     {
 		loadingScreenUI.SetActive(isLoading);
 
@@ -144,7 +215,7 @@ public class MainMenuManager : MonoBehaviour
 		
     }
 
-	public void DisplayNotification(string notificationText, string notificationButtonText)
+	public void DisplayNotification(string notificationText, string notificationButtonText = "Back")
 	{
 		this.notificationText.text = notificationText;
 		this.notificationButtonText.text = notificationButtonText;
