@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0f847b2f420ea54ba779e55bdc277ad, type: 3}
   m_Name: PixelizeRenderer
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0
@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8173f089832511149b44a215bb4a2f39, type: 3}
   m_Name: DitheringRenderer
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 856792627b7ad87479de639d23b34329, type: 3}
   m_Name: PosterizeRenderer
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a529de71a3723409dc5bcc5e30cf8c, type: 3}
   m_Name: ScanlinesRenderer
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0

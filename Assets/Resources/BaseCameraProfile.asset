@@ -47,7 +47,7 @@ MonoBehaviour:
   dirtIntensity:
     m_OverrideState: 0
     m_Value: 0
---- !u!114 &-7011558710299706105
+--- !u!114 &-7162338157072087632
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,25 +56,54 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 899c54efeace73346a0a16faa3afe726, type: 3}
-  m_Name: Vignette
+  m_Script: {fileID: 11500000, guid: c8ca37f13bb89c144a71832585b7a6ac, type: 3}
+  m_Name: EdgeDetection
   m_EditorClassIdentifier: 
-  active: 0
-  color:
-    m_OverrideState: 0
-    m_Value: {r: 0, g: 0, b: 0, a: 1}
-  center:
-    m_OverrideState: 0
-    m_Value: {x: 0.5, y: 0.5}
-  intensity:
+  active: 1
+  debug:
     m_OverrideState: 1
-    m_Value: 0.125
-  smoothness:
+    m_Value: 0
+  mode:
     m_OverrideState: 1
-    m_Value: 0.4
-  rounded:
+    m_Value: 3
+  invertFadeDistance:
     m_OverrideState: 0
     m_Value: 0
+  distanceFade:
+    m_OverrideState: 1
+    m_Value: 0
+  startFadeDistance:
+    m_OverrideState: 0
+    m_Value: 0
+  endFadeDistance:
+    m_OverrideState: 0
+    m_Value: 1000
+  sensitivityDepth:
+    m_OverrideState: 1
+    m_Value: 0
+  sensitivityNormals:
+    m_OverrideState: 1
+    m_Value: 1
+  lumThreshold:
+    m_OverrideState: 1
+    m_Value: 0.01
+  edgeColor:
+    m_OverrideState: 1
+    m_Value: {r: 0, g: 0, b: 0, a: 1}
+  edgeExp:
+    m_OverrideState: 0
+    m_Value: 1
+  edgeSize:
+    m_OverrideState: 1
+    m_Value: 1
+  edgeOpacity:
+    m_OverrideState: 1
+    m_Value: 0.25
+  sobelThin:
+    m_OverrideState: 0
+    m_Value: 0
+  DepthNormalsShader: {fileID: 4800000, guid: 516d67fad41db074ca871164dfde9e71, type: 3}
+  shader: {fileID: 4800000, guid: 3d6327a8c88b3714793200af974474fc, type: 3}
 --- !u!114 &-6695814514780586981
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -115,10 +144,10 @@ MonoBehaviour:
     m_Value: 0
   offset:
     m_OverrideState: 1
-    m_Value: -0.59
+    m_Value: 2.83
   edgeMasking:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   shader: {fileID: 4800000, guid: 0fd2fca24eaee21468e7f54b6ef8e2b9, type: 3}
 --- !u!114 &-1099638556956292059
 MonoBehaviour:
@@ -138,7 +167,7 @@ MonoBehaviour:
     m_Value: 0
   radius:
     m_OverrideState: 1
-    m_Value: 5
+    m_Value: 0
   startFadeDistance:
     m_OverrideState: 0
     m_Value: 100
@@ -146,6 +175,32 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 500
   shader: {fileID: 0}
+--- !u!114 &-838400729349268155
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab22b3400d2f8464d9d467a4e5f30570, type: 3}
+  m_Name: Sharpen
+  m_EditorClassIdentifier: 
+  active: 1
+  mode:
+    m_OverrideState: 1
+    m_Value: 0
+  amount:
+    m_OverrideState: 1
+    m_Value: 1
+  radius:
+    m_OverrideState: 1
+    m_Value: 2
+  contrast:
+    m_OverrideState: 1
+    m_Value: 1
+  shader: {fileID: 4800000, guid: 4ac6ceefc63ebf54184a982924ba5f8b, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,15 +216,16 @@ MonoBehaviour:
   components:
   - {fileID: 849379129802519247}
   - {fileID: -7893295128165547882}
-  - {fileID: -7011558710299706105}
   - {fileID: 8363288345529198559}
   - {fileID: 7916315327482468062}
   - {fileID: 2763767640314403250}
   - {fileID: -6003029289609488709}
-  - {fileID: 8366821205967745645}
   - {fileID: 9194957164746475820}
-  - {fileID: 5415013795254609796}
+  - {fileID: -838400729349268155}
   - {fileID: 6468070253904921754}
+  - {fileID: 8366821205967745645}
+  - {fileID: 5415013795254609796}
+  - {fileID: -7162338157072087632}
   - {fileID: -1099638556956292059}
 --- !u!114 &849379129802519247
 MonoBehaviour:
@@ -271,10 +327,10 @@ MonoBehaviour:
   active: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.1
+    m_Value: 0.05
   amount:
     m_OverrideState: 1
-    m_Value: 240
+    m_Value: 480
   speed:
     m_OverrideState: 1
     m_Value: 0.25
@@ -338,10 +394,10 @@ MonoBehaviour:
   active: 0
   type:
     m_OverrideState: 1
-    m_Value: 9
+    m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.502
   response:
     m_OverrideState: 1
     m_Value: 0.567
@@ -366,10 +422,10 @@ MonoBehaviour:
     m_Value: 1
   resolution:
     m_OverrideState: 1
-    m_Value: 240
+    m_Value: 334
   resolutionPreset:
     m_OverrideState: 1
-    m_Value: 240
+    m_Value: 480
   shader: {fileID: 4800000, guid: 418afc1867615f1408a4c6de9d799560, type: 3}
 --- !u!114 &8713469300237999870
 MonoBehaviour:
@@ -430,11 +486,11 @@ MonoBehaviour:
     dimension: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.603
+    m_Value: 0.355
   luminanceThreshold:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.293
   tiling:
     m_OverrideState: 1
-    m_Value: 1.08
+    m_Value: 1.548
   shader: {fileID: 4800000, guid: 9dfd4d129fd660d43a2fb5c40d119ca4, type: 3}
