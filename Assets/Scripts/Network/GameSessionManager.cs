@@ -236,6 +236,7 @@ public class GameSessionManager : NetworkBehaviour
             PlayerController playerController = playerControllerList[targetPlayerId];
 			playerController.localClientId = clientId;
 			playerController.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+			playerController.controlledByClient = true;
 			ClientIdToPlayerIdDictionary.Add(clientId, targetPlayerId);
 			connectedPlayerCount = ClientIdToPlayerIdDictionary.Count;
 			OnClientConnectedGameSessionClientRpc(clientId, targetPlayerId, ClientIdToPlayerIdDictionary.Keys.ToArray(), ClientIdToPlayerIdDictionary.Values.ToArray());
@@ -290,7 +291,6 @@ public class GameSessionManager : NetworkBehaviour
                     playerControllerList[j].controlledByClient = true;
 				}
 			}
-			playerController.controlledByClient = true;
 			
             Debug.Log($"OnClientConnectedGameSessionClientRpc: Connected player number: {connectedPlayerCount}");
 			
@@ -303,7 +303,7 @@ public class GameSessionManager : NetworkBehaviour
 				}
 			}
 
-			//Do stuff if I am the client who just join
+			//Do stuff if I am the client who just joined
             if (NetworkManager.Singleton.LocalClientId == clientId)
             {
 				StartCoroutine(LoadCoroutine());
@@ -374,7 +374,7 @@ public class GameSessionManager : NetworkBehaviour
             Debug.Log("OnClientDisconnectClientRpc: Target clientId key already removed, ignoring");
             return;
         }
-        if (GameNetworkManager.Instance.localPlayerController != null && clientId == GameNetworkManager.Instance.localPlayerController.localPlayerId)
+        if (localPlayerController != null && clientId == localPlayerController.localPlayerId)
         {
             Debug.Log("OnClientDisconnectClientRpc: Local client disconnecting, ignoring");
             return;
@@ -393,7 +393,6 @@ public class GameSessionManager : NetworkBehaviour
         try
         {
         	PlayerController playerController = playerControllerList[playerId].GetComponent<PlayerController>();
-            playerController.controlledByClient = false;
 			//Drop all inventory items
 
 			Destroy(playerController.currentVoiceChatIngameSettings.gameObject);
@@ -403,6 +402,7 @@ public class GameSessionManager : NetworkBehaviour
             {
                 playerController.gameObject.GetComponent<NetworkObject>().RemoveOwnership();
 				playerController.TeleportPlayer(despawnTransform.position);
+            	playerController.controlledByClient = false;
             }
             Debug.Log($"OnClientDisconnectedGameSessionClientRpc: Client #{clientId} disconnected.");
         }
@@ -434,7 +434,7 @@ public class GameSessionManager : NetworkBehaviour
 
 	public void UpdatePlayerVoicePlayback()
 	{
-		if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
+		if (GameNetworkManager.Instance == null || localPlayerController == null)
 		{
 			return;
 		}
@@ -443,7 +443,7 @@ public class GameSessionManager : NetworkBehaviour
 		foreach (PlayerController playerController in playerControllerList)
 		{
 			//if ((!playerController.isPlayerControlled && !playerController.isPlayerDead) || playerController == GameNetworkManager.Instance.localPlayerController)
-			if (!playerController.controlledByClient || playerController == GameNetworkManager.Instance.localPlayerController)
+			if (!playerController.controlledByClient || playerController == localPlayerController)
 			{
 				continue;
 			}
@@ -531,7 +531,7 @@ public class GameSessionManager : NetworkBehaviour
 
 	public void RefreshPlayerVoicePlaybackObjects()
 	{
-		if (GameNetworkManager.Instance == null || GameNetworkManager.Instance.localPlayerController == null)
+		if (GameNetworkManager.Instance == null || localPlayerController == null)
 		{
 			return;
 		}

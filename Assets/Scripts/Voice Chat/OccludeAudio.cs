@@ -62,7 +62,7 @@ public class OccludeAudio : MonoBehaviour
 		{
 			return;
 		}
-		if (useReverb && GameNetworkManager.Instance != null && GameNetworkManager.Instance.localPlayerController != null)
+		if (useReverb && GameSessionManager.Instance != null && GameSessionManager.Instance.localPlayerController != null)
 		{
             reverbFilter.enabled = false;
             

@@ -9,16 +9,17 @@ using Steamworks;
 using TMPro;
 using Dissonance;
 using Sirenix.OdinInspector;
+using Enviro;
 
 public class PlayerController : NetworkBehaviour, IDamagable
 {
     public static PlayerController instance;
 
-    [FoldoutGroup("Inventory")]
-    public List<I_InventoryItem> inventoryItemList= new List<I_InventoryItem>();
+    // [FoldoutGroup("Inventory")]
+    // public List<I_InventoryItem> inventoryItemList= new List<I_InventoryItem>();
 
-    [FoldoutGroup("Inventory")]
-    public List<I_InventoryItem> storageItemList= new List<I_InventoryItem>();
+    // [FoldoutGroup("Inventory")]
+    // public List<I_InventoryItem> storageItemList= new List<I_InventoryItem>();
 
     [FoldoutGroup("Voice Chat")]
     public VoicePlayerState voicePlayerState;
@@ -45,13 +46,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public bool controlledByClient;
 
     [FoldoutGroup("Networks")]
-    public bool awaitInitialization;
-
-    [FoldoutGroup("Networks")]
     public bool isPlayerDead;
 
     [FoldoutGroup("Networks")]
-    public Vector3 playerServerPosition;
+    public bool awaitInitialization;
+
+    // [FoldoutGroup("Networks")]
+    // public Vector3 playerServerPosition;
 
     [FoldoutGroup("References")]
     public Transform playerUsernameCanvasTransform;
@@ -63,10 +64,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public List<Camera> cameraList = new List<Camera>();
 
     [FoldoutGroup("References")]
-    public Transform t;
-
-    [FoldoutGroup("References")]
-    public Transform tHead;
+    public Transform headTransform;
 
     [FoldoutGroup("References")]
     public Transform equippedTransform;
@@ -87,7 +85,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public MouseLook mouseLookY;
 
     [FoldoutGroup("References")]
-    public CameraBob bob;
+    public CameraBob cameraBob;
     
     [FoldoutGroup("References")]
     public HeadPosition headPosition;
@@ -213,8 +211,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Health")] 
     public float maxHp = 100f;
+
     [FoldoutGroup("Health")] 
-    public NetworkVariable<float> currentHp = new NetworkVariable<float>();
+    public NetworkVariable<float> currentHp = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 
     private void Awake()
@@ -222,27 +221,19 @@ public class PlayerController : NetworkBehaviour, IDamagable
         instance = this;
         awaitInitialization = true;
 
-        t = base.transform;
-        tHead = t.Find("Head Pivot").transform;
+        headTransform = transform.Find("Head Pivot").transform;
         rb = GetComponent<Rigidbody>();
         playerCollider = GetComponent<CapsuleCollider>();
         grounder = GetComponent<Grounder>();
-        bob = tHead.GetComponentInChildren<CameraBob>();
-        headPosition = tHead.GetComponentInChildren<HeadPosition>();
+        cameraBob = headTransform.GetComponentInChildren<CameraBob>();
+        headPosition = headTransform.GetComponentInChildren<HeadPosition>();
         waterObject = GetComponentInChildren<WaterObject>();
         mouseLookX = GetComponent<MouseLook>();
-        mouseLookY = tHead.GetComponent<MouseLook>();
+        mouseLookY = headTransform.GetComponent<MouseLook>();
 
         playerUsername = $"Player #{localPlayerId}";
         playerUsernameText.text = playerUsername;
 
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-        if (IsServer)
-            currentHp.Value = maxHp;
     }
 
     private void Update()
@@ -313,9 +304,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     private void LateUpdate() 
     {
         //Rotate Username Canvas facing local player's camera
-        if (!base.IsOwner && GameNetworkManager.Instance.localPlayerController != null)
+        if (!base.IsOwner && GameSessionManager.Instance.localPlayerController != null)
         {
-            playerUsernameCanvasTransform.LookAt(GameNetworkManager.Instance.localPlayerController.cameraList[0].transform);
+            playerUsernameCanvasTransform.LookAt(GameSessionManager.Instance.localPlayerController.cameraList[0].transform);
         }
     }
 
@@ -323,10 +314,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         localClientId = NetworkManager.Singleton.LocalClientId;
 
-        if (GameNetworkManager.Instance != null)
-        {
-            GameNetworkManager.Instance.localPlayerController = this;
-        }
         if (GameSessionManager.Instance != null)
         {
             GameSessionManager.Instance.localPlayerController = this;
@@ -343,6 +330,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         cameraList = GetComponentsInChildren<Camera>(true).ToList<Camera>();
         cameraList[0].tag = "MainCamera";
+        EnviroManager.instance.Camera = cameraList[0];
         foreach (Camera cam in cameraList)
         {
             cam.enabled = true;
@@ -353,6 +341,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        currentHp.Value = maxHp;
     }
 
     public void DisconnectClientFromPlayerObject()
@@ -489,11 +479,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {   //if climbing, or no surface to climb up to, or surface too low, or obsticle on top of landing spot, too close to ground
         //no climbing
         if (climbState > 0
-            || !Physics.Raycast(t.position + Vector3.up * 3f + tHead.forward * 1f, Vector3.down, out hit, 4f, 1)
-            || !(hit.point.y + 1f > t.position.y)
-            || Physics.Raycast(new Vector3(t.position.x, hit.point.y + 1f, t.position.z), tHead.forward.normalized, 2f, 1)
-            || Physics.Raycast(t.position, Vector3.down, 1.5f, 1)
-            || Physics.Raycast(t.position, Vector3.up, 2.5f, 1))
+            || !Physics.Raycast(transform.position + Vector3.up * 3f + headTransform.forward * 1f, Vector3.down, out hit, 4f, 1)
+            || !(hit.point.y + 1f > transform.position.y)
+            || Physics.Raycast(new Vector3(transform.position.x, hit.point.y + 1f, transform.position.z), headTransform.forward.normalized, 2f, 1)
+            || Physics.Raycast(transform.position, Vector3.down, 1.5f, 1)
+            || Physics.Raycast(transform.position, Vector3.up, 2.5f, 1))
         {
             return;
         }
@@ -515,7 +505,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 climbStartPos = rb.position;
                 climbStartDir = climbStartPos;
                 climbStartDir.y += 2f;
-                bob.Sway(new Vector4(10f, 0f, -5f, 2f));
+                cameraBob.Sway(new Vector4(10f, 0f, -5f, 2f));
 
                 //poofVFX.transform.position = climbTargetPos;
                 //ParticleSystem particle = poofVFX.GetComponent<ParticleSystem>();
@@ -527,9 +517,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
             //lerps from start position to target position based on curve value at current time
             //finishes climbing when timer ends
             case 2:
-                bob.Angle(Mathf.Sin(climbTimer * (float)Mathf.PI * 5f));
+                cameraBob.Angle(Mathf.Sin(climbTimer * (float)Mathf.PI * 5f));
                 climbTimer = Mathf.MoveTowards(climbTimer, 1f, Time.deltaTime * 3f);
-                t.position = Vector3.LerpUnclamped(climbStartPos, climbTargetPos, climbCurve.Evaluate(climbTimer));
+                transform.position = Vector3.LerpUnclamped(climbStartPos, climbTargetPos, climbCurve.Evaluate(climbTimer));
                 if (climbTimer == 1f)
                 {
                     climbState--;
@@ -613,7 +603,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (climbState == 0)
         {
 
-            bob.Angle(inputDir.x * -1f - damageTimer * 3f);
+            cameraBob.Angle(inputDir.x * -1f - damageTimer * 3f);
         }
 
         //applies camera bob when grounded, walking, and not sliding
@@ -622,16 +612,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             if (gVel.sqrMagnitude > 1f)
             {
-                bob.Bob(dynamicSpeed);
+                cameraBob.Bob(dynamicSpeed);
             }
             else
             {
-                bob.Reset();
+                cameraBob.Reset();
             }
         }
         else
         {
-            bob.Reset();
+            cameraBob.Reset();
         }
 
     }
@@ -647,7 +637,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         gVel = Vector3.ProjectOnPlane(vel, grounder.groundNormal);
 
         //recalculates direction based on new ground normals
-        gDir = tHead.TransformDirection(inputDir);
+        gDir = headTransform.TransformDirection(inputDir);
         gDirCross = Vector3.Cross(Vector3.up, gDir).normalized;
         gDirCrossProject = Vector3.ProjectOnPlane(grounder.groundNormal, gDirCross);
         gDir = Vector3.Cross(gDirCross, gDirCrossProject);
@@ -875,19 +865,69 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [ClientRpc]
     public void TakeDamageClientRpc(float damage)
     {
-        if (!IsOwner)
-            return;
-        currentHp.Value -= damage;
-        if (currentHp.Value <= 0)
+        if (IsOwner)
         {
-            Die();
+            currentHp.Value -= damage;
+
+            if (currentHp.Value <= 0)
+            {
+                Die();
+            }
+
+            Debug.Log(playerUsername + " took " + damage + " damage.");
         }
-        Debug.Log(playerUsername + " took " + damage + " damage.");
     }
 
+    [Button]
     public void Die()
     {
+        if (IsOwner && !isPlayerDead)
+        {
+            isPlayerDead = true;
+            LockMovement(true);
+            LockCamera(true);
+            rb.constraints = RigidbodyConstraints.None;
+            rb.AddTorque(base.transform.right);
+            InventoryManager.instance.DropAllItemsFromInventory();
+            DieServerRPC();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void DieServerRPC()
+    {
+        DieClientRpc();
+    }
+
+    [ClientRpc]
+    public void DieClientRpc()
+    {
         isPlayerDead = true;
+    }
+
+    [Button]
+    public void Respawn()
+    {
+        if (IsOwner && isPlayerDead)
+        {
+            isPlayerDead = false;
+            LockMovement(false);
+            LockCamera(false);
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            RespawnServerRPC();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RespawnServerRPC()
+    {
+        RespawnClientRpc();
+    }
+    
+    [ClientRpc]
+    public void RespawnClientRpc()
+    {
+        isPlayerDead = false;
     }
 }
 

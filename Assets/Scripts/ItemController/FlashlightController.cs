@@ -21,7 +21,7 @@ public class FlashlightController : NetworkBehaviour
     
     void Update()
     {   
-        if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameNetworkManager.Instance.localPlayerController)
+        if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameSessionManager.Instance.localPlayerController)
         {
             
             if (GetComponent<I_InventoryItem>().isCurrentlyEquipped && GetComponent<I_InventoryItem>().owner.enableMovement) 

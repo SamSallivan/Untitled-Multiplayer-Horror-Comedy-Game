@@ -38,17 +38,18 @@ public class MonsterAI : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateTarget();
-        Chase();
-        Attack();
-        
+        if (IsServer)
+        {
+            UpdateTarget();
+            Chase();
+            Attack();
+        }
         
     }
     
     public void Attack()
     {
-
-        if(currentAttackCD<=0f)
+        if(currentAttackCD <= 0f)
         {
             if (target != null)
             {

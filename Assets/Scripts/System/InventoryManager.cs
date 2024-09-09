@@ -307,25 +307,6 @@ public class InventoryManager : NetworkBehaviour
 
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void PocketItemServerRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
-    {   
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
-        {
-            PocketItemClientRpc(inventoryItemObject, playerControllerObject);
-        }
-    }
-    [ClientRpc]
-    public void PocketItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
-        {
-            inventoryItemObject.GetComponent<I_InventoryItem>().owner = playerControllerObject.GetComponent<PlayerController>();
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(false);
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(false);
-        }
-    }
-
     public I_InventoryItem AddItemToInventory(I_InventoryItem inventoryItem)
     {
         RatingManager.instance.AddScore(50);
@@ -456,168 +437,15 @@ public class InventoryManager : NetworkBehaviour
         return null;
     }
 
-    public void RemoveItem(I_InventoryItem inventoryItem, int amount = 1)
+    public void DropAllItemsFromInventory()
     {
-        if (inventoryItem.itemData.isStackable)
+        foreach (InventorySlot slot in inventorySlotList)
         {
-            if (inventoryItem.itemStatus.amount > amount)
+            if (slot.inventoryItem)
             {
-                inventoryItem.itemStatus.amount -= amount;
-                ModifyItemAmountServerRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.amount);
-                inventoryItem.inventorySlot.amount.text = "" + inventoryItem.itemStatus.amount;
-
-            }
-            else
-            {
-                if (equippedItem == inventoryItem)
-                {
-                    UnequipItem();
-                }
-
-                ClearInventorySlot(inventoryItem.inventorySlot);
-                //Destory inventoryItem on server
+                DropItemFromInventory(slot.inventoryItem);
             }
         }
-        else
-        {
-            if (equippedItem == inventoryItem)
-            {
-                UnequipItem();
-            }
-
-            ClearInventorySlot(inventoryItem.inventorySlot);
-            //Destory inventoryItem on server
-        }
-
-        UpdateSelection();
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void InstantiateUnpocketedItemServerRpc(NetworkObjectReference inventoryItem, int amount)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        {
-            var gameObject = Instantiate(inventoryItemObject.gameObject);
-            gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
-            gameObject.GetComponent<NetworkObject>().Spawn();
-            UnpocketItemServerRpc(gameObject.GetComponent<NetworkObject>(), playerController.NetworkObject);
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void InstantiateUnpocketedItemServerRpc(int itemIndex, int amount, NetworkObjectReference playerController)
-    {
-        if (playerController.TryGet(out NetworkObject playerControllerObject))
-        {
-            var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject, position: playerControllerObject.GetComponent<PlayerController>().tHead.transform.position + playerControllerObject.GetComponent<PlayerController>().tHead.transform.forward * 0.5f, playerControllerObject.GetComponent<PlayerController>().tHead.transform.rotation);
-            gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
-            gameObject.GetComponent<NetworkObject>().Spawn();
-            InstantiateUnpocketedItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
-        }
-    }
-
-    [ClientRpc]
-    public void InstantiateUnpocketedItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject) && this.playerController == playerControllerObject.GetComponent<PlayerController>())
-        {
-            UnpocketItemServerRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerControllerObject);
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, int storageSlotIndex, ulong clientId)
-    {
-        var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
-        gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
-        gameObject.GetComponent<NetworkObject>().Spawn();
-        InstantiatePocketedItemClientRpc(storageSlotIndex, gameObject.GetComponent<NetworkObject>(), clientId);
-    }
-    
-    [ClientRpc]
-    public void InstantiatePocketedItemClientRpc(int storageSlotIndex, NetworkObjectReference inventoryItem, ulong clientId)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && NetworkManager.Singleton.LocalClientId == clientId)
-        {
-            PocketItemServerRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerController.NetworkObject);
-            storageSlotList[storageSlotIndex].inventoryItem = inventoryItemObject.GetComponent<I_InventoryItem>();
-            storageSlotList[storageSlotIndex].UpdateInventorySlotDisplay();
-            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = storageSlotList[storageSlotIndex];
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void DestoryItemServerRpc(NetworkObjectReference inventoryItem)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        {
-            inventoryItemObject.Despawn();
-            Destroy(inventoryItemObject.gameObject);
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void UnpocketItemServerRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
-        {
-            UnpocketItemClientRpc(inventoryItemObject, playerControllerObject);
-            //inventoryItemObject.RemoveOwnership();
-        }
-    }
-
-    [ClientRpc]
-    public void UnpocketItemClientRpc(NetworkObjectReference inventoryItem)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        {
-            inventoryItemObject.GetComponent<I_InventoryItem>().owner = null;
-            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = null;
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(true);
-        }
-    }
-
-    [ClientRpc]
-    public void UnpocketItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
-        {
-            inventoryItemObject.GetComponent<I_InventoryItem>().owner = null;
-            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = null;
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(true);
-            inventoryItemObject.transform.position = playerControllerObject.GetComponent<PlayerController>().tHead.transform.position + playerControllerObject.GetComponent<PlayerController>().tHead.transform.forward * 0.5f;
-            inventoryItemObject.transform.rotation = playerControllerObject.GetComponent<PlayerController>().tHead.transform.rotation;
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void EquipItemServerRpc(NetworkObjectReference inventoryItem, bool hide)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        {
-            EquipItemClientRpc(inventoryItemObject, hide);
-        }
-    }
-
-    [ClientRpc]
-    public void EquipItemClientRpc(NetworkObjectReference inventoryItem, bool hide)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        {
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(!hide);
-            inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = !hide;
-        }
-    }
-
-    public void ClearInventorySlot(InventorySlot slot)
-    {
-        slot.inventoryItem = null;
-        slot.image.sprite = null;
-        slot.image.color = new UnityEngine.Color(1, 1, 1, 0);
-        slot.name.text = "";
-        slot.amount.text = "";
     }
 
     public void DropItemFromInventory(I_InventoryItem inventoryItem)
@@ -719,6 +547,178 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
+    public void RemoveItem(I_InventoryItem inventoryItem, int amount = 1)
+    {
+        if (inventoryItem.itemData.isStackable)
+        {
+            if (inventoryItem.itemStatus.amount > amount)
+            {
+                inventoryItem.itemStatus.amount -= amount;
+                ModifyItemAmountServerRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.amount);
+                inventoryItem.inventorySlot.amount.text = "" + inventoryItem.itemStatus.amount;
+
+            }
+            else
+            {
+                if (equippedItem == inventoryItem)
+                {
+                    UnequipItem();
+                }
+
+                ClearInventorySlot(inventoryItem.inventorySlot);
+                //Destory inventoryItem on server
+            }
+        }
+        else
+        {
+            if (equippedItem == inventoryItem)
+            {
+                UnequipItem();
+            }
+
+            ClearInventorySlot(inventoryItem.inventorySlot);
+            //Destory inventoryItem on server
+        }
+
+        UpdateSelection();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void InstantiateUnpocketedItemServerRpc(NetworkObjectReference inventoryItem, int amount)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            var gameObject = Instantiate(inventoryItemObject.gameObject);
+            gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
+            gameObject.GetComponent<NetworkObject>().Spawn();
+            UnpocketItemServerRpc(gameObject.GetComponent<NetworkObject>(), playerController.NetworkObject);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void InstantiateUnpocketedItemServerRpc(int itemIndex, int amount, NetworkObjectReference playerController)
+    {
+        if (playerController.TryGet(out NetworkObject playerControllerObject))
+        {
+            var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject, position: playerControllerObject.GetComponent<PlayerController>().headTransform.transform.position + playerControllerObject.GetComponent<PlayerController>().headTransform.transform.forward * 0.5f, playerControllerObject.GetComponent<PlayerController>().headTransform.transform.rotation);
+            gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
+            gameObject.GetComponent<NetworkObject>().Spawn();
+            InstantiateUnpocketedItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
+        }
+    }
+
+    [ClientRpc]
+    public void InstantiateUnpocketedItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject) && this.playerController == playerControllerObject.GetComponent<PlayerController>())
+        {
+            UnpocketItemServerRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerControllerObject);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, int storageSlotIndex, ulong clientId)
+    {
+        var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
+        gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
+        gameObject.GetComponent<NetworkObject>().Spawn();
+        InstantiatePocketedItemClientRpc(storageSlotIndex, gameObject.GetComponent<NetworkObject>(), clientId);
+    }
+    
+    [ClientRpc]
+    public void InstantiatePocketedItemClientRpc(int storageSlotIndex, NetworkObjectReference inventoryItem, ulong clientId)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            PocketItemServerRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerController.NetworkObject);
+            storageSlotList[storageSlotIndex].inventoryItem = inventoryItemObject.GetComponent<I_InventoryItem>();
+            storageSlotList[storageSlotIndex].UpdateInventorySlotDisplay();
+            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = storageSlotList[storageSlotIndex];
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void DestoryItemServerRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            inventoryItemObject.Despawn();
+            Destroy(inventoryItemObject.gameObject);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void PocketItemServerRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
+    {   
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
+        {
+            PocketItemClientRpc(inventoryItemObject, playerControllerObject);
+        }
+    }
+    [ClientRpc]
+    public void PocketItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
+        {
+            inventoryItemObject.GetComponent<I_InventoryItem>().owner = playerControllerObject.GetComponent<PlayerController>();
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(false);
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(false);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void UnpocketItemServerRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            UnpocketItemClientRpc(inventoryItemObject);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void UnpocketItemServerRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
+        {
+            UnpocketItemClientRpc(inventoryItemObject, playerControllerObject);
+        }
+    }
+
+    [ClientRpc]
+    public void UnpocketItemClientRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            inventoryItemObject.GetComponent<I_InventoryItem>().owner = null;
+            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = null;
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(true);
+        }
+    }
+
+    [ClientRpc]
+    public void UnpocketItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
+        {
+            inventoryItemObject.GetComponent<I_InventoryItem>().owner = null;
+            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = null;
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemPhysics(true);
+            inventoryItemObject.transform.position = playerControllerObject.GetComponent<PlayerController>().headTransform.transform.position + playerControllerObject.GetComponent<PlayerController>().headTransform.transform.forward * 0.5f;
+            inventoryItemObject.transform.rotation = playerControllerObject.GetComponent<PlayerController>().headTransform.transform.rotation;
+        }
+    }
+
+    public void ClearInventorySlot(InventorySlot slot)
+    {
+        slot.inventoryItem = null;
+        slot.image.sprite = null;
+        slot.image.color = new UnityEngine.Color(1, 1, 1, 0);
+        slot.name.text = "";
+        slot.amount.text = "";
+    }
+
     public void EquipItem(I_InventoryItem inventoryItem, bool autoUnequip = false)
     {
         if (inventoryItem == null)
@@ -750,11 +750,11 @@ public class InventoryManager : NetworkBehaviour
 
             if (IsHost)
             {
-                EquipItemClientRpc(inventoryItem.NetworkObject, false);
+                EquipItemClientRpc(inventoryItem.NetworkObject);
             }
             else
             {
-                EquipItemServerRpc(inventoryItem.NetworkObject, false);
+                EquipItemServerRpc(inventoryItem.NetworkObject);
             }
 
         }
@@ -762,6 +762,25 @@ public class InventoryManager : NetworkBehaviour
         if (playerController.targetInteractable != null)
         {
             playerController.targetInteractable.Target();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void EquipItemServerRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            EquipItemClientRpc(inventoryItemObject);
+        }
+    }
+
+    [ClientRpc]
+    public void EquipItemClientRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
+            inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = true;
         }
     }
 
@@ -773,20 +792,36 @@ public class InventoryManager : NetworkBehaviour
         if (equippedItem != null && equippedItem.inventorySlot != null)
         {
             equippedItem.inventorySlot.rightHandIcon.enabled = false;
-            /*if (playerController.equippedTransformRight.childCount > 0)
-            {
-                Destroy(playerController.equippedTransformRight.GetChild(0).gameObject);
-            }*/
+
             if (IsHost)
             {
-                EquipItemClientRpc(equippedItem.NetworkObject, true);
+                UnequipItemClientRpc(equippedItem.NetworkObject);
             }
             else
             {
-                EquipItemServerRpc(equippedItem.NetworkObject, true);
+                UnequipItemServerRpc(equippedItem.NetworkObject);
             }
         }
         equippedItem = null;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void UnequipItemServerRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            UnequipItemClientRpc(inventoryItemObject);
+        }
+    }
+
+    [ClientRpc]
+    public void UnequipItemClientRpc(NetworkObjectReference inventoryItem)
+    {
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        {
+            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(false);
+            inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = false;
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -848,15 +883,15 @@ public class InventoryManager : NetworkBehaviour
 
         if (selectedItem != null && selectedItem.itemData != null)
         {
-            CreateObjectDetail();
+            CreateDetailObject();
         }
         else if(deleteOnUnselect)
         {
-            DeleteObjectDetail();
+            DeleteDetailObject();
         }
     }
 
-    public void CreateObjectDetail()
+    public void CreateDetailObject()
     {
         //if (UIManager.instance.detailName.text != selectedItem.itemData.name)
         if (detailObject != selectedItem)
@@ -896,7 +931,7 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
-    public void DeleteObjectDetail()
+    public void DeleteDetailObject()
     {
         detailObject = null;
         if (UIManager.instance.detailObjectPivot.childCount > 0)
@@ -926,8 +961,8 @@ public class InventoryManager : NetworkBehaviour
         {
             rotateValue.x = -(lookVector.x * 2.5f);
             rotateValue.y = lookVector.y * 2.5f;
-            UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.tHead.GetChild(0).transform.up, rotateValue.x, Space.World);
-            UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.tHead.GetChild(0).transform.right, rotateValue.y, Space.World);
+            UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.headTransform.GetChild(0).transform.up, rotateValue.x, Space.World);
+            UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.headTransform.GetChild(0).transform.right, rotateValue.y, Space.World);
             // UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(Vector3.up, rotateValue.x, Space.World);
             // UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(Vector3.right, rotateValue.y, Space.World);
             detailRotationFix = true;
@@ -943,7 +978,7 @@ public class InventoryManager : NetworkBehaviour
             else
             {
                 detailRotationFix = false;
-                UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.tHead.GetChild(0).transform.up, 0.2f, Space.World);
+                UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(playerController.headTransform.GetChild(0).transform.up, 0.2f, Space.World);
                 //UIManager.instance.detailObjectPivot.GetChild(0).transform.Rotate(Vector3.up, 0.2f, Space.World);
             }
         }
@@ -959,42 +994,17 @@ public class InventoryManager : NetworkBehaviour
         return ((position.y) * slotPerRow + position.x);
     }
 
-/*    public void EquipMap()
-    {
-        I_InventoryItem map = FindInventoryItem("Map");
-        I_InventoryItem compass = FindInventoryItem("Compass");
-        if (map != null)
-        {
-            if (equippedItemLeft != null && equippedItemLeft == map)
-            {
-                UnequipItem(map);
-                if (compass != null)
-                {
-                    UnequipItem(compass);
-                }
-            }
-            else
-            {
-                EquipItem(map, false);
-                if (compass != null)
-                {
-                    EquipItem(compass, false);
-                }
-            }
-        }
-    }*/
-
     public void LockCursor(bool lockCursor)
     {
         if (lockCursor)
         {
-            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-            UnityEngine.Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
         else
         {
-            UnityEngine.Cursor.lockState = CursorLockMode.Confined;
-            UnityEngine.Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
         }
     }
 }

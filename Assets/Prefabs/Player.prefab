@@ -73,7 +73,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 151
+    m_Bits: 407
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 985594061636798841}
   - component: {fileID: 8469150785865484790}
   m_Layer: 0
-  m_Name: Goggle
+  m_Name: Visor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -872,7 +872,7 @@ GameObject:
   - component: {fileID: 6708520134979418985}
   - component: {fileID: 6474330115237772916}
   - component: {fileID: 5510620420523601156}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1030,8 +1030,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09996860e76b82b45bd8e6b01ee69a32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryItemList: []
-  storageItemList: []
   currentVoiceChatAudioSource: {fileID: 0}
   currentVoiceChatIngameSettings: {fileID: 0}
   playerUsername: Player
@@ -1039,20 +1037,18 @@ MonoBehaviour:
   localClientId: 0
   localSteamId: 0
   controlledByClient: 0
-  awaitInitialization: 0
   isPlayerDead: 0
-  playerServerPosition: {x: 0, y: 0, z: 0}
+  awaitInitialization: 0
   playerUsernameCanvasTransform: {fileID: 15498366079930494}
   playerUsernameText: {fileID: 234470645503231130}
   cameraList: []
-  t: {fileID: 0}
-  tHead: {fileID: 0}
+  headTransform: {fileID: 0}
   equippedTransform: {fileID: 2944472136624858675}
   rb: {fileID: 0}
   playerCollider: {fileID: 0}
   mouseLookX: {fileID: 0}
   mouseLookY: {fileID: 0}
-  bob: {fileID: 0}
+  cameraBob: {fileID: 0}
   headPosition: {fileID: 0}
   enableMovement: 1
   isNonPhysics: 0

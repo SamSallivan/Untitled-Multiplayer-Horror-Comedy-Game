@@ -60,30 +60,27 @@ public class I_InventoryItem : Interactable
 
 	public virtual void LateUpdate()
 	{
-        //if(IsOwner){
-            if (owner != null)
+        if (owner != null)
+        {
+            if (owner.controlledByClient && !owner.isPlayerDead) 
             {
-                if (owner.controlledByClient && !owner.isPlayerDead) 
+                Transform targetTransform = owner.equippedTransform;
+                base.transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
+                base.transform.rotation = targetTransform.rotation;
+                base.transform.Rotate(itemData.equipRotation);
+            }
+            else if (IsServer)
+            {
+                if (!owner.controlledByClient && inStorageBox)
                 {
-                    Transform targetTransform = owner.equippedTransform;
-                    base.transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
-                    base.transform.rotation = targetTransform.rotation;
-                    base.transform.Rotate(itemData.equipRotation);
+                    InventoryManager.instance.DestoryItemServerRpc(this.NetworkObject);
                 }
-                else
+                else if (!inStorageBox)
                 {
-                    if(!owner.controlledByClient && inStorageBox && IsServer)
-                    {
-                        InventoryManager.instance.DestoryItemServerRpc(this.NetworkObject);
-                        return;
-                    }
-                    owner = null;
-                    inventorySlot = null;
-                    EnableItemMeshes(true);
-                    EnableItemPhysics(true);
+                    InventoryManager.instance.UnpocketItemClientRpc(this.NetworkObject);
                 }
             }
-        //}
+        }
     }
 
     public override IEnumerator InteractionEvent()

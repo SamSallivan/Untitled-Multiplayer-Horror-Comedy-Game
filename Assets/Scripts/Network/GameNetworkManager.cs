@@ -45,8 +45,6 @@ public class GameNetworkManager : MonoBehaviour
     public LobbySettings lobbySettings;
 	
     [Header("References")]
-	[Sirenix.OdinInspector.ReadOnly]
-    public PlayerController localPlayerController;
 	private Coroutine lobbyRefreshTimeOutCoroutine;
 	[Sirenix.OdinInspector.ReadOnly]
 	public string currentSteamLobbyName;
@@ -754,7 +752,6 @@ public class GameNetworkManager : MonoBehaviour
 	{
 		disconnecting = false;
 		connectedClientCount = 0;
-		localPlayerController = null;
 		gameStarted = false;
         UnsubscribeToNetworkManagerCallbacks();
 	}
