@@ -86,7 +86,7 @@ public class MainMenuManager : MonoBehaviour
 		titlePageUI.SetActive(false);
 		hostPageUI.SetActive(true);
 
-		if(SteamClient.IsLoggedOn)
+		if(SteamClient.IsValid && SteamClient.IsLoggedOn)
 		{
 			lobbyNameInputField.text = SteamClient.Name.ToString() + "'s Lobby";
 		}
@@ -96,7 +96,7 @@ public class MainMenuManager : MonoBehaviour
 
 	public void JoinOnlineButton()
 	{
-		if (!SteamClient.IsLoggedOn)
+		if (!SteamClient.IsValid || !SteamClient.IsLoggedOn)
 		{
 			DisplayNotification("Could not connect to Steam servers.");
 			return;
@@ -150,11 +150,14 @@ public class MainMenuManager : MonoBehaviour
 
 	public void OnLocalToggle()
 	{
-		if (!lobbyIsLocalToggle.isOn && !SteamClient.IsLoggedOn)
+		if (!lobbyIsLocalToggle.isOn)
 		{
-			DisplayNotification("Could not connect to Steam servers.");
-			lobbyIsLocalToggle.isOn = true;
-			return;
+			if (!SteamClient.IsValid || !SteamClient.IsLoggedOn)
+			{
+				DisplayNotification("Could not connect to Steam servers.");
+				lobbyIsLocalToggle.isOn = true;
+				return;
+			}
 		}
 
 		GameNetworkManager.Instance.steamDisabled = lobbyIsLocalToggle.isOn;
