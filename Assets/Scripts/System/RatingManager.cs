@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class RatingManager : MonoBehaviour
@@ -15,7 +16,7 @@ public class RatingManager : MonoBehaviour
         SSS = 6
     }
 
-    public Rating rating;
+    public NetworkVariable<Rating> rating;
     public float ratingMeter;
     public int score;
     public float scoreTextTimer;

@@ -130,9 +130,9 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 0fcdd472bd6a8ec429fc1e9bc978c4fa, type: 2}
   showCirrusCloudsControls: 0
   show2DCloudsControls: 0
-  cloudFlatBaseAnim: {x: 0.37661946, y: 0.30935502}
-  cloudFlatDetailAnim: {x: -0.61598116, y: 0.20038693}
-  cirrusAnim: {x: -0.8083289, y: -0.8540694}
+  cloudFlatBaseAnim: {x: -0.94972116, y: -0.36491483}
+  cloudFlatDetailAnim: {x: 0.75328916, y: 0.83130735}
+  cirrusAnim: {x: -0.47118896, y: 0.8087958}
 --- !u!114 &-5447272849285213076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -894,12 +894,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3e0fff1aca044c40b9f5dc9d0bfaaa3, type: 3}
   m_Name: Audio Module
   m_EditorClassIdentifier: 
-  showModuleInspector: 0
+  showModuleInspector: 1
   showSaveLoad: 0
   active: 1
   Settings:
     ambientClips:
-    - showEditor: 0
+    - showEditor: 1
       name: Day
       audioClip: {fileID: 8300000, guid: 3e0b793299afd7c4086f6dfcd604aaba, type: 3}
       audioMixerGroup: {fileID: 0}
@@ -950,7 +950,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       maxVolume: 1
-    - showEditor: 0
+    - showEditor: 1
       name: Night
       audioClip: {fileID: 8300000, guid: eef01bfe93973f4419f0b3dd1b7a6a06, type: 3}
       audioMixerGroup: {fileID: 0}
@@ -964,15 +964,15 @@ MonoBehaviour:
         - serializedVersion: 3
           time: 0.0058403015
           value: 0.003780365
-          inSlope: 0.40376505
-          outSlope: 0.40376505
+          inSlope: 0.2673816
+          outSlope: 0.2673816
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.30587992
-          value: 0.12492588
+          time: 0.28372416
+          value: 0.0780814
           inSlope: 0.9373293
           outSlope: 0.9373293
           tangentMode: 0
@@ -980,8 +980,8 @@ MonoBehaviour:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.45850945
-          value: 0.39840025
+          time: 0.41419792
+          value: 0.12669843
           inSlope: -0.15356094
           outSlope: -0.15356094
           tangentMode: 0
@@ -1199,7 +1199,7 @@ MonoBehaviour:
   ambientVolumeModifier: 0
   weatherVolumeModifier: 0
   thunderVolumeModifier: 0
-  showAmbientSetupControls: 0
+  showAmbientSetupControls: 1
   showWeatherSetupControls: 0
   showThunderSetupControls: 0
   showAudioControls: 1
@@ -2098,7 +2098,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    temperature: 18.088923
+    temperature: 18.216621
     temperatureWeatherMod: 1.7
     temperatureCustomMod: 0
     temperatureChangingSpeed: 0.1
@@ -2320,7 +2320,7 @@ MonoBehaviour:
   showDensityControls: 0
   showTextureControls: 0
   showWindControls: 0
-  cloudAnimLayer1: {x: -0.59613585, y: 0.6974069, z: 0.4012984}
+  cloudAnimLayer1: {x: 0.4152706, y: -0.3140008, z: -0.9885462}
   cloudAnimLayer2: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer1: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer2: {x: 0, y: 0, z: 0}
@@ -2439,7 +2439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ccdfb360c52f049bf71126aa74826f, type: 3}
   m_Name: Weather Module
   m_EditorClassIdentifier: 
-  showModuleInspector: 1
+  showModuleInspector: 0
   showSaveLoad: 0
   active: 1
   Settings:
@@ -2466,7 +2466,7 @@ MonoBehaviour:
   globalAutoWeatherChange: 1
   triggerCollider: {fileID: 0}
   triggerRB: {fileID: 0}
-  showWeatherPresetsControls: 1
+  showWeatherPresetsControls: 0
   showTransitionControls: 0
   showZoneControls: 0
 --- !u!114 &6137975383063632260
@@ -2581,6 +2581,10 @@ MonoBehaviour:
   showVolumetricsControls: 0
   showUnityFogControls: 1
   fogLights:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
