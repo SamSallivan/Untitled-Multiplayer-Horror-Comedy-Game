@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -19,13 +20,19 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    
+    [FoldoutGroup("Match Time")]
     [SerializeField] 
     float preExtractionTime = 300f;
+    [FoldoutGroup("Match Time")]
     [SerializeField] 
     float extractionTime = 60f;
+    [FoldoutGroup("Match Time")]
     public NetworkVariable<float> matchTimer = new NetworkVariable<float>(0);
 
     public List<GameObject> ExtractionLocations; 
+    
+    
 
     public enum GameState
     {
