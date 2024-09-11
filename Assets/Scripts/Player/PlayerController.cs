@@ -817,13 +817,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     
     public void TakeDamage(float damage)
     {
-        TakeDamageClientRpc(damage);
-    }
-
-    [ClientRpc]
-    public void TakeDamageClientRpc(float damage)
-    {
-        if (IsOwner)
+        if (base.IsOwner && !isPlayerDead)
         {
             currentHp.Value -= damage;
 
@@ -831,8 +825,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
             {
                 Die();
             }
-
-            Debug.Log(playerUsername + " took " + damage + " damage.");
         }
     }
 
@@ -869,6 +861,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (IsOwner && isPlayerDead)
         {
             isPlayerDead = false;
+            currentHp.Value = maxHp;
             LockMovement(false);
             LockCamera(false);
             rb.constraints = RigidbodyConstraints.FreezeRotation;

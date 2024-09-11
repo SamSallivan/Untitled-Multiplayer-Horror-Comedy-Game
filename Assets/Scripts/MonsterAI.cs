@@ -56,20 +56,38 @@ public class MonsterAI : NetworkBehaviour
                 if (Vector3.Distance(transform.position, target.position) <= 1f)
                 {
                     currentAttackCD = maxAttackCD;
-                    Collider[] hits = Physics.OverlapSphere(transform.TransformPoint(attackOffset), attackRadius, attackMask);
-                    foreach (var player in hits.Select(hit => hit.GetComponentInParent<PlayerController>()).Where(obj => obj != null).Where(obj => obj != this))
-                    {
-                        player.TakeDamage(attackDamage);
-                    }
+                    AttackClientRpc();
                 }
             }
-
         }
         else
         {
             currentAttackCD -= Time.deltaTime;
         }
     }
+    
+    [ClientRpc]
+    public void AttackClientRpc()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.TransformPoint(attackOffset), attackRadius, attackMask);
+        foreach (var targetDamagable in hits.Select(hit => hit.GetComponentInParent<IDamagable>()).Where(obj => obj != null).Where(obj => obj != this))
+        {
+            targetDamagable.TakeDamage(attackDamage);
+        }
+    }
+
+    // [ServerRpc]
+    // public void DamageServerRpc(IDamagable target, float damage)
+    // {
+    //     DamageClientRpc(target, damage);
+    // }
+
+    // [ClientRpc]
+    // public void DamageClientRpc(IDamagable target, float damage)
+    // {
+    //     if (target.gameObject.)
+    // }
+
     public void Chase()
     {
         if (currentAttackCD>0f)
@@ -90,7 +108,7 @@ public class MonsterAI : NetworkBehaviour
 
     public void UpdateTarget()
     {
-        
+        target = null;
         for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
         {
             if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
@@ -100,14 +118,10 @@ public class MonsterAI : NetworkBehaviour
 
                 if (dist<chaseDistance)
                 {
-                    if(target==null)
+                    if(target == null)
                         target = GameSessionManager.Instance.playerControllerList[i].transform;
                     else if(dist < Vector3.Distance(transform.position,target.position))
                         target = GameSessionManager.Instance.playerControllerList[i].transform;
-                }
-                else
-                {
-                    target = null;
                 }
             }
         }
