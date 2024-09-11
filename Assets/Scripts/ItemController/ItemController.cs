@@ -5,5 +5,5 @@ using Unity.Netcode;
 
 public abstract class ItemController : NetworkBehaviour
 {
-    public abstract void UseItem();
+    public abstract void UseItem(bool buttonDown = true);
 }

@@ -19,9 +19,10 @@ public class FlashlightController : ItemController
         }
     }
     
-    public override void UseItem()
+    public override void UseItem(bool buttonDown = true)
     {
-        ToggleLightServerRpc();
+        if(buttonDown)
+            ToggleLightServerRpc();
     }
 
     void Update()

@@ -249,7 +249,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerInputActions.FindAction("Jump").performed += Jump_performed;
         //playerInputActions.FindAction("Crouch").performed += Crouch_performed;
         playerInputActions.FindAction("ActivateItem").performed += ActivateItem_performed;
-        //playerInputActions.FindAction("ActivateItem").canceled += ActivateItem_canceled;
+        playerInputActions.FindAction("ActivateItem").canceled += ActivateItem_canceled;
         // playerInputActions.FindAction("ItemSecondaryUse").performed += ItemSecondaryUse_performed;
         playerInputActions.FindAction("Interact").performed += Interact_performed;
         playerInputActions.FindAction("Discard").performed += Discard_performed;
@@ -815,16 +815,19 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     #region Damage & Death
     
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, Vector3 direction)
     {
         if (base.IsOwner && !isPlayerDead)
         {
             currentHp.Value -= damage;
 
+            rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
+
             if (currentHp.Value <= 0)
             {
                 Die();
             }
+            Debug.Log($"{playerUsernameText} took {damage} damage.");
         }
     }
 
@@ -959,7 +962,21 @@ public class PlayerController : NetworkBehaviour, IDamagable
             {
                 if (InventoryManager.instance.equippedItem.GetComponent<ItemController>()) 
                 {
-                    InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem();
+                    InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(true);
+                }
+            }
+        }
+    }
+    
+    private void ActivateItem_canceled(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner && InventoryManager.instance.equippedItem.owner == this)
+            {
+                if (InventoryManager.instance.equippedItem.GetComponent<ItemController>()) 
+                {
+                    InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(false);
                 }
             }
         }

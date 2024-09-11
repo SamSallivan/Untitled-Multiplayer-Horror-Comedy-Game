@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class MonsterAI : NetworkBehaviour
+public class MonsterAI : NetworkBehaviour, IDamagable
 {
     private NavMeshAgent _agent;
 
@@ -26,6 +26,9 @@ public class MonsterAI : NetworkBehaviour
     public LayerMask attackMask;
 
     public float chaseDistance = 10f;
+
+    public bool isDead = false;
+    public float health = 100;
     
     
     // Start is called before the first frame update
@@ -70,9 +73,10 @@ public class MonsterAI : NetworkBehaviour
     public void AttackClientRpc()
     {
         Collider[] hits = Physics.OverlapSphere(transform.TransformPoint(attackOffset), attackRadius, attackMask);
-        foreach (var targetDamagable in hits.Select(hit => hit.GetComponentInParent<IDamagable>()).Where(obj => obj != null).Where(obj => obj != this))
+        foreach (IDamagable targetDamagable in hits.Select(hit => hit.GetComponentInParent<IDamagable>()).Where(obj => obj != null).Where(obj => obj != this))
         {
-            targetDamagable.TakeDamage(attackDamage);
+            Vector3 direction = Vector3.zero;
+            targetDamagable.TakeDamage(attackDamage, direction);
         }
     }
 
@@ -126,5 +130,30 @@ public class MonsterAI : NetworkBehaviour
             }
         }
 
+    } 
+    
+    public void TakeDamage(float damage, Vector3 direction)
+    {
+        if (base.IsOwner && !isDead)
+        {
+            health -= damage;
+
+            //rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
+
+            if (health <= 0)
+            {
+                Die();
+            }
+            //Debug.Log($"{playerUsernameText} took {damage} damage.");
+        }
+    }
+
+    public void Die()
+    {
+        if (IsOwner && !isDead)
+        {
+            isDead = true;
+            Destroy(gameObject);
+        }
     }
 }

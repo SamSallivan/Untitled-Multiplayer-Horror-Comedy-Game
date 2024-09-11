@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 5034274585606342954}
   - component: {fileID: 4463421092320414823}
   - component: {fileID: 9078181484996867578}
+  - component: {fileID: 2156562718832107575}
   m_Layer: 0
   m_Name: MONSTER
   m_TagString: Untagged
@@ -359,7 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 34026151
+  GlobalObjectIdHash: 1761431402
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -390,6 +391,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   chaseDistance: 10
+  isDead: 0
+  health: 100
 --- !u!114 &9078181484996867578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421,3 +424,26 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!136 &2156562718832107575
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9003375152520329749}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.0023884
+  m_Height: 3.9553206
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
