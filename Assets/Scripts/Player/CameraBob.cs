@@ -95,11 +95,11 @@ public class CameraBob : MonoBehaviour
 	{
 		//moves rotTimer to 1;
 		//lerps between camera rotation and target rotation based on rotTimer on curve.
-		if (rotTimer != 1f)
-		{
-			rotTimer = Mathf.MoveTowards(rotTimer, 1f, Time.deltaTime * rotSpeed);
-			transform.localRotation = Quaternion.SlerpUnclamped(startRot, rot, swayCurve.Evaluate(rotTimer));
-		}
+		// if (rotTimer != 1f)
+		// {
+		// 	rotTimer = Mathf.MoveTowards(rotTimer, 1f, Time.deltaTime * rotSpeed);
+		// 	transform.localRotation = Quaternion.SlerpUnclamped(startRot, rot, swayCurve.Evaluate(rotTimer));
+		// }
 
         //float fov = Mathf.Lerp(GetComponent<Camera>().fieldOfView, defaultFOV + (PlayerController.instance.GetClimbState() != 0 ? 15f : 0f), Time.deltaTime * 20f);
 
@@ -110,12 +110,12 @@ public class CameraBob : MonoBehaviour
 
         // }
 
-        foreach (Camera camera in GetComponentsInChildren<Camera>())
-        {
-            float fov = Mathf.Lerp(camera.fieldOfView, defaultFOV + (PlayerController.instance.GetClimbState() != 0 ? 15f : 0f), Time.deltaTime * 20f);
-            camera.fieldOfView = fov;
+        // foreach (Camera camera in GetComponentsInChildren<Camera>())
+        // {
+        //     float fov = Mathf.Lerp(camera.fieldOfView, defaultFOV + (GameSessionManager.Instance.localPlayerController.GetClimbState() != 0 ? 15f : 0f), Time.deltaTime * 20f);
+        //     camera.fieldOfView = fov;
 
-        }
+        // }
 		/*
         WeaponManager weapon = transform.parent.GetComponentInChildren<WeaponManager>();
 		if (weapon.isActiveAndEnabled && weapon.Holding() > 0f)
@@ -126,7 +126,47 @@ public class CameraBob : MonoBehaviour
 		{
 			GetComponent<Camera>().fieldOfView = Mathf.Lerp(GetComponent<Camera>().fieldOfView, defaultFOV + (PlayerController.instance.rb.isKinematic ? 15f : 0f), Time.deltaTime * 20f);
 		}
-		*/
+		*/ 
 
+	}
+
+	public void BobUpdate()
+	{
+		if (rotTimer != 1f)
+		{
+			rotTimer = Mathf.MoveTowards(rotTimer, 1f, Time.deltaTime * rotSpeed);
+			transform.localRotation = Quaternion.SlerpUnclamped(startRot, rot, swayCurve.Evaluate(rotTimer));
+		}
+
+        foreach (Camera camera in GetComponentsInChildren<Camera>())
+        {
+            float fov = Mathf.Lerp(camera.fieldOfView, defaultFOV + (GameSessionManager.Instance.localPlayerController.GetClimbState() != 0 ? 15f : 0f), Time.deltaTime * 20f);
+            camera.fieldOfView = fov;
+
+        }
+
+        //tilts camera based on horizontal input
+        if (GameSessionManager.Instance.localPlayerController.climbState == 0)
+        {
+            Angle(GameSessionManager.Instance.localPlayerController.inputDir.x * -1f - GameSessionManager.Instance.localPlayerController.damageTimer * 3f);
+        }
+
+        //applies camera bob when grounded, walking, and not sliding
+        //or sets camera position back to 0
+        if (GameSessionManager.Instance.localPlayerController.grounder.grounded && GameSessionManager.Instance.localPlayerController.inputDir.sqrMagnitude > 0.25f)
+        {
+            if (GameSessionManager.Instance.localPlayerController.gVel.sqrMagnitude > 1f)
+            {
+                Bob(GameSessionManager.Instance.localPlayerController.dynamicSpeed);
+            }
+            else
+            {
+                Reset();
+            }
+        }
+        else
+        {
+            Reset();
+        }
 	}
 }

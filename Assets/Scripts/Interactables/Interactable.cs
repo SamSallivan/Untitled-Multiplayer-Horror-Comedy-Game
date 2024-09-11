@@ -123,11 +123,11 @@ public abstract class Interactable : NetworkBehaviour
 
                     if(!activated && excludeOtherInteraction)
                     {
-                        PlayerController.instance.exclusiveInteractable = this;
+                        GameSessionManager.Instance.localPlayerController.exclusiveInteractable = this;
                     }
                     else if(activated && excludeOtherInteraction)
                     {
-                        PlayerController.instance.exclusiveInteractable = null;
+                        GameSessionManager.Instance.localPlayerController.exclusiveInteractable = null;
                     }
 
                     StartCoroutine(InteractionEvent());

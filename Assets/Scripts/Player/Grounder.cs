@@ -128,7 +128,7 @@ public class Grounder : MonoBehaviour
 		if (!grounded)
 		{
             //updates the highestpoint during an unground.
-		    if (transform.position.y > highestPoint || PlayerController.instance.waterObject.IsTouchingWater())
+		    if (transform.position.y > highestPoint || pc.waterObject.IsTouchingWater())
 		    {
 			    highestPoint = transform.position.y;
 		    }

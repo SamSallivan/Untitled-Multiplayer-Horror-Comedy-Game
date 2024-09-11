@@ -65,6 +65,10 @@ public class RatingManager : MonoBehaviour
     {
         this.score += score;
         ratingMeter += (float)score/100;
+        if(ratingMeter >= 1 && rating == Rating.SSS)
+        {
+            ratingMeter = 1;
+        }
         UIManager.instance.addScoreText.text = "+ " + score;
         scoreTextTimer = 1;
     }

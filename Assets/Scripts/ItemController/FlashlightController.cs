@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class FlashlightController : NetworkBehaviour
+public class FlashlightController : ItemController
 {
     public GameObject light;
     public bool activated;
@@ -19,24 +19,16 @@ public class FlashlightController : NetworkBehaviour
         }
     }
     
+    public override void UseItem()
+    {
+        ToggleLightServerRpc();
+    }
+
     void Update()
     {   
         if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameSessionManager.Instance.localPlayerController)
         {
-            
-            if (GetComponent<I_InventoryItem>().isCurrentlyEquipped && GetComponent<I_InventoryItem>().owner.enableMovement) 
-            {
-                if (Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    if(IsServer){
-                        ToggleLightClientRpc();
-                    }
-                    else{
-                        ToggleLightServerRpc();
-                    }
-                }
-            }
-            else if(light.activeInHierarchy)
+            if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped & activated) 
             {
                 ToggleLightServerRpc();
             }

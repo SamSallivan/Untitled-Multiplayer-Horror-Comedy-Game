@@ -872,6 +872,7 @@ GameObject:
   - component: {fileID: 6708520134979418985}
   - component: {fileID: 6474330115237772916}
   - component: {fileID: 5510620420523601156}
+  - component: {fileID: 5287848248952165287}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -1046,20 +1047,25 @@ MonoBehaviour:
   equippedTransform: {fileID: 2944472136624858675}
   rb: {fileID: 0}
   playerCollider: {fileID: 0}
+  grounder: {fileID: 0}
   mouseLookX: {fileID: 0}
   mouseLookY: {fileID: 0}
   cameraBob: {fileID: 0}
   headPosition: {fileID: 0}
+  playerInput: {fileID: 0}
+  inputDir: {x: 0, y: 0, z: 0}
   enableMovement: 1
   isNonPhysics: 0
   dynamicSpeed: 2.5
   dynamicSpeedSprint: 1
   vel: {x: 0, y: 0, z: 0}
+  gVel: {x: 0, y: 0, z: 0}
   waterObject: {fileID: 0}
   enableJump: 1
   jumpForce: {x: 0, y: 8, z: 0}
   ungroundedJumpGraceTimer: 0
   gravity: -25
+  climbState: 0
   climbCurve:
     serializedVersion: 2
     m_Curve:
@@ -1092,6 +1098,7 @@ MonoBehaviour:
   nonPhysicsCollisions:
     serializedVersion: 2
     m_Bits: 0
+  damageTimer: 0
   enableInteraction: 1
   targetInteractable: {fileID: 0}
   exclusiveInteractable: {fileID: 0}
@@ -1148,8 +1155,8 @@ MonoBehaviour:
   enableLook: 1
   axes: 1
   invertY: 0
-  sensitivityX: 2.5
-  sensitivityY: 2
+  sensitivityX: 0.2
+  sensitivityY: 0.15
   minimumX: -360
   maximumX: 360
   minimumY: -85
@@ -1212,6 +1219,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06a892ac1d6c864dad7c6c575b6e640, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5287848248952165287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738643314197950141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 844474083bbb5ad4e869d1c6ef2ef118, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &6867382714877513452
 GameObject:
   m_ObjectHideFlags: 0
@@ -1420,8 +1457,8 @@ MonoBehaviour:
   enableLook: 1
   axes: 2
   invertY: 0
-  sensitivityX: 2.5
-  sensitivityY: 2
+  sensitivityX: 0.2
+  sensitivityY: 0.15
   minimumX: -360
   maximumX: 360
   minimumY: -85

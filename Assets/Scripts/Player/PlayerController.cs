@@ -10,11 +10,10 @@ using TMPro;
 using Dissonance;
 using Sirenix.OdinInspector;
 using Enviro;
+using UnityEngine.InputSystem;
 
 public class PlayerController : NetworkBehaviour, IDamagable
 {
-    public static PlayerController instance;
-
     // [FoldoutGroup("Inventory")]
     // public List<I_InventoryItem> inventoryItemList= new List<I_InventoryItem>();
 
@@ -76,7 +75,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public CapsuleCollider playerCollider;
 
     [FoldoutGroup("References")]
-    private Grounder grounder;
+    public Grounder grounder;
 
     [FoldoutGroup("References")]
     public MouseLook mouseLookX;
@@ -91,6 +90,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public HeadPosition headPosition;
 
     [FoldoutGroup("Inputs")]
+    public PlayerInputActions playerInputActions;
+
+    [FoldoutGroup("Inputs")]
+    public PlayerInput playerInput;
+
+    [FoldoutGroup("Inputs")]
     private float hTemp;
 
     [FoldoutGroup("Inputs")]
@@ -103,7 +108,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     private float v;
 
     [FoldoutGroup("Inputs")]
-    private Vector3 inputDir;
+    public Vector3 inputDir;
 
     [FoldoutGroup("Settings")]
     public bool enableMovement = true;
@@ -121,7 +126,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public Vector3 vel;
 
     [FoldoutGroup("Physics Based Movements")]
-    private Vector3 gVel;
+    public Vector3 gVel;
 
     [FoldoutGroup("Physics Based Movements")]
     private Vector3 gDir;
@@ -157,7 +162,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float gravity = -40f;
 
     [FoldoutGroup("Physics Based Movements")]
-    private int climbState;
+    public int climbState;
 
     [FoldoutGroup("Physics Based Movements")]
     private float climbTimer;
@@ -192,7 +197,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Kinematic Movements")]
     public LayerMask nonPhysicsCollisions;
 
-    private float damageTimer;
+    public float damageTimer;
 
     [FoldoutGroup("Interaction")]
     public bool enableInteraction = true;
@@ -218,8 +223,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     private void Awake()
     {
-        instance = this;
         awaitInitialization = true;
+        
+        playerInputActions = new PlayerInputActions();
 
         headTransform = transform.Find("Head Pivot").transform;
         rb = GetComponent<Rigidbody>();
@@ -236,9 +242,36 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     }
 
+    private void OnEnable() 
+    {
+        playerInputActions.Enable();
+        playerInputActions.FindAction("Sprint").performed += Sprint_performed;
+        playerInputActions.FindAction("Jump").performed += Jump_performed;
+        //playerInputActions.FindAction("Crouch").performed += Crouch_performed;
+        playerInputActions.FindAction("ActivateItem").performed += ActivateItem_performed;
+        //playerInputActions.FindAction("ActivateItem").canceled += ActivateItem_canceled;
+        // playerInputActions.FindAction("ItemSecondaryUse").performed += ItemSecondaryUse_performed;
+        playerInputActions.FindAction("Interact").performed += Interact_performed;
+        playerInputActions.FindAction("Discard").performed += Discard_performed;
+        playerInputActions.FindAction("SwitchItem").performed += SwitchItem_performed;
+    }
+
+    private void OnDisable() 
+    {
+        playerInputActions.FindAction("Sprint").performed -= Sprint_performed;
+        playerInputActions.FindAction("Jump").performed -= Jump_performed;
+        //playerInputActions.FindAction("Crouch").performed -= Crouch_performed;
+        playerInputActions.FindAction("ActivateItem").performed -= ActivateItem_performed;
+        //playerInputActions.FindAction("ActivateItem").canceled -= ActivateItem_canceled;
+        // playerInputActions.FindAction("ItemSecondaryUse").performed -= ItemSecondaryUse_performed;
+        playerInputActions.FindAction("Interact").performed -= Interact_performed;
+        playerInputActions.FindAction("Discard").performed -= Discard_performed;
+        playerInputActions.FindAction("SwitchItem").performed -= SwitchItem_performed;
+        playerInputActions.Disable();
+    }
+
     private void Update()
     {
-
         if (base.IsOwner && controlledByClient)
         {
             if (awaitInitialization)
@@ -248,40 +281,17 @@ public class PlayerController : NetworkBehaviour, IDamagable
             }
 
             InputUpdate();
-
-            if(mouseLookX.enabled)
-                mouseLookX.UpdateCameraRotation();
-            if (mouseLookY.enabled)
-                mouseLookY.UpdateCameraRotation();
-
-            //WalkSoundUpdate();
-            BobUpdate();
-            headPosition.PositionUpdate();
-
+            LookUpdate();
             InteractionUpdate();
+            //WalkSoundUpdate();
+            cameraBob.BobUpdate();
+            headPosition.PositionUpdate();
 
             if (climbState > 0)
             {
                 ClimbingUpdate();
             }
 
-            //counts down the timer that restricts air control 
-            if (airControlBlockTimer > 0f)
-            {
-                airControlBlockTimer -= Time.deltaTime;
-                airControl = 0f;
-            }
-
-            //sets air control back to 1 over time
-            else if (airControl != 1f)
-            {
-                airControl = Mathf.MoveTowards(airControl, 1f, Time.deltaTime);
-            }
-
-            if (ungroundedJumpGraceTimer > 0f)
-            {
-                ungroundedJumpGraceTimer -= Time.deltaTime;
-            }
         }
         else
         {
@@ -434,6 +444,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 rb.isKinematic = false;
                 climbState = 0;
             }
+
             Jump();
             return;
         }
@@ -441,7 +452,19 @@ public class PlayerController : NetworkBehaviour, IDamagable
         //else check if player can climb
         else
         {
-            Climb();
+            //if climbing, or no surface to climb up to, or surface too low, or obsticle on top of landing spot, too close to ground
+            //no climbing
+            if (climbState > 0
+                || !Physics.Raycast(transform.position + Vector3.up * 3f + headTransform.forward * 1f, Vector3.down, out hit, 4f, 1)
+                || !(hit.point.y + 1f > transform.position.y)
+                || Physics.Raycast(new Vector3(transform.position.x, hit.point.y + 1f, transform.position.z), headTransform.forward.normalized, 2f, 1)
+                || Physics.Raycast(transform.position, Vector3.down, 1.5f, 1)
+                || Physics.Raycast(transform.position, Vector3.up, 2.5f, 1))
+            {
+                return;
+            }
+
+            Climb(hit.point + hit.normal);
         }
     }
 
@@ -475,21 +498,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
         //playerAudio.PlayJumpSound();
     }
 
-    private void Climb()
-    {   //if climbing, or no surface to climb up to, or surface too low, or obsticle on top of landing spot, too close to ground
-        //no climbing
-        if (climbState > 0
-            || !Physics.Raycast(transform.position + Vector3.up * 3f + headTransform.forward * 1f, Vector3.down, out hit, 4f, 1)
-            || !(hit.point.y + 1f > transform.position.y)
-            || Physics.Raycast(new Vector3(transform.position.x, hit.point.y + 1f, transform.position.z), headTransform.forward.normalized, 2f, 1)
-            || Physics.Raycast(transform.position, Vector3.down, 1.5f, 1)
-            || Physics.Raycast(transform.position, Vector3.up, 2.5f, 1))
-        {
-            return;
-        }
-
-        //else sets target position and start climbing
-        climbTargetPos = hit.point + hit.normal;
+    private void Climb(Vector3 targetPos)
+    {   
+        //sets target position and start climbing
+        climbTargetPos = targetPos;
         climbState = 3;
     }
 
@@ -534,56 +546,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         }
     }
 
-
-    private void InputUpdate()
-    {
-        vTemp = 0f;
-        vTemp += Input.GetKey(KeyCode.W) ? 1 : 0;
-        vTemp += Input.GetKey(KeyCode.S) ? (-1) : 0;
-        hTemp = 0f;
-        hTemp += Input.GetKey(KeyCode.A) ? (-1) : 0;
-        hTemp += Input.GetKey(KeyCode.D) ? 1 : 0;
-        v = vTemp;
-        h = hTemp;
-
-        if (enableMovement)
-        {
-            inputDir.x = h;
-            inputDir.y = 0f;
-            inputDir.z = v;
-            inputDir = inputDir.normalized;
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                JumpOrClimb();
-            }
-
-            if (inputDir != Vector3.zero)
-            {
-                if (Input.GetKeyDown(KeyCode.LeftShift))
-                {
-                    if (dynamicSpeed == 1.5f)
-                    {
-                        dynamicSpeed = 2.5f;
-                    }
-                    else if (dynamicSpeed == 2.5f)
-                    {
-                        dynamicSpeed = 1.5f;
-                    }
-                }
-            }
-            else
-            {
-                dynamicSpeed = 2.5f;
-            }
-        }
-        else
-        {
-            inputDir = Vector3.zero;
-        }
-
-    }
-
     // public void WalkSoundUpdate()
     // {
     //     if (grounder.grounded && (inputDir != Vector3.zero))
@@ -595,36 +557,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     //         StartCoroutine(playerAudio.StopWalkSound());
     //     }
     // }
-
-    private void BobUpdate()
-    {
-
-        //tilts camera based on horizontal input
-        if (climbState == 0)
-        {
-
-            cameraBob.Angle(inputDir.x * -1f - damageTimer * 3f);
-        }
-
-        //applies camera bob when grounded, walking, and not sliding
-        //or sets camera position back to 0
-        if (grounder.grounded && inputDir.sqrMagnitude > 0.25f)
-        {
-            if (gVel.sqrMagnitude > 1f)
-            {
-                cameraBob.Bob(dynamicSpeed);
-            }
-            else
-            {
-                cameraBob.Reset();
-            }
-        }
-        else
-        {
-            cameraBob.Reset();
-        }
-
-    }
 
     public void MovementUpdate()
     {
@@ -644,6 +576,30 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         if (!isNonPhysics)
         {
+            //Stops sprinting if not inputing forward
+            if (inputDir.z <= 0)
+            {
+                //spritning = false;
+                dynamicSpeed = 2.5f;
+            }
+
+            //counts down the timer that restricts air control 
+            if (airControlBlockTimer > 0f)
+            {
+                airControlBlockTimer -= Time.deltaTime;
+                airControl = 0f;
+            }
+            //sets air control back to 1 over time
+            else if (airControl != 1f)
+            {
+                airControl = Mathf.MoveTowards(airControl, 1f, Time.deltaTime);
+            }
+
+            if (ungroundedJumpGraceTimer > 0f)
+            {
+                ungroundedJumpGraceTimer -= Time.deltaTime;
+            }
+
             //if moving fast, apply the calculated movement.
             //based on new input subtracted by previous velocity
             //so that player accelerates faster when start moving.
@@ -701,6 +657,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         //     }
         // }
     }
+    
     //Executes when taken damage from a source.
     /*
 	public void Damage(Damage damage)
@@ -740,6 +697,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 	}
 	*/
 
+    #region Interaction
+
     public void InteractionUpdate()
     {
         if (Physics.Raycast(cameraList[0].ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
@@ -775,12 +734,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
             targetInteractable.UnTarget();
             targetInteractable = null;
         }
-        
-        if (enableMovement && Input.GetKeyDown(KeyCode.E) && targetInteractable != null)
-        {
-            targetInteractable.Interact();
-        }
     }
+    
+    #endregion
 
     public void LockMovement(bool state)
     {
@@ -856,6 +812,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         Gizmos.DrawSphere(base.transform.position + base.transform.up * 0.5f, radius);
         Gizmos.DrawSphere(base.transform.position + base.transform.up * -0.5f, radius);
     }
+
+    #region Damage & Death
     
     public void TakeDamage(float damage)
     {
@@ -929,5 +887,124 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         isPlayerDead = false;
     }
+    
+    #endregion
+
+    #region Input Performed
+
+    private void InputUpdate()
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            inputDir.x = playerInputActions.Player.Move.ReadValue<Vector2>().x;
+            inputDir.y = 0f;
+            inputDir.z = playerInputActions.Player.Move.ReadValue<Vector2>().y;
+            inputDir = inputDir.normalized;
+        }
+        else
+        {
+            inputDir = Vector3.zero;
+        }
+    }
+
+    private void LookUpdate()
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {   
+            Vector2 mouseInput = playerInputActions.FindAction("Look").ReadValue<Vector2>();
+
+            if(mouseLookX.enabled)
+            {
+                mouseLookX.UpdateCameraRotation(mouseInput.x);
+            }
+            if (mouseLookY.enabled)
+            {
+                mouseLookY.UpdateCameraRotation(mouseInput.y);
+            }
+        }
+    }
+
+
+    private void Sprint_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            if (inputDir.z >= 0)
+            {
+                if (dynamicSpeed == 1.5f)
+                {
+                    //spritning = false;
+                    dynamicSpeed = 2.5f;
+                }
+                else if (dynamicSpeed == 2.5f)
+                {
+                    //spritning = true;
+                    dynamicSpeed = 1.5f;
+                }
+            }
+            else
+            {
+                //spritning = false;
+                dynamicSpeed = 2.5f;
+            }
+        }
+    }
+
+    private void Jump_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            JumpOrClimb();
+        }
+    }
+
+    private void ActivateItem_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner && InventoryManager.instance.equippedItem.owner == this)
+            {
+                if (InventoryManager.instance.equippedItem.GetComponent<ItemController>()) 
+                {
+                    InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem();
+                }
+            }
+        }
+    }
+
+    private void Discard_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {        
+            if (!InventoryManager.instance.activated)
+            {
+                InventoryManager.instance.DiscardEquippedItem();
+            }
+            else
+            {
+                InventoryManager.instance.DiscardSelectedItem();
+            }
+        }
+    }
+
+    private void SwitchItem_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            InventoryManager.instance.SwitchEquipedItem(Math.Sign(context.ReadValue<float>()));
+        }
+    }
+
+    private void Interact_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            if (enableMovement && targetInteractable != null)
+            {
+                targetInteractable.Interact();
+            }
+        }
+    }
+    #endregion
 }
 

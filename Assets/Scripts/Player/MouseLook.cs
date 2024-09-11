@@ -75,13 +75,13 @@ public class MouseLook : NetworkBehaviour
         }
     }
 
-    public void UpdateCameraRotation()
+    public void UpdateCameraRotation(float input)
     {
         switch(axes)
         {
             case RotationAxes.MouseX:
 
-                rotationX += Input.GetAxis("Mouse X") * sensitivityX * Time.timeScale;
+                rotationX += input * sensitivityX * Time.timeScale;
                 rotArrayX.Add(rotationX); 
 
                 if (minimumX != -360 && maximumX != 360)
@@ -120,7 +120,7 @@ public class MouseLook : NetworkBehaviour
                 {
                     invertFlag = -1f;
                 }
-                rotationY += Input.GetAxis("Mouse Y") * sensitivityY * invertFlag * Time.timeScale;
+                rotationY += input * sensitivityY * invertFlag * Time.timeScale;
                 rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
                 rotArrayY.Add(rotationY);
                 if (rotArrayY.Count >= framesOfSmoothing)

@@ -84,31 +84,31 @@ public class InventoryManager : NetworkBehaviour
                 OpenInventory();
             }
 
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                if (equippedItem != null && equippedItem.itemData != null)
-                {
-                    DropItemFromInventory(equippedItem, 1);
-                }
-            }
+            // if (Input.GetKeyDown(KeyCode.G))
+            // {
+            //     if (equippedItem != null && equippedItem.itemData != null)
+            //     {
+            //         DropItemFromInventory(equippedItem, 1);
+            //     }
+            // }
 
-            if (Input.GetAxis("Mouse ScrollWheel") != 0f && inputDelay > 0.1f) // forward
-            {
-                inputDelay = 0f;
-                equippedSlotIndex += -Math.Sign(Input.GetAxis("Mouse ScrollWheel"));
+            // if (Input.GetAxis("Mouse ScrollWheel") != 0f && inputDelay > 0.1f) // forward
+            // {
+            //     inputDelay = 0f;
+            //     equippedSlotIndex += -Math.Sign(Input.GetAxis("Mouse ScrollWheel"));
 
-                if (equippedSlotIndex < 0)
-                {
-                    equippedSlotIndex = 3;
-                }
-                else if (equippedSlotIndex > 3)
-                {
-                    equippedSlotIndex = 0;
-                }
+            //     if (equippedSlotIndex < 0)
+            //     {
+            //         equippedSlotIndex = 3;
+            //     }
+            //     else if (equippedSlotIndex > 3)
+            //     {
+            //         equippedSlotIndex = 0;
+            //     }
 
-                UpdateEquippedItem();
+            //     UpdateEquippedItem();
 
-            }
+            // }
 
         }
         else if (activated)
@@ -132,13 +132,13 @@ public class InventoryManager : NetworkBehaviour
                 //         //CloseInventory();
                 //     }
                 // }
-                if (Input.GetKeyDown(KeyCode.G) && inputDelay >= 0.1f)
-                {
-                    if (!requireItemType)
-                    {
-                        DropItemFromInventory(selectedItem, 1);
-                    }
-                }
+                // if (Input.GetKeyDown(KeyCode.G) && inputDelay >= 0.1f)
+                // {
+                //     if (!requireItemType)
+                //     {
+                //         DropItemFromInventory(selectedItem, 1);
+                //     }
+                // }
             }
 
             // if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.W))
@@ -1007,4 +1007,43 @@ public class InventoryManager : NetworkBehaviour
             Cursor.visible = true;
         }
     }
+
+    public void DiscardEquippedItem()
+    {
+        if (equippedItem != null && instance.equippedItem.itemData != null)
+        {
+            DropItemFromInventory(instance.equippedItem, 1);
+        }
+    }
+
+    public void DiscardSelectedItem()
+    {
+        if (selectedItem != null && selectedItem.itemData != null)
+        {
+            if (inputDelay >= 0.1f)
+            {
+                DropItemFromInventory(selectedItem, 1);
+            }
+        }
+    }
+
+    public void SwitchEquipedItem(int value)
+    {
+        if (inputDelay > 0.1f) // forward
+        {
+            inputDelay = 0f;
+            equippedSlotIndex += -value;
+
+            if (equippedSlotIndex < 0)
+            {
+                equippedSlotIndex = 3;
+            }
+            else if (equippedSlotIndex > 3)
+            {
+                equippedSlotIndex = 0;
+            }
+
+            UpdateEquippedItem();
+        }
+}
 }

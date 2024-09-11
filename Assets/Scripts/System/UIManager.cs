@@ -182,8 +182,8 @@ public class UIManager : MonoBehaviour
 
     public void Examine(string text, Sprite image)
     {
-        PlayerController.instance.LockMovement(true);
-        PlayerController.instance.LockCamera(true);
+        GameSessionManager.Instance.localPlayerController.LockMovement(true);
+        GameSessionManager.Instance.localPlayerController.LockCamera(true);
 
         examineUI.SetActive(true);
         gameplayUI.SetActive(false);
@@ -196,8 +196,8 @@ public class UIManager : MonoBehaviour
 
     public void Unexamine()
     {
-        PlayerController.instance.LockMovement(false);
-        PlayerController.instance.LockCamera(false);
+        GameSessionManager.Instance.localPlayerController.LockMovement(false);
+        GameSessionManager.Instance.localPlayerController.LockCamera(false);
 
         examineUI.SetActive(false);
         gameplayUI.SetActive(true);
