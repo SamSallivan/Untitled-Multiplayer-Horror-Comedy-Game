@@ -16,7 +16,7 @@ public class RatingManager : MonoBehaviour
         SSS = 6
     }
 
-    public NetworkVariable<Rating> rating;
+    public Rating rating;
     public float ratingMeter;
     public int score;
     public float scoreTextTimer;
