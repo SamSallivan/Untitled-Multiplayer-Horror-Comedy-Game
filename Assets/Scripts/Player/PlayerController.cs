@@ -230,7 +230,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         
         playerInputActions = new PlayerInputActions();
 
-        headTransform = transform.Find("Head Position").transform;
+        headTransform = transform.GetChild(0).Find("Head Position").transform;
         rb = GetComponent<Rigidbody>();
         playerCollider = GetComponent<CapsuleCollider>();
         grounder = GetComponent<Grounder>();

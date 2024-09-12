@@ -90,7 +90,7 @@ ModelImporter:
           preInfinity: 2
           postInfinity: 2
           rotationOrder: 4
-      - name: Curve
+      - name: RightFoot
         curve:
           serializedVersion: 2
           curve:
