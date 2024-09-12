@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Grounder : MonoBehaviour
 {	
@@ -270,7 +271,11 @@ public class Grounder : MonoBehaviour
 				groundContactCount++;
             }
         }
-		
+	}
+
+	void test()
+	{
+		RaycastHit[] hits = Physics.SphereCastAll(transform.position, 1f,transform.position, 1f);
 	}
 
 }
