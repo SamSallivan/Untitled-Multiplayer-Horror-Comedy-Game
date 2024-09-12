@@ -26,7 +26,7 @@ public class HeadPosition : MonoBehaviour
 	public void Awake(){
 		headPos = transform.localPosition;
 		slideStart = headPos.y;
-		slideTarget = 0.75f;
+		slideTarget = headPos.y;
 	}
 
 

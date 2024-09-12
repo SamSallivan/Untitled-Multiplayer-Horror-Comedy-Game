@@ -1286,7 +1286,6 @@ MonoBehaviour:
   connectedClientCount: 0
   disconnectionReasonText: 
   localSteamClientUsername: 
-  localPlayerController: {fileID: 0}
   currentSteamLobbyName: 
 --- !u!1 &655630356
 GameObject:

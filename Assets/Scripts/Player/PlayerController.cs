@@ -120,6 +120,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float dynamicSpeed = 1f;
 
     [FoldoutGroup("Physics Based Movements")]
+    public bool sprinting;
+
+    [FoldoutGroup("Physics Based Movements")]
     public float dynamicSpeedSprint = 1f;
 
     [FoldoutGroup("Physics Based Movements")]
@@ -227,14 +230,22 @@ public class PlayerController : NetworkBehaviour, IDamagable
         
         playerInputActions = new PlayerInputActions();
 
-        headTransform = transform.Find("Head Pivot").transform;
+        headTransform = transform.Find("Head Position").transform;
         rb = GetComponent<Rigidbody>();
         playerCollider = GetComponent<CapsuleCollider>();
         grounder = GetComponent<Grounder>();
         cameraBob = headTransform.GetComponentInChildren<CameraBob>();
         headPosition = headTransform.GetComponentInChildren<HeadPosition>();
         waterObject = GetComponentInChildren<WaterObject>();
-        mouseLookX = GetComponent<MouseLook>();
+
+        if(GetComponent<MouseLook>().enabled)
+        {
+            mouseLookX = GetComponent<MouseLook>();
+        }
+        else
+        {
+            mouseLookX = transform.GetChild(0).GetComponent<MouseLook>();
+        }
         mouseLookY = headTransform.GetComponent<MouseLook>();
 
         playerUsername = $"Player #{localPlayerId}";
@@ -577,9 +588,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (!isNonPhysics)
         {
             //Stops sprinting if not inputing forward
-            if (inputDir.z <= 0)
+            if (inputDir == Vector3.zero || inputDir.z < 0)
             {
-                //spritning = false;
+                sprinting = false;
                 dynamicSpeed = 2.5f;
             }
 
@@ -817,13 +828,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
     
     public void TakeDamage(float damage, Vector3 direction)
     {
-        if (base.IsOwner && !isPlayerDead)
+        if (base.IsOwner)
         {
             currentHp.Value -= damage;
 
             rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
 
-            if (currentHp.Value <= 0)
+            if (currentHp.Value <= 0 && !isPlayerDead)
             {
                 Die();
             }
@@ -929,18 +940,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
             {
                 if (dynamicSpeed == 1.5f)
                 {
-                    //spritning = false;
+                    sprinting = false;
                     dynamicSpeed = 2.5f;
                 }
                 else if (dynamicSpeed == 2.5f)
                 {
-                    //spritning = true;
+                    sprinting = true;
                     dynamicSpeed = 1.5f;
                 }
             }
             else
             {
-                //spritning = false;
+                sprinting = false;
                 dynamicSpeed = 2.5f;
             }
         }
