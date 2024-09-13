@@ -15,6 +15,8 @@ public class PlayerAnimationController : MonoBehaviour
     public MultiRotationConstraint NeckRotationalConstraint;
     public ChainIKConstraint leftFootIKConstraint;
     public ChainIKConstraint rightFootIKConstraint;
+    public Transform leftFootIKTarget;
+    public Transform rightFootIKTarget;
         
     private Transform leftFootTransform;
     private Transform rightFootTransform;
@@ -144,15 +146,25 @@ public class PlayerAnimationController : MonoBehaviour
         
         animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, animator.GetFloat("LeftFoot"));
         animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, animator.GetFloat("RightFoot"));
+
+        /*leftFootIKConstraint.weight = animator.GetFloat("LeftFoot");
+        rightFootIKConstraint.weight = animator.GetFloat("RightFoot");*/
         
         FootToSurfaceRaycast(leftFootTransform, ref _leftFootIKTargetPos, ref _leftFootIKTargetRot);
         FootToSurfaceRaycast(rightFootTransform, ref _rightFootIKTargetPos, ref _rightFootIKTargetRot);
-
+        
         animator.SetIKPosition(AvatarIKGoal.LeftFoot, _leftFootIKTargetPos + footIKTargetPositionOffset);
         animator.SetIKRotation(AvatarIKGoal.LeftFoot, _leftFootIKTargetRot);
         
         animator.SetIKPosition(AvatarIKGoal.RightFoot, _rightFootIKTargetPos + footIKTargetPositionOffset);
         animator.SetIKRotation(AvatarIKGoal.RightFoot, _rightFootIKTargetRot);
+
+        /*leftFootIKTarget.position = Vector3.Lerp(leftFootIKTarget.position, _leftFootIKTargetPos, Time.deltaTime * velocityLerpSpeed);
+        leftFootIKTarget.rotation = Quaternion.Lerp(leftFootIKTarget.rotation, _leftFootIKTargetRot, Time.deltaTime * velocityLerpSpeed);
+        rightFootIKTarget.position = Vector3.Lerp(rightFootIKTarget.position, _rightFootIKTargetPos, Time.deltaTime * velocityLerpSpeed);
+        rightFootIKTarget.rotation = Quaternion.Lerp(rightFootIKTarget.rotation, _rightFootIKTargetRot, Time.deltaTime * velocityLerpSpeed);*/
+
+
     }
     
     void FootToSurfaceRaycast(Transform footTransform, ref Vector3 targetPosition, ref Quaternion targetRotation)

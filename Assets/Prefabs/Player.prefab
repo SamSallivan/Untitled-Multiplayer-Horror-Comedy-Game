@@ -2125,9 +2125,12 @@ MonoBehaviour:
   NeckRotationalConstraint: {fileID: 5019998506118668865}
   leftFootIKConstraint: {fileID: 5691111682121373251}
   rightFootIKConstraint: {fileID: 4950238131660513091}
+  leftFootIKTarget: {fileID: 6335107920471640321}
+  rightFootIKTarget: {fileID: 6631760595682373157}
+  footStickToSurface: 1
+  turnAnimation: 1
   velocityLerpSpeed: 10
   rotationLerpSpeed: 5
-  footStickToSurface: 1
   footIKTargetPositionOffset: {x: 0, y: 0.075, z: 0}
   surfaceDetectDistance: 2
 --- !u!114 &1476323981809808205
@@ -2142,7 +2145,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad8deae8091111f4eb30a56c1f4e0d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -453240694
+    DestinationState: 1592145419
+    TransitionDuration: 0.1
+    TriggerNameHash: -1847120011
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -453240694
+    DestinationState: 1022928746
+    TransitionDuration: 0.1
+    TriggerNameHash: -685270779
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -453240694
+    DestinationState: 125937960
+    TransitionDuration: 0.1
+    TriggerNameHash: 125937960
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 125937960
+    DestinationState: 137525990
+    TransitionDuration: 0.1
+    TriggerNameHash: 137525990
+    TransitionIndex: 0
   m_Animator: {fileID: 7422018340954777515}
 --- !u!1 &4393038100937110496
 GameObject:
@@ -3788,7 +3819,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04912587cfe12bf4ea07f13ccb159a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectGroundUsingFootPosition: 1
+  detectGroundUsingFootPosition: 0
   groundMask:
     serializedVersion: 2
     m_Bits: 129
