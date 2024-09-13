@@ -511,6 +511,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         //ungrounds and jumps
         grounder.Unground();
+        animator.SetTrigger("Jump");
         jumpCooldown = 0.2f;
         rb.velocity = new Vector3(0, 0, 0);
         rb.AddForce(jumpForce * multiplier, ForceMode.Impulse);
@@ -641,7 +642,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
             //applies gravity in the direction of ground normal
             //so player does not slide off within the tolerable angle
-            if(grounder.grounded)
+            if(grounder.grounded && !isPlayerDead)
             {
                 //lerp from current position to target ground position
                 Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
@@ -871,6 +872,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             isPlayerDead = true;
             LockMovement(true);
             LockCamera(true);
+            animator.enabled = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.AddTorque(base.transform.right);
             InventoryManager.instance.DropAllItemsFromInventory();
@@ -899,6 +901,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
             currentHp.Value = maxHp;
             LockMovement(false);
             LockCamera(false);
+            animator.enabled = true;
+            TeleportPlayer(rb.position + new Vector3(0f, 1f, 0f));
+            rb.rotation = Quaternion.identity;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
             RespawnServerRPC();
         }

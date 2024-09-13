@@ -20,9 +20,10 @@ public class PlayerAnimationController : MonoBehaviour
     private Transform rightFootTransform;
     
     [Header("Settings")]
+    public bool footStickToSurface = true;
+    public bool turnAnimation = true;
     public float velocityLerpSpeed = 1;
     public float rotationLerpSpeed = 1;
-    public bool footStickToSurface;
     public Vector3 footIKTargetPositionOffset;
     public float surfaceDetectDistance = 1.0f;
     
@@ -47,7 +48,7 @@ public class PlayerAnimationController : MonoBehaviour
     
     void Update()
     {
-        if (playerController.NetworkObject.IsOwner)
+        if (playerController.NetworkObject.IsOwner && !playerController.isPlayerDead)
         {   
             if (playerController.enableMovement)
             {   
@@ -112,7 +113,7 @@ public class PlayerAnimationController : MonoBehaviour
         Vector3 cross = Vector3.Cross(bodyTransformForward, headTransformForward);
         angle *= Mathf.Sign(cross.y);
         
-        if (!animator.GetBool("isMoving"))
+        if (!animator.GetBool("isMoving") && turnAnimation)
         {
             if (angle >= 90 && turnBodyCooldown <= 0)
             {

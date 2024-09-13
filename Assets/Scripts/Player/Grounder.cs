@@ -187,6 +187,7 @@ public class Grounder : MonoBehaviour
 		{
 			grounded = true;
 			airTime = 0;
+			playerController.animator.SetTrigger("Land");
 
 			playerController.headPosition.Bounce((0f - fallDistance) / 12f);
 
