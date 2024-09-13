@@ -70,6 +70,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("References")]
     public Rigidbody rb;
+    
+    [FoldoutGroup("References")]
+    public Animator animator;
+    
+    [FoldoutGroup("References")]
+    public PlayerAnimationController playerAnimationController;
 
     [FoldoutGroup("References")]
     public CapsuleCollider playerCollider;
@@ -159,7 +165,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public Vector3 jumpForce = new Vector3(0f, 15f, 0f);
 
     [FoldoutGroup("Physics Based Movements")]
-    public float ungroundedJumpGraceTimer;
+    public float jumpCooldown;
 
     [FoldoutGroup("Physics Based Movements")]
     public float gravity = -40f;
@@ -227,16 +233,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
     private void Awake()
     {
         awaitInitialization = true;
-        
         playerInputActions = new PlayerInputActions();
 
-        headTransform = transform.GetChild(0).Find("Head Position").transform;
         rb = GetComponent<Rigidbody>();
-        playerCollider = GetComponent<CapsuleCollider>();
         grounder = GetComponent<Grounder>();
+        playerCollider = GetComponent<CapsuleCollider>();
+        headTransform = transform.GetChild(0).Find("Head Position").transform;
+        animator = transform.Find("Character").GetComponent<Animator>();
+        playerAnimationController = transform.Find("Character").GetComponent<PlayerAnimationController>();
+        
         cameraBob = headTransform.GetComponentInChildren<CameraBob>();
         headPosition = headTransform.GetComponentInChildren<HeadPosition>();
-        waterObject = GetComponentInChildren<WaterObject>();
+        waterObject = GetComponentInChildren<WaterObject>(true);
 
         if(GetComponent<MouseLook>().enabled)
         {
@@ -446,9 +454,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
         //if grounded, or just ungrouned, or just finished climbing
         //jump
         if (grounder.grounded
-            || ungroundedJumpGraceTimer > 0f
+            || grounder.airTime < 0.2f
             || (climbState == 2 && climbTimer > 0.8f)
-            || GetComponentInChildren<WaterObject>().IsTouchingWater())
+            || waterObject.IsTouchingWater())
         {
             if (climbState == 2)
             {
@@ -485,7 +493,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             //return;
         }
-        if (!enableJump)
+        if (!enableJump || jumpCooldown > 0)
         {
             return;
         }
@@ -503,7 +511,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         //ungrounds and jumps
         grounder.Unground();
-        ungroundedJumpGraceTimer = 0f;
+        jumpCooldown = 0.2f;
         rb.velocity = new Vector3(0, 0, 0);
         rb.AddForce(jumpForce * multiplier, ForceMode.Impulse);
         //playerAudio.PlayJumpSound();
@@ -597,18 +605,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
             //counts down the timer that restricts air control 
             if (airControlBlockTimer > 0f)
             {
-                airControlBlockTimer -= Time.deltaTime;
+                airControlBlockTimer -= Time.fixedDeltaTime;
                 airControl = 0f;
             }
             //sets air control back to 1 over time
             else if (airControl != 1f)
             {
-                airControl = Mathf.MoveTowards(airControl, 1f, Time.deltaTime);
+                airControl = Mathf.MoveTowards(airControl, 1f, Time.fixedDeltaTime);
             }
 
-            if (ungroundedJumpGraceTimer > 0f)
+            if (jumpCooldown > 0f)
             {
-                ungroundedJumpGraceTimer -= Time.deltaTime;
+                jumpCooldown -= Time.fixedDeltaTime;
             }
 
             //if moving fast, apply the calculated movement.
@@ -633,7 +641,20 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
             //applies gravity in the direction of ground normal
             //so player does not slide off within the tolerable angle
-            rb.AddForce(grounder.groundNormal * gravity);
+            if(grounder.grounded)
+            {
+                //lerp from current position to target ground position
+                Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
+                //Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y - grounder.transform.localPosition.y, rb.position.z);
+                targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 10f);
+                rb.MovePosition(targetGroundPosition);
+                rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            }
+            else
+            {
+                //rb.AddForce(grounder.groundNormal * gravity);
+                rb.AddForce(Vector3.up * gravity);
+            }
 
         }
         // else if (isNonPhysics)
@@ -817,12 +838,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
         // }
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = new Color(0.1f, 0.1f, 0.9f, 0.8f);
-        Gizmos.DrawSphere(base.transform.position + base.transform.up * 0.5f, radius);
-        Gizmos.DrawSphere(base.transform.position + base.transform.up * -0.5f, radius);
-    }
+    // private void OnDrawGizmosSelected()
+    // {
+    //     Gizmos.color = new Color(0.1f, 0.1f, 0.9f, 0.8f);
+    //     Gizmos.DrawSphere(base.transform.position + base.transform.up * 0.5f, radius);
+    //     Gizmos.DrawSphere(base.transform.position + base.transform.up * -0.5f, radius);
+    // }
 
     #region Damage & Death
     
