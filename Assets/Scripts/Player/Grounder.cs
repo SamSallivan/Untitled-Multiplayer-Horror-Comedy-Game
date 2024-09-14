@@ -39,8 +39,12 @@ public class Grounder : MonoBehaviour
 	public float minGroundNormal;
 
 	public float airTime;
+	
+	public float groundTime;
 
     public float regroundCooldown;
+
+    public float regroundCooldownSetting = 0.2f;
 
 	public float highestPoint;
 
@@ -90,7 +94,15 @@ public class Grounder : MonoBehaviour
 
 		    //calculates how high the player has fell.
 		    fallDistance = highestPoint - transform.position.y;
+		    
+		    //calculates the time player has been in air.
+			airTime += Time.fixedDeltaTime;
 
+		}
+
+		if (grounded)
+		{
+			groundTime += Time.fixedDeltaTime;
 		}
     }
 
@@ -164,15 +176,7 @@ public class Grounder : MonoBehaviour
 			//if not on any ground, unground player.
 			Unground();
 		}
-
-		
-
-		//calculates the time player has been in air.
-		if (!grounded)
-		{
-			airTime += Time.fixedDeltaTime;
-		}
-
+        
 		//clears temporary values
 		groundContactCount = 0;
 		tempGroundNormal = Vector3.zero;
@@ -188,6 +192,7 @@ public class Grounder : MonoBehaviour
 			grounded = true;
 			airTime = 0;
 			playerController.animator.SetTrigger("Land");
+			playerController.animator.SetBool("isFalling", false);
 
 			playerController.headPosition.Bounce((0f - fallDistance) / 12f);
 
@@ -217,13 +222,14 @@ public class Grounder : MonoBehaviour
 		if (grounded)
 		{
 			grounded = false;
+			groundTime = 0;
 			groundContactCount = 0;
 			highestPoint = transform.position.y;
 			tempGroundNormal = Vector3.zero;
 			groundNormal = Vector3.up;
 			tempGroundPosition = Vector3.zero;
 			groundPosition = Vector3.zero;
-			regroundCooldown = 0.2f;
+			regroundCooldown = regroundCooldownSetting;
 			
 			//sets a timeframe that allows player to jump after ungrounding
 

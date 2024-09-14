@@ -12,7 +12,8 @@ public class PlayerAnimationController : MonoBehaviour
     public PlayerController playerController;
     
     public MultiRotationConstraint headRotationalConstraint;
-    public MultiRotationConstraint NeckRotationalConstraint;
+    public MultiRotationConstraint shoulderRotationalConstraint;
+    public MultiRotationConstraint chestRotationalConstraint;
     public ChainIKConstraint leftFootIKConstraint;
     public ChainIKConstraint rightFootIKConstraint;
     public Transform leftFootIKTarget;
@@ -22,12 +23,17 @@ public class PlayerAnimationController : MonoBehaviour
     private Transform rightFootTransform;
     
     [Header("Settings")]
+    public float walkAnimationInterpolationSpeed = 10f;
+    
     public bool footStickToSurface = true;
-    public bool turnAnimation = true;
-    public float velocityLerpSpeed = 1;
-    public float rotationLerpSpeed = 1;
     public Vector3 footIKTargetPositionOffset;
     public float surfaceDetectDistance = 1.0f;
+    
+    public bool turnAnimation = true;
+    public float bodyRotationInterpolationSpeed = 5f;
+    public float turnBodyAngleThreshold = 45f;
+    
+    public float fallAirTimeThreshold = 0.65f;
     
     [Header("Values")]
     private float velocityX;
@@ -57,7 +63,12 @@ public class PlayerAnimationController : MonoBehaviour
                 UpdateWalkAnimation();
             }
             
-            UpdateBodyRotation();
+            if(playerController.mouseLookX.enabled)
+            {
+                UpdateBodyRotation();
+            }
+            
+            UpdateFallAnimation();
         }
     }
 
@@ -77,7 +88,8 @@ public class PlayerAnimationController : MonoBehaviour
         float inputX = (playerController.inputDir.x == 0) ? 0 : 1;
         float inputZ = (playerController.inputDir.z == 0) ? 0 : 1;
         float sprint = playerController.sprinting ? 1 : 0.5f;
-        Vector3 velocity = playerController.headTransform.InverseTransformDirection(playerController.vel).normalized;
+        Vector3 velocity = playerController.transform.GetChild(0).InverseTransformDirection(playerController.vel).normalized;
+        //velocity = new Vector3(velocity.x, 0, velocity.z);
 
         float tempX = velocity.x * inputX * sprint;
         float tempZ = velocity.z * inputZ * sprint;
@@ -96,10 +108,16 @@ public class PlayerAnimationController : MonoBehaviour
             animator.SetBool("isMoving", false);
         }
 
-        velocityX = Mathf.Lerp(velocityX, tempX, Time.deltaTime * velocityLerpSpeed);
-        velocityZ = Mathf.Lerp(velocityZ, tempZ, Time.deltaTime * velocityLerpSpeed);
+        velocityX = Mathf.Lerp(velocityX, tempX, Time.deltaTime * walkAnimationInterpolationSpeed);
+        velocityZ = Mathf.Lerp(velocityZ, tempZ, Time.deltaTime * walkAnimationInterpolationSpeed);
         animator.SetFloat("VelocityX", velocityX);
         animator.SetFloat("VelocityZ", velocityZ);
+            
+        //Add body leaning using additive layer:
+        //Get rigidbody velocity horizontal, tilt body Z rotation
+        float leanX = playerController.rb.angularVelocity.normalized.y;
+        animator.SetFloat("LeanX", Mathf.Lerp(animator.GetFloat("LeanX"), leanX, Time.deltaTime * bodyRotationInterpolationSpeed));
+        //Get ground normal z, tilt waist X rotation
     }
     
     void UpdateBodyRotation()
@@ -115,15 +133,15 @@ public class PlayerAnimationController : MonoBehaviour
         Vector3 cross = Vector3.Cross(bodyTransformForward, headTransformForward);
         angle *= Mathf.Sign(cross.y);
         
-        if (!animator.GetBool("isMoving") && turnAnimation)
+        if (!animator.GetBool("isMoving") && turnAnimation & Mathf.Abs(angle) < 120f)
         {
-            if (angle >= 90 && turnBodyCooldown <= 0)
+            if (angle >= turnBodyAngleThreshold && turnBodyCooldown <= 0)
             {
                 animator.SetTrigger("TurnRight");
                 targetBodyRotation = playerController.transform.GetChild(0).rotation;
                 turnBodyCooldown = 0.5f;
             }
-            else if (angle <= -90 && turnBodyCooldown <= 0)
+            else if (angle <= -turnBodyAngleThreshold && turnBodyCooldown <= 0)
             {
                 animator.SetTrigger("TurnLeft");
                 targetBodyRotation = playerController.transform.GetChild(0).rotation;
@@ -133,10 +151,30 @@ public class PlayerAnimationController : MonoBehaviour
         else
         {
             targetBodyRotation = playerController.transform.GetChild(0).rotation;
-            //targetRotation.eulerAngles = new Vector3(targetRotation.eulerAngles.x, targetRotation.eulerAngles.y, - angle / 10f);
         }
         
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetBodyRotation, Time.deltaTime * rotationLerpSpeed);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetBodyRotation, Time.deltaTime * bodyRotationInterpolationSpeed);
+        
+        //Upper Body Rotation Constraint Weight
+        if (playerController.grounder.groundTime > 0.5f)
+        {
+            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.66f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.33f,Time.deltaTime * bodyRotationInterpolationSpeed);
+        }
+        else
+        {
+            shoulderRotationalConstraint.weight = 0;
+            chestRotationalConstraint.weight = 0;
+        }
+        
+    }
+    
+    void UpdateFallAnimation()
+    {
+        if (playerController.grounder.airTime > fallAirTimeThreshold && playerController.jumpCooldown <= 0)
+        {
+            animator.SetBool("isFalling", true);
+        }
     }
 
     void UpdateFootPlacement()

@@ -166,6 +166,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Physics Based Movements")]
     public float jumpCooldown;
+    
+    [FoldoutGroup("Physics Based Movements")]
+    public float jumpCooldownSetting = 0.5f;
 
     [FoldoutGroup("Physics Based Movements")]
     public float gravity = -40f;
@@ -512,7 +515,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         //ungrounds and jumps
         grounder.Unground();
         animator.SetTrigger("Jump");
-        jumpCooldown = 0.2f;
+        jumpCooldown = jumpCooldownSetting;
         rb.velocity = new Vector3(0, 0, 0);
         rb.AddForce(jumpForce * multiplier, ForceMode.Impulse);
         //playerAudio.PlayJumpSound();

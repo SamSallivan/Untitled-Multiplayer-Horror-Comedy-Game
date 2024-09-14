@@ -760,7 +760,7 @@ GameObject:
   - component: {fileID: 2815762831388891297}
   - component: {fileID: 5019998506118668865}
   m_Layer: 0
-  m_Name: Neck
+  m_Name: Shoulder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -794,7 +794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb90b913935e644baaa86c076d788e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 0.2
+  m_Weight: 0.66
   m_Data:
     m_ConstrainedObject: {fileID: 3710457648268167765}
     m_SourceObjects:
@@ -825,9 +825,9 @@ MonoBehaviour:
         weight: 0
     m_Offset: {x: 0, y: 0, z: 0}
     m_ConstrainedAxes:
-      x: 1
+      x: 0
       y: 1
-      z: 1
+      z: 0
     m_MaintainOffset: 0
 --- !u!1 &1727752200223568632
 GameObject:
@@ -1737,6 +1737,86 @@ MonoBehaviour:
     m_Tolerance: 0.0001
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
+--- !u!1 &3642221650264750077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 852068329456218477}
+  - component: {fileID: 8778675694803973200}
+  m_Layer: 0
+  m_Name: Chest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &852068329456218477
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3642221650264750077}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7233493831855761272}
+  m_Father: {fileID: 4660465057680945577}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8778675694803973200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3642221650264750077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb90b913935e644baaa86c076d788e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Weight: 0.33
+  m_Data:
+    m_ConstrainedObject: {fileID: 2793768779332418110}
+    m_SourceObjects:
+      m_Length: 1
+      m_Item0:
+        transform: {fileID: 953704681069039082}
+        weight: 1
+      m_Item1:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item2:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item3:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item4:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item5:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item6:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item7:
+        transform: {fileID: 0}
+        weight: 0
+    m_Offset: {x: 0, y: 0, z: 0}
+    m_ConstrainedAxes:
+      x: 0
+      y: 1
+      z: 0
+    m_MaintainOffset: 0
 --- !u!1 &3735144704480653850
 GameObject:
   m_ObjectHideFlags: 0
@@ -2122,17 +2202,20 @@ MonoBehaviour:
   animator: {fileID: 7422018340954777515}
   playerController: {fileID: 3919373091671918840}
   headRotationalConstraint: {fileID: 6131445038978260601}
-  NeckRotationalConstraint: {fileID: 5019998506118668865}
+  shoulderRotationalConstraint: {fileID: 5019998506118668865}
+  chestRotationalConstraint: {fileID: 8778675694803973200}
   leftFootIKConstraint: {fileID: 5691111682121373251}
   rightFootIKConstraint: {fileID: 4950238131660513091}
   leftFootIKTarget: {fileID: 6335107920471640321}
   rightFootIKTarget: {fileID: 6631760595682373157}
+  walkAnimationInterpolationSpeed: 10
   footStickToSurface: 1
-  turnAnimation: 1
-  velocityLerpSpeed: 10
-  rotationLerpSpeed: 5
   footIKTargetPositionOffset: {x: 0, y: 0.075, z: 0}
   surfaceDetectDistance: 2
+  turnAnimation: 1
+  bodyRotationInterpolationSpeed: 5
+  turnBodyAngleThreshold: 60
+  fallAirTimeThreshold: 0.65
 --- !u!114 &1476323981809808205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2148,28 +2231,35 @@ MonoBehaviour:
   TransitionStateInfoList:
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: -453240694
+    OriginatingState: -878133152
     DestinationState: 1592145419
     TransitionDuration: 0.1
     TriggerNameHash: -1847120011
     TransitionIndex: 0
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: -453240694
+    OriginatingState: -878133152
     DestinationState: 1022928746
     TransitionDuration: 0.1
     TriggerNameHash: -685270779
     TransitionIndex: 1
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: -453240694
+    OriginatingState: -878133152
     DestinationState: 125937960
-    TransitionDuration: 0.1
+    TransitionDuration: 0.25
     TriggerNameHash: 125937960
     TransitionIndex: 2
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 125937960
+    DestinationState: 137525990
+    TransitionDuration: 0.25
+    TriggerNameHash: 137525990
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1533177906
     DestinationState: 137525990
     TransitionDuration: 0.1
     TriggerNameHash: 137525990
@@ -2543,6 +2633,7 @@ Transform:
   m_Children:
   - {fileID: 9200841044390834429}
   - {fileID: 2815762831388891297}
+  - {fileID: 852068329456218477}
   - {fileID: 2738103288871617888}
   - {fileID: 6162400511227725275}
   - {fileID: 2401798842653445942}
@@ -3013,7 +3104,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7557012099311659725
 Transform:
   m_ObjectHideFlags: 0
@@ -3762,6 +3853,7 @@ MonoBehaviour:
   enableJump: 1
   jumpForce: {x: 0, y: 8, z: 0}
   jumpCooldown: 0
+  jumpCooldownSetting: 1
   gravity: -25
   climbState: 0
   climbCurve:
@@ -3835,6 +3927,7 @@ MonoBehaviour:
   minGroundNormal: 0
   airTime: 0
   regroundCooldown: 0
+  regroundCooldownSetting: 0.2
   highestPoint: 0
   fallDistance: 0
   groundContactCount: 0
@@ -4048,6 +4141,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2765852249115965302}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7050873100196904117
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7233493831855761272}
+  m_Layer: 0
+  m_Name: Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7233493831855761272
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7050873100196904117}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.65, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 852068329456218477}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7062476357818097558
 GameObject:
