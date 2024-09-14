@@ -743,6 +743,7 @@ public class InventoryManager : NetworkBehaviour
             UnequipItem();
 
             equippedItem = inventoryItem;
+            playerController.currentEquippedItem = inventoryItem;
             inventoryItem.inventorySlot.rightHandIcon.enabled = true;
 
             //playerController.inventoryAudio.PlayItemEquip();
@@ -750,11 +751,11 @@ public class InventoryManager : NetworkBehaviour
 
             if (IsHost)
             {
-                EquipItemClientRpc(inventoryItem.NetworkObject);
+                EquipItemClientRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
             }
             else
             {
-                EquipItemServerRpc(inventoryItem.NetworkObject);
+                EquipItemServerRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
             }
 
         }
@@ -766,21 +767,22 @@ public class InventoryManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void EquipItemServerRpc(NetworkObjectReference inventoryItem)
+    public void EquipItemServerRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
     {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
-            EquipItemClientRpc(inventoryItemObject);
+            EquipItemClientRpc(inventoryItemObject, playerControllerObject);
         }
     }
 
     [ClientRpc]
-    public void EquipItemClientRpc(NetworkObjectReference inventoryItem)
+    public void EquipItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
     {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
             inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
             inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = true;
+            playerControllerObject.GetComponent<PlayerController>().currentEquippedItem = inventoryItemObject.GetComponent<I_InventoryItem>();
         }
     }
 

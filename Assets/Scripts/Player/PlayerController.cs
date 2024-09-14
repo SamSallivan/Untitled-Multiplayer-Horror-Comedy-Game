@@ -15,10 +15,13 @@ using UnityEngine.InputSystem;
 public class PlayerController : NetworkBehaviour, IDamagable
 {
     // [FoldoutGroup("Inventory")]
-    // public List<I_InventoryItem> inventoryItemList= new List<I_InventoryItem>();
+    // public List<I_InventoryItem> inventoryItemList = new List<I_InventoryItem>();
 
     // [FoldoutGroup("Inventory")]
-    // public List<I_InventoryItem> storageItemList= new List<I_InventoryItem>();
+    // public List<I_InventoryItem> storageItemList = new List<I_InventoryItem>();
+    
+    [FoldoutGroup("Inventory")]
+    public I_InventoryItem currentEquippedItem;
 
     [FoldoutGroup("Voice Chat")]
     public VoicePlayerState voicePlayerState;
@@ -115,6 +118,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Inputs")]
     public Vector3 inputDir;
+    
+    [FoldoutGroup("Inputs")]
+    public NetworkVariable<Vector3> inputDirNetworkVariable;
 
     [FoldoutGroup("Settings")]
     public bool enableMovement = true;
@@ -125,8 +131,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Physics Based Movements")]
     public float dynamicSpeed = 1f;
 
+    /*[FoldoutGroup("Physics Based Movements")]
+    public bool sprinting;*/
     [FoldoutGroup("Physics Based Movements")]
-    public bool sprinting;
+    public NetworkVariable<bool> sprinting = new NetworkVariable<bool>(writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Physics Based Movements")]
     public float dynamicSpeedSprint = 1f;
@@ -595,7 +603,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             //Stops sprinting if not inputing forward
             if (inputDir == Vector3.zero || inputDir.z < 0)
             {
-                sprinting = false;
+                sprinting.Value = false;
                 dynamicSpeed = 2.5f;
             }
 
@@ -934,6 +942,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             inputDir = Vector3.zero;
         }
+
+        inputDirNetworkVariable.Value = inputDir;
     }
 
     private void LookUpdate()
@@ -962,18 +972,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
             {
                 if (dynamicSpeed == 1.5f)
                 {
-                    sprinting = false;
+                    sprinting.Value = false;
                     dynamicSpeed = 2.5f;
                 }
                 else if (dynamicSpeed == 2.5f)
                 {
-                    sprinting = true;
+                    sprinting.Value = true;
                     dynamicSpeed = 1.5f;
                 }
             }
             else
             {
-                sprinting = false;
+                sprinting.Value = false;
                 dynamicSpeed = 2.5f;
             }
         }

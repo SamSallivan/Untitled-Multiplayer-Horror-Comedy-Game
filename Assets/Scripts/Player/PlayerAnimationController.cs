@@ -29,6 +29,7 @@ public class PlayerAnimationController : MonoBehaviour
     
     public bool footStickToSurface = true;
     public Vector3 footIKTargetPositionOffset;
+    public Vector3 footIKTargetRotationOffset;
     public float surfaceDetectDistance = 1.0f;
     
     public bool turnAnimation = true;
@@ -58,39 +59,47 @@ public class PlayerAnimationController : MonoBehaviour
     
     void Update()
     {
-        
-        if (playerController.NetworkObject.IsOwner && !playerController.isPlayerDead)
-        {   
-            if (playerController.enableMovement)
-            {   
-                UpdateWalkAnimation();
-            }
-            
-            if(playerController.mouseLookX.enabled)
+        if (!playerController.isPlayerDead)
+        {
+            if (playerController.NetworkObject.IsOwner)
             {
-                UpdateBodyRotation();
+                if (playerController.enableMovement)
+                {
+                    //UpdateWalkAnimation();
+                }
+
+                if (playerController.mouseLookX.enabled)
+                {
+                    //UpdateBodyRotation();
+                }
+
+                //UpdateFallAnimation();
             }
+
+            UpdateLookRotationConstraint();
             
+            UpdateWalkAnimation();
+            UpdateBodyRotation();
             UpdateFallAnimation();
         }
     }
 
     void OnAnimatorIK()
     {
-        if (playerController.NetworkObject.IsOwner)
-        {
+        //if (playerController.NetworkObject.IsOwner)
+        //{
             if (footStickToSurface)
             {
                 UpdateFootPlacement();
             }
-        }
+        //}
     }
     
     void UpdateWalkAnimation()
     {
         float inputX = (playerController.inputDir.x == 0) ? 0 : 1;
         float inputZ = (playerController.inputDir.z == 0) ? 0 : 1;
-        float sprint = playerController.sprinting ? 1 : 0.5f;
+        float sprint = playerController.sprinting.Value ? 1 : 0.5f;
         Vector3 velocity = playerController.transform.GetChild(0).InverseTransformDirection(playerController.vel).normalized;
         //velocity = new Vector3(velocity.x, 0, velocity.z);
 
@@ -172,14 +181,17 @@ public class PlayerAnimationController : MonoBehaviour
         }
         
         transform.rotation = Quaternion.Slerp(transform.rotation, targetBodyRotation, Time.deltaTime * turnSpeed);
-        
+    }
+
+    void UpdateLookRotationConstraint()
+    {
         //Upper Body Rotation Constraint Weight
         if (playerController.grounder.groundTime > 0.5f)
         {
             headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f,Time.deltaTime * bodyRotationInterpolationSpeed);
             headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0.5f,Time.deltaTime * bodyRotationInterpolationSpeed);
             shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.25f,Time.deltaTime * bodyRotationInterpolationSpeed);
-            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.125f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.25f,Time.deltaTime * bodyRotationInterpolationSpeed);
         }
         else
         {
@@ -188,7 +200,6 @@ public class PlayerAnimationController : MonoBehaviour
             shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f,Time.deltaTime * bodyRotationInterpolationSpeed);
             chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f,Time.deltaTime * bodyRotationInterpolationSpeed);
         }
-        
     }
     
     void UpdateFallAnimation()
@@ -206,18 +217,28 @@ public class PlayerAnimationController : MonoBehaviour
         
         animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, animator.GetFloat("LeftFoot"));
         animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, animator.GetFloat("RightFoot"));
+
         
         FootToSurfaceRaycast(leftFootTransform, ref _leftFootIKTargetPos, ref _leftFootIKTargetRot);
         FootToSurfaceRaycast(rightFootTransform, ref _rightFootIKTargetPos, ref _rightFootIKTargetRot);
 
-        _leftFootIKTargetRot.eulerAngles = new Vector3(_leftFootIKTargetRot.eulerAngles.x, leftFootTransform.rotation.eulerAngles.y, _leftFootIKTargetRot.eulerAngles.z);
+        /*_leftFootIKTargetRot.eulerAngles = new Vector3(_leftFootIKTargetRot.eulerAngles.x, leftFootTransform.rotation.eulerAngles.y, _leftFootIKTargetRot.eulerAngles.z);
         _rightFootIKTargetRot.eulerAngles = new Vector3(_rightFootIKTargetRot.eulerAngles.x, rightFootTransform.rotation.eulerAngles.y, _rightFootIKTargetRot.eulerAngles.z);
+        */
 
         animator.SetIKPosition(AvatarIKGoal.LeftFoot, _leftFootIKTargetPos + footIKTargetPositionOffset);
-        animator.SetIKRotation(AvatarIKGoal.LeftFoot, _leftFootIKTargetRot);
+        animator.SetIKRotation(AvatarIKGoal.LeftFoot, _leftFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
         
         animator.SetIKPosition(AvatarIKGoal.RightFoot, _rightFootIKTargetPos + footIKTargetPositionOffset);
-        animator.SetIKRotation(AvatarIKGoal.RightFoot, _rightFootIKTargetRot);
+        animator.SetIKRotation(AvatarIKGoal.RightFoot, _rightFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
+
+        /*leftFootIKConstraint.weight = animator.GetFloat("LeftFoot");
+        rightFootIKConstraint.weight = animator.GetFloat("RightFoot");
+        
+        leftFootIKTarget.position = _leftFootIKTargetPos + footIKTargetPositionOffset;
+        leftFootIKTarget.rotation = _leftFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset);
+        rightFootIKTarget.position = _rightFootIKTargetPos + footIKTargetPositionOffset;
+        rightFootIKTarget.rotation = _rightFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset);*/
     }
     
     void FootToSurfaceRaycast(Transform footTransform, ref Vector3 targetPosition, ref Quaternion targetRotation)
