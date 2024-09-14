@@ -22,6 +22,10 @@ public class HeadPosition : MonoBehaviour
 	public float slideTimer;
 
 	public float bounceTimer;
+	
+	public Transform targetPositionTransform;
+	
+	public Vector3 targetPositionOffset;
 
 	public void Awake(){
 		headPos = transform.localPosition;
@@ -63,5 +67,10 @@ public class HeadPosition : MonoBehaviour
 
 		//applies head y position;
 		transform.localPosition = headPos;
+
+		if (targetPositionTransform)
+		{
+			transform.position = targetPositionTransform.TransformPoint(targetPositionOffset);
+		}
 	}
 }

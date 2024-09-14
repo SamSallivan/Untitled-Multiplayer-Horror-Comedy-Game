@@ -11,7 +11,9 @@ public class PlayerAnimationController : MonoBehaviour
     public Animator animator;
     public PlayerController playerController;
     
-    public MultiRotationConstraint headRotationalConstraint;
+    public MultiRotationConstraint headHorizontalRotationalConstraint;
+    public MultiRotationConstraint headVerticalRotationalConstraint;
+    public MultiRotationConstraint headZRotationalConstraint;
     public MultiRotationConstraint shoulderRotationalConstraint;
     public MultiRotationConstraint chestRotationalConstraint;
     public ChainIKConstraint leftFootIKConstraint;
@@ -56,6 +58,7 @@ public class PlayerAnimationController : MonoBehaviour
     
     void Update()
     {
+        
         if (playerController.NetworkObject.IsOwner && !playerController.isPlayerDead)
         {   
             if (playerController.enableMovement)
@@ -115,8 +118,12 @@ public class PlayerAnimationController : MonoBehaviour
             
         //Add body leaning using additive layer:
         //Get rigidbody velocity horizontal, tilt body Z rotation
-        float leanX = playerController.rb.angularVelocity.normalized.y;
-        animator.SetFloat("LeanX", Mathf.Lerp(animator.GetFloat("LeanX"), leanX, Time.deltaTime * bodyRotationInterpolationSpeed));
+        if (animator.GetBool("isMoving") && playerController.grounder.grounded)
+        {
+            Vector2 mouseInput = playerController.playerInputActions.FindAction("Look").ReadValue<Vector2>();
+            float leanX = mouseInput.x * playerController.mouseLookX.sensitivityX;
+            animator.SetFloat("LeanX", Mathf.Lerp(animator.GetFloat("LeanX"), leanX, Time.deltaTime));
+        }
         //Get ground normal z, tilt waist X rotation
     }
     
@@ -133,38 +140,53 @@ public class PlayerAnimationController : MonoBehaviour
         Vector3 cross = Vector3.Cross(bodyTransformForward, headTransformForward);
         angle *= Mathf.Sign(cross.y);
         
-        if (!animator.GetBool("isMoving") && turnAnimation & Mathf.Abs(angle) < 120f)
+        var turnSpeed = bodyRotationInterpolationSpeed;
+
+        if (!animator.GetBool("isMoving") && turnAnimation)
         {
             if (angle >= turnBodyAngleThreshold && turnBodyCooldown <= 0)
             {
                 animator.SetTrigger("TurnRight");
-                targetBodyRotation = playerController.transform.GetChild(0).rotation;
                 turnBodyCooldown = 0.5f;
+                targetBodyRotation = playerController.transform.GetChild(0).rotation;
             }
             else if (angle <= -turnBodyAngleThreshold && turnBodyCooldown <= 0)
             {
                 animator.SetTrigger("TurnLeft");
-                targetBodyRotation = playerController.transform.GetChild(0).rotation;
                 turnBodyCooldown = 0.5f;
+                targetBodyRotation = playerController.transform.GetChild(0).rotation;
+            }
+            else if (Mathf.Abs(angle) > 120f)
+            {
+                targetBodyRotation = playerController.transform.GetChild(0).rotation;
+                turnSpeed *= 3.5f;
             }
         }
         else
         {
             targetBodyRotation = playerController.transform.GetChild(0).rotation;
+            if (Mathf.Abs(angle) > 120f)
+            {
+                turnSpeed *= 3.5f;
+            }
         }
         
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetBodyRotation, Time.deltaTime * bodyRotationInterpolationSpeed);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetBodyRotation, Time.deltaTime * turnSpeed);
         
         //Upper Body Rotation Constraint Weight
         if (playerController.grounder.groundTime > 0.5f)
         {
-            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.66f,Time.deltaTime * bodyRotationInterpolationSpeed);
-            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.33f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0.5f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.25f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.125f,Time.deltaTime * bodyRotationInterpolationSpeed);
         }
         else
         {
-            shoulderRotationalConstraint.weight = 0;
-            chestRotationalConstraint.weight = 0;
+            headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f,Time.deltaTime * bodyRotationInterpolationSpeed);
         }
         
     }
@@ -184,25 +206,18 @@ public class PlayerAnimationController : MonoBehaviour
         
         animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, animator.GetFloat("LeftFoot"));
         animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, animator.GetFloat("RightFoot"));
-
-        /*leftFootIKConstraint.weight = animator.GetFloat("LeftFoot");
-        rightFootIKConstraint.weight = animator.GetFloat("RightFoot");*/
         
         FootToSurfaceRaycast(leftFootTransform, ref _leftFootIKTargetPos, ref _leftFootIKTargetRot);
         FootToSurfaceRaycast(rightFootTransform, ref _rightFootIKTargetPos, ref _rightFootIKTargetRot);
-        
+
+        _leftFootIKTargetRot.eulerAngles = new Vector3(_leftFootIKTargetRot.eulerAngles.x, leftFootTransform.rotation.eulerAngles.y, _leftFootIKTargetRot.eulerAngles.z);
+        _rightFootIKTargetRot.eulerAngles = new Vector3(_rightFootIKTargetRot.eulerAngles.x, rightFootTransform.rotation.eulerAngles.y, _rightFootIKTargetRot.eulerAngles.z);
+
         animator.SetIKPosition(AvatarIKGoal.LeftFoot, _leftFootIKTargetPos + footIKTargetPositionOffset);
         animator.SetIKRotation(AvatarIKGoal.LeftFoot, _leftFootIKTargetRot);
         
         animator.SetIKPosition(AvatarIKGoal.RightFoot, _rightFootIKTargetPos + footIKTargetPositionOffset);
         animator.SetIKRotation(AvatarIKGoal.RightFoot, _rightFootIKTargetRot);
-
-        /*leftFootIKTarget.position = Vector3.Lerp(leftFootIKTarget.position, _leftFootIKTargetPos, Time.deltaTime * velocityLerpSpeed);
-        leftFootIKTarget.rotation = Quaternion.Lerp(leftFootIKTarget.rotation, _leftFootIKTargetRot, Time.deltaTime * velocityLerpSpeed);
-        rightFootIKTarget.position = Vector3.Lerp(rightFootIKTarget.position, _rightFootIKTargetPos, Time.deltaTime * velocityLerpSpeed);
-        rightFootIKTarget.rotation = Quaternion.Lerp(rightFootIKTarget.rotation, _rightFootIKTargetRot, Time.deltaTime * velocityLerpSpeed);*/
-
-
     }
     
     void FootToSurfaceRaycast(Transform footTransform, ref Vector3 targetPosition, ref Quaternion targetRotation)
@@ -219,7 +234,7 @@ public class PlayerAnimationController : MonoBehaviour
             // then rotate based on the hit normal
             Quaternion rot = Quaternion.LookRotation(transform.forward);          
             targetRotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * rot;   
-            Debug.DrawRay(origin, -Vector3.up, Color.green);       
+            Debug.DrawRay(origin, -Vector3.up, Color.green);
         }
         else
         {

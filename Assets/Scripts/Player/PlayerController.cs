@@ -249,14 +249,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         headPosition = headTransform.GetComponentInChildren<HeadPosition>();
         waterObject = GetComponentInChildren<WaterObject>(true);
 
-        if(GetComponent<MouseLook>().enabled)
-        {
-            mouseLookX = GetComponent<MouseLook>();
-        }
-        else
-        {
-            mouseLookX = transform.GetChild(0).GetComponent<MouseLook>();
-        }
+        mouseLookX = transform.GetChild(0).GetComponent<MouseLook>();
         mouseLookY = headTransform.GetComponent<MouseLook>();
 
         playerUsername = $"Player #{localPlayerId}";
@@ -650,7 +643,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 //lerp from current position to target ground position
                 Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
                 //Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y - grounder.transform.localPosition.y, rb.position.z);
-                targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 10f);
+                targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 7.5f);
                 rb.MovePosition(targetGroundPosition);
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
             }
