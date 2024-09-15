@@ -235,7 +235,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         target = null;
         for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
         {
-            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient&&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead)
             {
                 float dist= Vector3.Distance(transform.position,
                     GameSessionManager.Instance.playerControllerList[i].transform.position);
