@@ -234,7 +234,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         target = null;
         for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
         {
-            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient&&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead)
             {
                 float dist= Vector3.Distance(transform.position,
                     GameSessionManager.Instance.playerControllerList[i].transform.position);
@@ -308,6 +308,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
         {
             _agent.Warp(hit.position+ new Vector3(0,2,0));
+            _agent.enabled = true;
             monState = MonsterState.Idle;
         }
         
