@@ -4188,7 +4188,10 @@ MonoBehaviour:
   isNonPhysics: 0
   dynamicSpeed: 2.5
   sprinting: 0
-  SprintingNetworkVariable:
+  sprintingNetworkVariable:
+    m_InternalValue: 0
+  crouching: 0
+  crouchingNetworkVariable:
     m_InternalValue: 0
   dynamicSpeedSprint: 1
   vel: {x: 0, y: 0, z: 0}
@@ -4267,7 +4270,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   maxGroundAngle: 60
-  detectionRadius: 0.175
+  detectionWidth: 0.175
+  detectionDepth: 0.175
   detectionDistance: 0.9
   detectionOffset: {x: 0, y: -0.55, z: 0}
   groundedPositionOffset: {x: 0, y: 1, z: 0}

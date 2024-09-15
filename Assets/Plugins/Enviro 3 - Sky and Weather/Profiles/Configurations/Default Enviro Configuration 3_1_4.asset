@@ -130,9 +130,9 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 0fcdd472bd6a8ec429fc1e9bc978c4fa, type: 2}
   showCirrusCloudsControls: 0
   show2DCloudsControls: 0
-  cloudFlatBaseAnim: {x: -0.94972116, y: -0.36491483}
-  cloudFlatDetailAnim: {x: 0.75328916, y: 0.83130735}
-  cirrusAnim: {x: -0.47118896, y: 0.8087958}
+  cloudFlatBaseAnim: {x: -0.85868615, y: -0.45594966}
+  cloudFlatDetailAnim: {x: -0.79162794, y: 0.37613344}
+  cirrusAnim: {x: -0.42567146, y: 0.76327854}
 --- !u!114 &-5447272849285213076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2320,7 +2320,7 @@ MonoBehaviour:
   showDensityControls: 0
   showTextureControls: 0
   showWindControls: 0
-  cloudAnimLayer1: {x: 0.4152706, y: -0.3140008, z: -0.9885462}
+  cloudAnimLayer1: {x: 0.5518231, y: -0.45055285, z: 0.2832796}
   cloudAnimLayer2: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer1: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer2: {x: 0, y: 0, z: 0}
@@ -2581,6 +2581,16 @@ MonoBehaviour:
   showVolumetricsControls: 0
   showUnityFogControls: 1
   fogLights:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
