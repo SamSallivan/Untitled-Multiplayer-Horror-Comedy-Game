@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ae88ff3d-798b-444a-9315-8e5f906c02c9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/MONSTER.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/MONSTER.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -121,7 +118,7 @@
       <workItem from="1725859214647" duration="4767000" />
       <workItem from="1726026149479" duration="10527000" />
       <workItem from="1726067115386" duration="5601000" />
-      <workItem from="1726357682956" duration="17631000" />
+      <workItem from="1726357682956" duration="18391000" />
     </task>
     <servers />
   </component>

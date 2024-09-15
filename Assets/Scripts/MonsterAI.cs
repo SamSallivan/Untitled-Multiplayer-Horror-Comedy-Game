@@ -216,7 +216,8 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     {
         if (currentJumpCD>0f)
         {
-            _agent.isStopped = true;
+            if(_agent.hasPath)
+                _agent.isStopped = true;
         }
         else
         {
