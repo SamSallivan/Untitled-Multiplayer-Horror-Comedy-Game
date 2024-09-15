@@ -310,8 +310,16 @@ public class GameSessionManager : NetworkBehaviour
 				//Teleport player controller to its spawn position.
 				playerController.TeleportPlayer(spawnTransform.position);
             }
-			
-        }
+            else
+            {
+	            if (localPlayerController.currentEquippedItem != null)
+	            {
+		            InventoryManager.instance.EquipItemServerRpc(
+			            localPlayerController.currentEquippedItem.NetworkObject, localPlayerController.NetworkObject);
+	            }
+            }
+
+		}
         catch (Exception arg)
 		{
 			Debug.LogError($"OnClientConnectedGameSessionClientRpc: Failed to assign new player with client id #{clientId}: {arg}");
