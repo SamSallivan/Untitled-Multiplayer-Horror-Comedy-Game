@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="ae88ff3d-798b-444a-9315-8e5f906c02c9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/GameManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/System/RatingManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/System/RatingManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/MONSTER.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/MONSTER.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,9 +20,11 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/AttachTrigger.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/ExtractionPoint.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/yilai/OneDrive/Desktop/Capstone2024/HorrorGameNew/Untitled-Multiplayer-Horror-Comedy-Game/Assets/Plugins/Enviro 3 - Sky and Weather/Profiles/Configurations/Default Enviro Configuration 3_1_4.asset" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/yilai/OneDrive/Desktop/Capstone2024/HorrorGameNew/Untitled-Multiplayer-Horror-Comedy-Game/Assets/Plugins/Enviro 3 - Sky and Weather/Profiles/Configurations/Default Enviro Configuration 3_1_4.asset" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/yilai/OneDrive/Desktop/Capstone2024/HorrorGameNew/Untitled-Multiplayer-Horror-Comedy-Game/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/yilai/OneDrive/Desktop/Capstone2024/HorrorGameNew/Untitled-Multiplayer-Horror-Comedy-Game/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/yilai/OneDrive/Desktop/Capstone2024/HorrorGameNew/Untitled-Multiplayer-Horror-Comedy-Game/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/IDamagable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Assets/Scripts/Player/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -116,6 +120,8 @@
       <workItem from="1725428975394" duration="7286000" />
       <workItem from="1725859214647" duration="4767000" />
       <workItem from="1726026149479" duration="10527000" />
+      <workItem from="1726067115386" duration="5601000" />
+      <workItem from="1726357682956" duration="17631000" />
     </task>
     <servers />
   </component>
