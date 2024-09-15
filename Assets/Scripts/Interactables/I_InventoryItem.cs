@@ -104,7 +104,7 @@ public class I_InventoryItem : Interactable
                     InventoryManager.instance.selectedSlot = item.inventorySlot;
                 }
             }
-            UnTarget();
+            //UnTarget();
         }
         yield return null; 
     }

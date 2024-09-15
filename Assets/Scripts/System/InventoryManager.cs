@@ -360,12 +360,6 @@ public class InventoryManager : NetworkBehaviour
             else
             {
                 slot = GetFirstEmptyInventorySlot();
-
-                if (slot.GetIndex() <= 3)
-                {
-                    equippedSlotIndex = slot.GetIndex();
-                    UpdateEquippedItem();
-                }
             }
 
             /*InventorySlot slot;
@@ -381,7 +375,12 @@ public class InventoryManager : NetworkBehaviour
 
                 slot.inventoryItem = inventoryItem;
                 slot.UpdateInventorySlotDisplay();
-
+                
+                if (slot.GetIndex() <= 3)
+                {
+                    equippedSlotIndex = slot.GetIndex();
+                }
+                
                 if (slot.GetIndex() == equippedSlotIndex)
                 {
                     UpdateEquippedItem();
