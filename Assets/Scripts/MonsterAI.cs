@@ -216,8 +216,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     {
         if (currentJumpCD>0f)
         {
-            if(_agent.hasPath)
-                _agent.isStopped = true;
+            _agent.isStopped = true;
         }
         else
         {
@@ -309,6 +308,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
         {
             _agent.Warp(hit.position+ new Vector3(0,2,0));
+            _agent.enabled = true;
             monState = MonsterState.Idle;
         }
         
