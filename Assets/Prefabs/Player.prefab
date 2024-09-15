@@ -901,6 +901,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7882151714451642048}
   - component: {fileID: 3737053616140787160}
+  - component: {fileID: 749386978981623756}
   m_Layer: 8
   m_Name: Player Rotation
   m_TagString: Untagged
@@ -948,6 +949,37 @@ MonoBehaviour:
   rotAverageX: 0
   rotAverageY: -8.499961
   framesOfSmoothing: 5
+--- !u!114 &749386978981623756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727752200223568632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &1792323033188466620
 GameObject:
   m_ObjectHideFlags: 0
@@ -1904,13 +1936,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3721818994465158156}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.3, y: -0.19999999, z: 0.6}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.15, y: -0.2, z: 0.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1739742256914026636}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &6242103900773005055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2281,7 +2313,6 @@ GameObject:
   - component: {fileID: 7422018340954777515}
   - component: {fileID: 8490116340079759731}
   - component: {fileID: 3482652699434817081}
-  - component: {fileID: 1476323981809808205}
   - component: {fileID: 1983091042915130528}
   m_Layer: 0
   m_Name: Character
@@ -2366,6 +2397,8 @@ MonoBehaviour:
   chestRotationalConstraint: {fileID: 8778675694803973200}
   leftFootIKConstraint: {fileID: 5691111682121373251}
   rightFootIKConstraint: {fileID: 4950238131660513091}
+  leftArmIKConstraint: {fileID: 533682570751514672}
+  rightArmIKConstraint: {fileID: 7022016655043715404}
   leftFootIKTarget: {fileID: 6335107920471640321}
   rightFootIKTarget: {fileID: 6631760595682373157}
   walkAnimationInterpolationSpeed: 10
@@ -2377,55 +2410,6 @@ MonoBehaviour:
   bodyRotationInterpolationSpeed: 3
   turnBodyAngleThreshold: 90
   fallAirTimeThreshold: 0.65
---- !u!114 &1476323981809808205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4227668541140543339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad8deae8091111f4eb30a56c1f4e0d3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -878133152
-    DestinationState: 1592145419
-    TransitionDuration: 0.25
-    TriggerNameHash: -1847120011
-    TransitionIndex: 0
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -878133152
-    DestinationState: 1022928746
-    TransitionDuration: 0.25
-    TriggerNameHash: -685270779
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -878133152
-    DestinationState: 125937960
-    TransitionDuration: 0.25
-    TriggerNameHash: 125937960
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 125937960
-    DestinationState: 137525990
-    TransitionDuration: 0.25
-    TriggerNameHash: 137525990
-    TransitionIndex: 0
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1533177906
-    DestinationState: 137525990
-    TransitionDuration: 0.1
-    TriggerNameHash: 137525990
-    TransitionIndex: 0
-  m_Animator: {fileID: 7422018340954777515}
 --- !u!114 &1983091042915130528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2433,7 +2417,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4227668541140543339}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
   m_Name: 
@@ -4172,6 +4156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09996860e76b82b45bd8e6b01ee69a32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentEquippedItem: {fileID: 0}
   currentVoiceChatAudioSource: {fileID: 0}
   currentVoiceChatIngameSettings: {fileID: 0}
   playerUsername: Player
@@ -4197,17 +4182,25 @@ MonoBehaviour:
   headPosition: {fileID: 0}
   playerInput: {fileID: 0}
   inputDir: {x: 0, y: 0, z: 0}
+  inputDirNetworkVariable:
+    m_InternalValue: {x: 0, y: 0, z: 0}
   enableMovement: 1
   isNonPhysics: 0
   dynamicSpeed: 2.5
   sprinting: 0
+  SprintingNetworkVariable:
+    m_InternalValue: 0
   dynamicSpeedSprint: 1
   vel: {x: 0, y: 0, z: 0}
+  velNetworkVariable:
+    m_InternalValue: {x: 0, y: 0, z: 0}
   gVel: {x: 0, y: 0, z: 0}
   waterObject: {fileID: 0}
   enableJump: 1
   jumpForce: {x: 0, y: 8, z: 0}
   jumpCooldown: 0
+  JumpCooldownNetworkVariable:
+    m_InternalValue: 0
   jumpCooldownSetting: 1
   gravity: -25
   climbState: 0
@@ -4990,14 +4983,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7568488197368888305}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.3, y: -0.19999999, z: 0.6}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.15, y: -0.2, z: 0.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2944472136624858675}
   m_Father: {fileID: 1739742256914026636}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &1496267956876472972
 MonoBehaviour:
   m_ObjectHideFlags: 0

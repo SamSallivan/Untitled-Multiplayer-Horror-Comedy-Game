@@ -18,6 +18,8 @@ public class PlayerAnimationController : MonoBehaviour
     public MultiRotationConstraint chestRotationalConstraint;
     public ChainIKConstraint leftFootIKConstraint;
     public ChainIKConstraint rightFootIKConstraint;
+    public ChainIKConstraint leftArmIKConstraint;
+    public ChainIKConstraint rightArmIKConstraint;
     public Transform leftFootIKTarget;
     public Transform rightFootIKTarget;
         
@@ -59,28 +61,21 @@ public class PlayerAnimationController : MonoBehaviour
     
     void Update()
     {
-        if (!playerController.isPlayerDead)
+        if (playerController.controlledByClient && !playerController.isPlayerDead)
         {
             if (playerController.NetworkObject.IsOwner)
             {
-                if (playerController.enableMovement)
-                {
-                    //UpdateWalkAnimation();
-                }
-
-                if (playerController.mouseLookX.enabled)
-                {
-                    //UpdateBodyRotation();
-                }
-
+                //UpdateWalkAnimation();
+                //UpdateBodyRotation();
                 //UpdateFallAnimation();
             }
 
-            UpdateLookRotationConstraint();
-            
             UpdateWalkAnimation();
             UpdateBodyRotation();
             UpdateFallAnimation();
+            UpdateArmAnimation();
+            UpdateCrouchAnimation();
+            UpdateLookRotationConstraint();
         }
     }
 
@@ -94,13 +89,39 @@ public class PlayerAnimationController : MonoBehaviour
             }
         //}
     }
+
+    void UpdateArmAnimation()
+    {
+        if (playerController.currentEquippedItem != null)
+        {
+            //leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f,Time.deltaTime * walkAnimationInterpolationSpeed);
+        }
+        else
+        {
+            //leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f,Time.deltaTime * bodyRotationInterpolationSpeed);
+            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f,Time.deltaTime * walkAnimationInterpolationSpeed);
+        }
+    }
+
+    void UpdateCrouchAnimation()
+    {
+        if (playerController.crouchingNetworkVariable.Value)
+        {
+            animator.SetFloat("Crouch", Mathf.Lerp(animator.GetFloat("Crouch"), 1f, Time.deltaTime * walkAnimationInterpolationSpeed)) ;
+        }
+        else
+        {
+            animator.SetFloat("Crouch", Mathf.Lerp(animator.GetFloat("Crouch"), 0f, Time.deltaTime * walkAnimationInterpolationSpeed)) ;
+        }
+    }
     
     void UpdateWalkAnimation()
     {
-        float inputX = (playerController.inputDir.x == 0) ? 0 : 1;
-        float inputZ = (playerController.inputDir.z == 0) ? 0 : 1;
-        float sprint = playerController.sprinting.Value ? 1 : 0.5f;
-        Vector3 velocity = playerController.transform.GetChild(0).InverseTransformDirection(playerController.vel).normalized;
+        float inputX = (playerController.inputDirNetworkVariable.Value.x == 0) ? 0 : 1;
+        float inputZ = (playerController.inputDirNetworkVariable.Value.z == 0) ? 0 : 1;
+        float sprint = playerController.sprintingNetworkVariable.Value ? 1 : 0.5f;
+        Vector3 velocity = playerController.transform.GetChild(0).InverseTransformDirection(playerController.velNetworkVariable.Value).normalized;
         //velocity = new Vector3(velocity.x, 0, velocity.z);
 
         float tempX = velocity.x * inputX * sprint;
@@ -204,7 +225,7 @@ public class PlayerAnimationController : MonoBehaviour
     
     void UpdateFallAnimation()
     {
-        if (playerController.grounder.airTime > fallAirTimeThreshold && playerController.jumpCooldown <= 0)
+        if (playerController.grounder.airTime > fallAirTimeThreshold && playerController.JumpCooldownNetworkVariable.Value <= 0)
         {
             animator.SetBool("isFalling", true);
         }

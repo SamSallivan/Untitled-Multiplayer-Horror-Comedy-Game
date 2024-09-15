@@ -23,7 +23,9 @@ public class Grounder : MonoBehaviour
 
 	public float maxGroundAngle = 40f;
 
-	public float detectionRadius = 0.75f;
+	public float detectionWidth = 0.75f;
+
+	public float detectionDepth = 0.75f;
 
 	public float detectionDistance = 0.75f;
 
@@ -229,7 +231,12 @@ public class Grounder : MonoBehaviour
 			groundNormal = Vector3.up;
 			tempGroundPosition = Vector3.zero;
 			groundPosition = Vector3.zero;
-			regroundCooldown = regroundCooldownSetting;
+			//regroundCooldown = regroundCooldownSetting;
+
+			if (playerController.JumpCooldownNetworkVariable.Value >= playerController.jumpCooldownSetting - 0.5f)
+			{
+				playerController.animator.SetTrigger("Jump");
+			}
 			
 			//sets a timeframe that allows player to jump after ungrounding
 
@@ -302,19 +309,19 @@ public class Grounder : MonoBehaviour
 
 		if (!detectGroundUsingFootPosition)
 		{
-			if(GroundRaycast(detectionRadius, 0, out RaycastHit hit1))
+			if(GroundRaycast(detectionWidth, 0, out RaycastHit hit1))
 			{
 				hitList.Add(hit1);
 			}
-			if(GroundRaycast(0, detectionRadius, out RaycastHit hit2))
+			if(GroundRaycast(0, detectionDepth, out RaycastHit hit2))
 			{
 				hitList.Add(hit2);
 			}
-			if(GroundRaycast(-detectionRadius, 0, out RaycastHit hit3))
+			if(GroundRaycast(-detectionWidth, 0, out RaycastHit hit3))
 			{
 				hitList.Add(hit3);
 			}
-			if(GroundRaycast(0, -detectionRadius, out RaycastHit hit4))
+			if(GroundRaycast(0, -detectionDepth, out RaycastHit hit4))
 			{
 				hitList.Add(hit4);
 			}		

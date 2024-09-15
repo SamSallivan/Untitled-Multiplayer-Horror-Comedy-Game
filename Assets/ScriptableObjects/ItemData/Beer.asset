@@ -17,7 +17,7 @@ MonoBehaviour:
   description: Tsingtao beer.
   isStackable: 0
   maxStackAmount: 1
-  equipPosition: {x: 0, y: 0, z: -0.2}
+  equipPosition: {x: 0, y: 0, z: 0}
   equipRotation: {x: 0, y: 0, z: 0}
   dropObject: {fileID: 7074802747145682746, guid: 85e38e86e450d724783feab416cbe01d, type: 3}
   examineScale: 1

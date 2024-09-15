@@ -11,6 +11,7 @@ using Dissonance;
 using Sirenix.OdinInspector;
 using Enviro;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class PlayerController : NetworkBehaviour, IDamagable
 {
@@ -120,7 +121,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public Vector3 inputDir;
     
     [FoldoutGroup("Inputs")]
-    public NetworkVariable<Vector3> inputDirNetworkVariable;
+    public NetworkVariable<Vector3> inputDirNetworkVariable = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Settings")]
     public bool enableMovement = true;
@@ -130,17 +131,27 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Physics Based Movements")]
     public float dynamicSpeed = 1f;
-
-    /*[FoldoutGroup("Physics Based Movements")]
-    public bool sprinting;*/
+    
     [FoldoutGroup("Physics Based Movements")]
-    public NetworkVariable<bool> sprinting = new NetworkVariable<bool>(writePerm: NetworkVariableWritePermission.Owner);
+    public bool sprinting;
+    
+    [FoldoutGroup("Physics Based Movements")]
+    public NetworkVariable<bool> sprintingNetworkVariable = new NetworkVariable<bool>(writePerm: NetworkVariableWritePermission.Owner);
+    
+    [FoldoutGroup("Physics Based Movements")]
+    public bool crouching;
+    
+    [FoldoutGroup("Physics Based Movements")]
+    public NetworkVariable<bool> crouchingNetworkVariable = new NetworkVariable<bool>(writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Physics Based Movements")]
     public float dynamicSpeedSprint = 1f;
 
     [FoldoutGroup("Physics Based Movements")]
     public Vector3 vel;
+    
+    [FoldoutGroup("Physics Based Movements")]
+    public NetworkVariable<Vector3> velNetworkVariable = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Physics Based Movements")]
     public Vector3 gVel;
@@ -174,6 +185,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Physics Based Movements")]
     public float jumpCooldown;
+    
+    [FoldoutGroup("Physics Based Movements")]
+    public NetworkVariable<float> JumpCooldownNetworkVariable = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
     
     [FoldoutGroup("Physics Based Movements")]
     public float jumpCooldownSetting = 0.5f;
@@ -270,7 +284,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerInputActions.Enable();
         playerInputActions.FindAction("Sprint").performed += Sprint_performed;
         playerInputActions.FindAction("Jump").performed += Jump_performed;
-        //playerInputActions.FindAction("Crouch").performed += Crouch_performed;
+        playerInputActions.FindAction("Crouch").performed += Crouch_performed;
         playerInputActions.FindAction("ActivateItem").performed += ActivateItem_performed;
         playerInputActions.FindAction("ActivateItem").canceled += ActivateItem_canceled;
         // playerInputActions.FindAction("ItemSecondaryUse").performed += ItemSecondaryUse_performed;
@@ -283,7 +297,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         playerInputActions.FindAction("Sprint").performed -= Sprint_performed;
         playerInputActions.FindAction("Jump").performed -= Jump_performed;
-        //playerInputActions.FindAction("Crouch").performed -= Crouch_performed;
+        playerInputActions.FindAction("Crouch").performed -= Crouch_performed;
         playerInputActions.FindAction("ActivateItem").performed -= ActivateItem_performed;
         //playerInputActions.FindAction("ActivateItem").canceled -= ActivateItem_canceled;
         // playerInputActions.FindAction("ItemSecondaryUse").performed -= ItemSecondaryUse_performed;
@@ -328,7 +342,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     private void FixedUpdate()
     {
-        if (base.IsOwner)
+        if (base.IsOwner && controlledByClient)
         {
             MovementUpdate();
         }
@@ -514,12 +528,35 @@ public class PlayerController : NetworkBehaviour, IDamagable
         // }
 
         //ungrounds and jumps
-        grounder.Unground();
-        animator.SetTrigger("Jump");
+        //rb.velocity = new Vector3(0, 0, 0);
+        
         jumpCooldown = jumpCooldownSetting;
-        rb.velocity = new Vector3(0, 0, 0);
+        JumpCooldownNetworkVariable.Value = jumpCooldown;
+        
         rb.AddForce(jumpForce * multiplier, ForceMode.Impulse);
+
+        grounder.Unground();
+        grounder.regroundCooldown = grounder.regroundCooldownSetting;
+
+        crouching = false;
+        crouchingNetworkVariable.Value = crouching;
+
+        //animator.SetTrigger("Jump");
+        //AnimatorSetTriggerServerRpc("Jump");
+
         //playerAudio.PlayJumpSound();
+    }
+
+    [ServerRpc]
+    private void AnimatorSetTriggerServerRpc(string triggerName)
+    {
+        AnimatorSetTriggerClientRpc(triggerName);
+    }
+    
+    [ClientRpc]
+    private void AnimatorSetTriggerClientRpc(string triggerName)
+    {
+        animator.SetTrigger(triggerName);
     }
 
     private void Climb(Vector3 targetPos)
@@ -588,6 +625,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (!isNonPhysics)
         {
             vel = rb.velocity;
+            velNetworkVariable.Value = vel;
         }
 
         gVel = Vector3.ProjectOnPlane(vel, grounder.groundNormal);
@@ -603,7 +641,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
             //Stops sprinting if not inputing forward
             if (inputDir == Vector3.zero || inputDir.z < 0)
             {
-                sprinting.Value = false;
+                sprinting = false;
+                sprintingNetworkVariable.Value = false;
                 dynamicSpeed = 2.5f;
             }
 
@@ -622,6 +661,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             if (jumpCooldown > 0f)
             {
                 jumpCooldown -= Time.fixedDeltaTime;
+                JumpCooldownNetworkVariable.Value = jumpCooldown;
             }
 
             //if moving fast, apply the calculated movement.
@@ -646,12 +686,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
             //applies gravity in the direction of ground normal
             //so player does not slide off within the tolerable angle
-            if(grounder.grounded && !isPlayerDead)
+            if(grounder.grounded && !isPlayerDead && grounder.regroundCooldown <= 0)
             {
                 //lerp from current position to target ground position
                 Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
                 //Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y - grounder.transform.localPosition.y, rb.position.z);
-                targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 7.5f);
+                targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 15f);
                 rb.MovePosition(targetGroundPosition);
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
             }
@@ -876,6 +916,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
             isPlayerDead = true;
             LockMovement(true);
             LockCamera(true);
+            crouching = false;
+            crouchingNetworkVariable.Value = crouching;
             animator.enabled = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.AddTorque(base.transform.right);
@@ -972,18 +1014,23 @@ public class PlayerController : NetworkBehaviour, IDamagable
             {
                 if (dynamicSpeed == 1.5f)
                 {
-                    sprinting.Value = false;
+                    sprinting = false;
+                    sprintingNetworkVariable.Value = false;
                     dynamicSpeed = 2.5f;
                 }
                 else if (dynamicSpeed == 2.5f)
                 {
-                    sprinting.Value = true;
+                    sprinting = true;
+                    sprintingNetworkVariable.Value = true;
                     dynamicSpeed = 1.5f;
+                    crouching = false;
+                    crouchingNetworkVariable.Value = crouching;
                 }
             }
             else
             {
-                sprinting.Value = false;
+                sprinting = false;
+                sprintingNetworkVariable.Value = false;
                 dynamicSpeed = 2.5f;
             }
         }
@@ -995,6 +1042,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             JumpOrClimb();
         }
+    }
+
+    private void Crouch_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            crouching = !crouching;
+            crouchingNetworkVariable.Value = crouching;
+        }
+        
     }
 
     private void ActivateItem_performed(InputAction.CallbackContext context)

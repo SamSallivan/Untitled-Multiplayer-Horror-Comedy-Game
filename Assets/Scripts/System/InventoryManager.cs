@@ -797,32 +797,33 @@ public class InventoryManager : NetworkBehaviour
 
             if (IsHost)
             {
-                UnequipItemClientRpc(equippedItem.NetworkObject);
+                UnequipItemClientRpc(equippedItem.NetworkObject, playerController.NetworkObject);
             }
             else
             {
-                UnequipItemServerRpc(equippedItem.NetworkObject);
+                UnequipItemServerRpc(equippedItem.NetworkObject, playerController.NetworkObject);
             }
         }
         equippedItem = null;
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void UnequipItemServerRpc(NetworkObjectReference inventoryItem)
+    public void UnequipItemServerRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
     {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
-            UnequipItemClientRpc(inventoryItemObject);
+            UnequipItemClientRpc(inventoryItemObject, playerControllerObject);
         }
     }
 
     [ClientRpc]
-    public void UnequipItemClientRpc(NetworkObjectReference inventoryItem)
+    public void UnequipItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
     {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
             inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(false);
             inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = false;
+            playerControllerObject.GetComponent<PlayerController>().currentEquippedItem = null;
         }
     }
 
