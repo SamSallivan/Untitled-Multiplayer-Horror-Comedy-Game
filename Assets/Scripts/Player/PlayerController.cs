@@ -389,7 +389,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        isPlayerDead = false;
         currentHp.Value = maxHp;
+        LockMovement(false);
+        LockCamera(false);
+        animator.enabled = true;
+        rb.rotation = Quaternion.identity;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        RespawnServerRPC();
     }
 
     public void DisconnectClientFromPlayerObject()
