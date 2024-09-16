@@ -201,7 +201,14 @@ public class InventoryManager : NetworkBehaviour
 
     public void UpdateEquippedItem()
     {
-        EquipItem(inventorySlotList[equippedSlotIndex].inventoryItem);
+        if (inventorySlotList[equippedSlotIndex].inventoryItem)
+        {
+            EquipItem(inventorySlotList[equippedSlotIndex].inventoryItem);
+        }
+        else
+        {
+            UnequipItem();
+        }
     }
 
     // public void RequireItemType(ItemData.ItemType type, Action<InventoryItem> action)
@@ -724,45 +731,36 @@ public class InventoryManager : NetworkBehaviour
         slot.amount.text = "";
     }
 
-    public void EquipItem(I_InventoryItem inventoryItem, bool autoUnequip = false)
+    public void EquipItem(I_InventoryItem inventoryItem)
     {
-        if (inventoryItem == null)
+        if (!inventoryItem)
         {
-            UnequipItem();
             return;
         }
+        
         // if (!inventoryItem.itemData.isEquippable)
         // {
         //     return;
         // }
+        
+        UnequipItem();
 
-        if (equippedItem == inventoryItem)
+        equippedItem = inventoryItem;
+        playerController.currentEquippedItem = inventoryItem;
+        playerController.playerAnimationController.armAnimator.SetBool("Equipped", true);
+        playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
+        //inventoryItem.inventorySlot.rightHandIcon.enabled = true;
+
+        //playerController.inventoryAudio.PlayItemEquip();
+
+
+        if (IsHost)
         {
-            if (autoUnequip)
-            {
-                UnequipItem();
-            }
+            EquipItemClientRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
         }
         else
         {
-            UnequipItem();
-
-            equippedItem = inventoryItem;
-            playerController.currentEquippedItem = inventoryItem;
-            inventoryItem.inventorySlot.rightHandIcon.enabled = true;
-
-            //playerController.inventoryAudio.PlayItemEquip();
-
-
-            if (IsHost)
-            {
-                EquipItemClientRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
-            }
-            else
-            {
-                EquipItemServerRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
-            }
-
+            EquipItemServerRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
         }
 
         if (playerController.targetInteractable != null)
@@ -785,9 +783,10 @@ public class InventoryManager : NetworkBehaviour
     {
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(true);
-            inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = true;
+            inventoryItemObject.GetComponent<I_InventoryItem>().OnEquip();
             playerControllerObject.GetComponent<PlayerController>().currentEquippedItem = inventoryItemObject.GetComponent<I_InventoryItem>();
+            playerControllerObject.GetComponent<PlayerController>().playerAnimationController.armAnimator.SetBool("Equipped", true);
+            playerControllerObject.GetComponent<PlayerController>().playerAnimationController.armAnimator.SetTrigger("SwitchItem");
         }
     }
 
@@ -795,10 +794,10 @@ public class InventoryManager : NetworkBehaviour
     {
         //TODO: get unequip sound
         //playerController.inventoryAudio.PlayItemUnequip();
-        
+
         if (equippedItem != null && equippedItem.inventorySlot != null)
         {
-            equippedItem.inventorySlot.rightHandIcon.enabled = false;
+            //equippedItem.inventorySlot.rightHandIcon.enabled = false;
 
             if (IsHost)
             {
@@ -810,6 +809,9 @@ public class InventoryManager : NetworkBehaviour
             }
         }
         equippedItem = null;
+        playerController.currentEquippedItem = null;
+        playerController.playerAnimationController.armAnimator.SetBool("Equipped", false);
+        playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -826,9 +828,10 @@ public class InventoryManager : NetworkBehaviour
     {
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject))
         {
-            inventoryItemObject.GetComponent<I_InventoryItem>().EnableItemMeshes(false);
-            inventoryItemObject.GetComponent<I_InventoryItem>().isCurrentlyEquipped = false;
+            inventoryItemObject.GetComponent<I_InventoryItem>().OnUnequip();
             playerControllerObject.GetComponent<PlayerController>().currentEquippedItem = null;
+            playerControllerObject.GetComponent<PlayerController>().playerAnimationController.armAnimator.SetBool("Equipped", false);
+            playerControllerObject.GetComponent<PlayerController>().playerAnimationController.armAnimator.SetTrigger("SwitchItem");
         }
     }
 

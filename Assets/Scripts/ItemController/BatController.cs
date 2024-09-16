@@ -20,7 +20,11 @@ public class BatController : ItemController
 
     public override void UseItem(bool buttonDown = true)
     {
-        if(buttonDown & cooldown <= 0)
+        if(buttonDown && cooldown <= 0)
+        {
+            
+        }
+        else if (!buttonDown && cooldown <= 0)
         {
             BatSwingServerRpc();
             cooldown = 1;

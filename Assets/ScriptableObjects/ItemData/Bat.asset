@@ -22,3 +22,5 @@ MonoBehaviour:
   dropObject: {fileID: 7074802747145682746, guid: 85e38e86e450d724783feab416cbe01d, type: 3}
   examineScale: 1
   examineRotation: {x: 0.25881904, y: 0, z: 0, w: 0.9659258}
+  equipAnimatorParameter: Bat
+  twoHandAnimation: 1

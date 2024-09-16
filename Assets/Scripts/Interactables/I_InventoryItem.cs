@@ -58,6 +58,26 @@ public class I_InventoryItem : Interactable
         }
     }
 
+    public void OnEquip()
+    {
+        EnableItemMeshes(true);
+        isCurrentlyEquipped = true;
+        if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
+        {
+            owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
+        }
+    }
+    
+    public void OnUnequip()
+    {
+        EnableItemMeshes(false);
+        isCurrentlyEquipped = false;
+        if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
+        {
+            owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
+        }
+    }
+
 	public virtual void LateUpdate()
 	{
         if (owner != null)

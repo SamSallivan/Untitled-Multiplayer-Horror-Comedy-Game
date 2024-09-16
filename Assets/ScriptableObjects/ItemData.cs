@@ -58,6 +58,12 @@ public class ItemData : ScriptableObject
     
     [FoldoutGroup("Settings")]
     public Quaternion examineRotation;
+    
+    [FoldoutGroup("Settings")]
+    public string equipAnimatorParameter;
+    
+    [FoldoutGroup("Settings")]
+    public bool twoHandAnimation = false;
 
     /*[ConditionalField(nameof(isExaminable))]
     public bool isReadable;
