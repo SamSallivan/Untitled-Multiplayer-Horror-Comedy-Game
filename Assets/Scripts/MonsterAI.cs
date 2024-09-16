@@ -99,7 +99,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
                     }
                     else
                     {
-                        //AttachedUpdate();
+                        AttachedUpdate();
                     }
 
                 }
@@ -110,13 +110,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         
     }
 
-    private void FixedUpdate()
-    {
-        if (monState == MonsterState.Attached)
-        {
-            AttachedUpdate();
-        }
-    }
+
 
 
     public void AttachedUpdate()
