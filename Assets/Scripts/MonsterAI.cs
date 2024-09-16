@@ -33,24 +33,21 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     
     
     //Jump Attack
-    
+
+
+    public float JumpTriggerDist = 4f;
     public float attackDamage;
 
     
     public float maxJumpCD=3f;
 
-    public float currentJumpCD = 0f;
+    float currentJumpCD = 0f;
 
+    
     public float maxAttackCD=3f;
 
-    public float currentAttackCD = 0f;
-
-    public Vector3 attackOffset;
-
-    public float attackRadius = 1f;
-
-    public LayerMask attackMask;
-
+    float currentAttackCD = 0f;
+    
     public float jumpForce;
     public float thrustForce;
 
@@ -153,9 +150,9 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         {
             if (target != null)
             {
-                if (Vector3.Distance(transform.position, target.position) <= 3f)
+                if (Vector3.Distance(transform.position, target.position) <= JumpTriggerDist)
                 {
-                    currentJumpCD = maxJumpCD;
+                    
                     StartCoroutine(Jump());
                 }
             }
@@ -169,24 +166,26 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     public IEnumerator Jump()
     {
         
+        monState = MonsterState.Attacking;
         yield return new WaitForSeconds(0.5f);
         transform.LookAt(target.position);
         _agent.enabled = false;
-        monState = MonsterState.Attacking;
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
+        rb.velocity = Vector3.zero;
         rb.AddForce(transform.up*jumpForce+transform.forward*thrustForce,ForceMode.Impulse);
         //AttackClientRpc();
         stuckHitbox.SetActive(true);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         stuckHitbox.SetActive(false);
         if (monState == MonsterState.Attached)
             yield break;
-
+        yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() =>
-            NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 1f, _agent.areaMask));
-        rb.velocity = Vector3.zero;
+            NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 0.5f, _agent.areaMask));
         _agent.enabled = true;
+        rb.velocity = Vector3.zero;
         monState = MonsterState.Chasing;
+        currentJumpCD = maxJumpCD;
     }
     
     //[ClientRpc]
@@ -284,10 +283,6 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         {
             GetComponent<Collider>().isTrigger = false;
             attatchedPlayer = null;
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
-            {
-                _agent.Warp(hit.position+ new Vector3(0,2,0));
-            }
         }
         
         rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
