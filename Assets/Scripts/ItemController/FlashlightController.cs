@@ -18,14 +18,8 @@ public class FlashlightController : ItemController
             SyncLightServerRpc();
         }
     }
-    
-    public override void UseItem(bool buttonDown = true)
-    {
-        if(buttonDown)
-            ToggleLightServerRpc();
-    }
 
-    void Update()
+    public override void ItemUpdate()
     {   
         if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameSessionManager.Instance.localPlayerController)
         {
@@ -34,6 +28,11 @@ public class FlashlightController : ItemController
                 ToggleLightServerRpc();
             }
         }
+    }
+
+    public override void Activate()
+    {
+        ToggleLightServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]

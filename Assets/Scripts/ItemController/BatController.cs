@@ -7,18 +7,14 @@ using System.Linq;
 public class BatController : ItemController
 {
     public float damage;
-    public float cooldown;
     public LayerMask attackMask;
 
-    public void Update()
+    public override void Update()
     {
-        if (cooldown >= 0)
-        {
-            cooldown -= Time.deltaTime;
-        }
+        base.Update();
     }
 
-    public override void UseItem(bool buttonDown = true)
+    /*public override void UseItem(bool buttonDown = true)
     {
         if(buttonDown && cooldown <= 0)
         {
@@ -29,6 +25,20 @@ public class BatController : ItemController
             BatSwingServerRpc();
             cooldown = 1;
         }
+    }*/
+    
+    
+    /*public override void OnButtonHeld()
+    {
+    }
+    
+    public override void OnButtonReleased()
+    {
+    }*/
+
+    public override void Activate()
+    {
+        BatSwingServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]

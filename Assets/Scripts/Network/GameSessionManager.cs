@@ -297,7 +297,7 @@ public class GameSessionManager : NetworkBehaviour
 			//Reinitialize NfgoPlayer Component Tracking for every PlayerController on all clients
 			foreach (PlayerController playerController1 in playerControllerList)
 			{
-				if (playerController1.GetComponent<NfgoPlayer>() && !playerController.GetComponent<NfgoPlayer>().IsTracking)
+				if (playerController1.GetComponent<NfgoPlayer>() && !playerController1.GetComponent<NfgoPlayer>().IsTracking)
 				{
 					playerController1.GetComponent<NfgoPlayer>().InitializeVoiceChatTracking();
 				}

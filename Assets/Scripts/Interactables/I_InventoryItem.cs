@@ -76,6 +76,11 @@ public class I_InventoryItem : Interactable
         {
             owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
         }
+
+        if (TryGetComponent<ItemController>(out var itemController))
+        {
+            itemController.HoldItemServerRpc(false);
+        }
     }
 
 	public virtual void LateUpdate()

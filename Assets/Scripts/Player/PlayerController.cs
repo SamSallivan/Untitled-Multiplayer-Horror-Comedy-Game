@@ -1063,7 +1063,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 if (InventoryManager.instance.equippedItem.GetComponent<ItemController>()) 
                 {
                     InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(true);
-                    ActivateItemServerRpc(true);
                 }
             }
         }
@@ -1078,30 +1077,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 if (InventoryManager.instance.equippedItem.GetComponent<ItemController>()) 
                 {
                     InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(false);
-                    ActivateItemServerRpc(false);
                 }
             }
         }
-    }
-
-    [ServerRpc]
-    public void ActivateItemServerRpc(bool buttonDown)
-    {
-        ActivateItemClientRpc(buttonDown);
-    }
-    
-    [ClientRpc]
-    public void ActivateItemClientRpc(bool buttonDown)
-    {
-        if (buttonDown)
-        {
-            playerAnimationController.armAnimator.ResetTrigger("Activate");
-        }
-        else
-        {
-            playerAnimationController.armAnimator.SetTrigger("Activate");
-        }
-        playerAnimationController.armAnimator.SetBool("Held", buttonDown);
     }
 
     private void Discard_performed(InputAction.CallbackContext context)
