@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -4716824821733182158}
   - component: {fileID: -8156527071672678044}
   m_Layer: 0
-  m_Name: SpatializedPlaybackPrefab
+  m_Name: PlayerVoicePlaybackObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -253,10 +253,11 @@ MonoBehaviour:
   occluderMask:
     serializedVersion: 2
     m_Bits: 1
-  useReverb: 0
+  occluded: 0
+  updateOcclusionCooldown: 0
+  updateOcclusionCooldownSetting: 0.5
   overridingLowPass: 0
   lowPassOverride: 20000
-  debugLog: 0
 --- !u!164 &-8156527071672678044
 AudioReverbFilter:
   m_ObjectHideFlags: 0

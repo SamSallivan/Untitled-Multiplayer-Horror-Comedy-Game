@@ -2,7 +2,7 @@ using Dissonance;
 using Dissonance.Audio.Playback;
 using UnityEngine;
 
-public class PlayerVoiceIngameSettings : MonoBehaviour
+public class PlayerVoicePlaybackObject : MonoBehaviour
 {
 	public AudioReverbFilter filter;
 
@@ -27,8 +27,8 @@ public class PlayerVoiceIngameSettings : MonoBehaviour
 	{
 		_playbackComponent = GetComponent<VoicePlayback>();
 		_dissonanceComms = Object.FindObjectOfType<DissonanceComms>();
-		filter = base.gameObject.GetComponent<AudioReverbFilter>();
-		voiceAudio = base.gameObject.GetComponent<AudioSource>();
+		filter = GetComponent<AudioReverbFilter>();
+		voiceAudio = GetComponent<AudioSource>();
 	}
 
 	private void LateUpdate()

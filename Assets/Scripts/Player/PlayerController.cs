@@ -25,13 +25,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public I_InventoryItem currentEquippedItem;
 
     [FoldoutGroup("Voice Chat")]
+    public PlayerVoicePlaybackObject playerVoiceChatPlaybackObject;
+
+    [FoldoutGroup("Voice Chat")]
     public VoicePlayerState voicePlayerState;
 
     [FoldoutGroup("Voice Chat")]
-    public AudioSource currentVoiceChatAudioSource;
-
-    [FoldoutGroup("Voice Chat")]
-    public PlayerVoiceIngameSettings currentVoiceChatIngameSettings;
+    public AudioSource playerVoiceChatAudioSource;
 
     [FoldoutGroup("Networks")]
     public string playerUsername = "Player";
@@ -50,9 +50,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Networks")]
     public bool controlledByClient;
-
-    [FoldoutGroup("Networks")]
-    public bool isPlayerDead;
 
     [FoldoutGroup("Networks")]
     public bool awaitInitialization;
@@ -256,6 +253,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     
     [FoldoutGroup("Interaction")]
     public LayerMask interactableLayer;
+
+    [FoldoutGroup("Health")]
+    public bool isPlayerDead;
 
     [FoldoutGroup("Health")] 
     public float maxHp = 100f;

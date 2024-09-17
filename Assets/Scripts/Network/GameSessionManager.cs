@@ -403,7 +403,7 @@ public class GameSessionManager : NetworkBehaviour
         	PlayerController playerController = playerControllerList[playerId].GetComponent<PlayerController>();
 			//Drop all inventory items
 
-			Destroy(playerController.currentVoiceChatIngameSettings.gameObject);
+			Destroy(playerController.playerVoiceChatPlaybackObject.gameObject);
 			playerController.GetComponent<NfgoPlayer>().StopTracking();
 
             if (!NetworkManager.Singleton.ShutdownInProgress && base.IsServer)
@@ -456,20 +456,20 @@ public class GameSessionManager : NetworkBehaviour
 				continue;
 			}
 
-			if (playerController.voicePlayerState == null || playerController.currentVoiceChatIngameSettings._playerState == null || playerController.currentVoiceChatAudioSource == null)
+			if (playerController.voicePlayerState == null || playerController.playerVoiceChatPlaybackObject._playerState == null || playerController.playerVoiceChatAudioSource == null)
 			{
 				RefreshPlayerVoicePlaybackObjects();
-				if (playerController.voicePlayerState == null || playerController.currentVoiceChatAudioSource == null)
+				if (playerController.voicePlayerState == null || playerController.playerVoiceChatAudioSource == null)
 				{
 					Debug.Log($"Unable to access voice chat object for {playerController.name}");
 					continue;
 				}
 			}
 			
-			AudioSource currentVoiceChatAudioSource = playerController.currentVoiceChatAudioSource;
+			AudioSource currentVoiceChatAudioSource = playerController.playerVoiceChatAudioSource;
 			AudioLowPassFilter lowPassFilter = currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>();
 			AudioHighPassFilter highPassFilter = currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>();
-			OccludeAudio occludeAudio = currentVoiceChatAudioSource.GetComponent<OccludeAudio>();
+			AudioOccluder audioOccluder = currentVoiceChatAudioSource.GetComponent<AudioOccluder>();
 			
 			if (playerController.isPlayerDead)
 			{ 
@@ -479,13 +479,13 @@ public class GameSessionManager : NetworkBehaviour
 				if (localPlayerController.isPlayerDead)
 				{
 			 		currentVoiceChatAudioSource.spatialBlend = 0f;
-			 		playerController.currentVoiceChatIngameSettings.set2D = true;
+			 		playerController.playerVoiceChatPlaybackObject.set2D = true;
 			 		playerController.voicePlayerState.Volume = 1f;
 				}
 				else
 				{
 			 		currentVoiceChatAudioSource.spatialBlend = 1f;
-			 		playerController.currentVoiceChatIngameSettings.set2D = false;
+			 		playerController.playerVoiceChatPlaybackObject.set2D = false;
 			 		playerController.voicePlayerState.Volume = 0f;
 				}
 				continue;
@@ -496,9 +496,9 @@ public class GameSessionManager : NetworkBehaviour
 			if (!flag)
 			{
 				highPassFilter.enabled = false;
-				occludeAudio.overridingLowPass = false;// || playerController.voiceMuffledByEnemy;
+				audioOccluder.overridingLowPass = false;// || playerController.voiceMuffledByEnemy;
 				currentVoiceChatAudioSource.spatialBlend = 1f;
-				playerController.currentVoiceChatIngameSettings.set2D = false;
+				playerController.playerVoiceChatPlaybackObject.set2D = false;
 				currentVoiceChatAudioSource.bypassListenerEffects = false;
 				currentVoiceChatAudioSource.bypassEffects = false;
 				//currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
@@ -546,7 +546,7 @@ public class GameSessionManager : NetworkBehaviour
 			return;
 		}
 
-		PlayerVoiceIngameSettings[] array = UnityEngine.Object.FindObjectsOfType<PlayerVoiceIngameSettings>(includeInactive: true);
+		PlayerVoicePlaybackObject[] array = UnityEngine.Object.FindObjectsOfType<PlayerVoicePlaybackObject>(includeInactive: true);
 		Debug.Log($"Refreshing voice playback objects. Number of voice objects found: {array.Length}");
 
 		foreach (PlayerController playerController in playerControllerList)
@@ -579,8 +579,8 @@ public class GameSessionManager : NetworkBehaviour
 				{
 					Debug.Log($"Found a match for voice object #{j} and player object {playerController.name}");
 					playerController.voicePlayerState = array[j]._playerState;
-					playerController.currentVoiceChatAudioSource = array[j].voiceAudio;
-					playerController.currentVoiceChatIngameSettings = array[j];
+					playerController.playerVoiceChatAudioSource = array[j].voiceAudio;
+					playerController.playerVoiceChatPlaybackObject = array[j];
 					//playerController.currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
 				}
 			}
