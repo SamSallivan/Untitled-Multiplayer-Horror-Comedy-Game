@@ -16,14 +16,7 @@ public class PlayerVoicePlaybackObject : MonoBehaviour
 
 	public bool set2D;
 
-	private bool isEnabled;
-
 	private void Awake()
-	{
-		InitializeComponents();
-	}
-
-	public void InitializeComponents()
 	{
 		_playbackComponent = GetComponent<VoicePlayback>();
 		_dissonanceComms = Object.FindObjectOfType<DissonanceComms>();
@@ -31,65 +24,30 @@ public class PlayerVoicePlaybackObject : MonoBehaviour
 		voiceAudio = GetComponent<AudioSource>();
 	}
 
-	private void LateUpdate()
-	{
-		if (isEnabled)
-		{
-			if (voiceAudio == null)
-			{
-				voiceAudio = base.gameObject.GetComponent<AudioSource>();
-			}
-			if (set2D)
-			{
-				voiceAudio.spatialBlend = 0f;
-			}
-			else
-			{
-				voiceAudio.spatialBlend = 1f;
-			}
-		}
-	}
-
 	private void OnEnable()
 	{
-		isEnabled = true;
-		if (_playbackComponent == null)
-		{
-			InitializeComponents();
-			if (_playbackComponent == null)
-			{
-				return;
-			}
-		}
 		_playerState = _dissonanceComms.FindPlayer(_playbackComponent.PlayerName);
+	}
+
+	private void LateUpdate()
+	{
+		if (set2D)
+		{
+			voiceAudio.spatialBlend = 0f;
+		}
+		else
+		{
+			voiceAudio.spatialBlend = 1f;
+		}
 	}
 
 	public void FindPlayerIfNull()
 	{
-		if (_playerState == null)
+		if (string.IsNullOrEmpty(_playbackComponent.PlayerName))
 		{
-			if (_playbackComponent == null)
-			{
-				InitializeComponents();
-				if (_playbackComponent == null)
-				{
-					return;
-				}
-			}
-			if (string.IsNullOrEmpty(_playbackComponent.PlayerName))
-			{
-				return;
-			}
-			_playerState = _dissonanceComms.FindPlayer(_playbackComponent.PlayerName);
+			return;
 		}
-		InitializeComponents();
-	}
-
-	private void OnDisable()
-	{
-		isEnabled = false;
-		voiceAudio = null;
-		filter = null;
-		_playerState = null;
+		
+		_playerState = _dissonanceComms.FindPlayer(_playbackComponent.PlayerName);
 	}
 }
