@@ -56,11 +56,18 @@ public class BatController : ItemController
         for (int i = 0; i < hitList.Count; i++)
         {
             IDamagable component;
+            Rigidbody rb;
+            
             if (hitList[i].transform.TryGetComponent<IDamagable>(out component) && hitList[i].transform != owner.transform)
             {
                 Vector3 direction = owner.headTransform.forward;
                 component.TakeDamage(damage, direction);
-                Debug.Log(hitList[i].transform.gameObject);
+            }
+            
+            else if (hitList[i].transform.TryGetComponent<Rigidbody>(out rb) && hitList[i].transform != owner.transform)
+            {
+                Vector3 direction = owner.headTransform.forward;
+                rb.AddForce(direction * damage, ForceMode.Impulse);
             }
         }
         
