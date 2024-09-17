@@ -464,10 +464,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [Rpc(SendTo.Everyone)]
     private void UpdatePlayerUsernameClientRpc(int playerId)
     {
-        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
-        string playerName = new Friend(playerController.localSteamId.Value).Name;
-        playerController.playerUsername = playerName;
-        playerController.playerUsernameText.text = playerName;
+        foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
+        {
+            string playerName = new Friend(playerController.localSteamId.Value).Name;
+            playerController.playerUsername = playerName;
+            playerController.playerUsernameText.text = playerName;
+        }
         
     }
 
