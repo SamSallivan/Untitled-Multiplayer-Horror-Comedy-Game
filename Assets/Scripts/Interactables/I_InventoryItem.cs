@@ -79,7 +79,7 @@ public class I_InventoryItem : Interactable
 
         if (TryGetComponent<ItemController>(out var itemController))
         {
-            itemController.HoldItemServerRpc(false);
+            itemController.HoldItemClientRpc(false);
         }
     }
 
@@ -194,14 +194,14 @@ public class I_InventoryItem : Interactable
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server)]
     public void SyncItemStateServerRpc()
     {
         int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
         SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics, itemStatus.amount, inStorageBox);
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void SyncItemStateClientRpc(int ownerPlayerId, bool isCurrentlyEquipped, bool enableMeshes, bool enablePhysics, int amount, bool inStorageBox)
     {
         if(ownerPlayerId != -1)
@@ -256,23 +256,10 @@ public class I_InventoryItem : Interactable
         //     storageItemListNetworkObject.Add(storageItem.NetworkObject);
         // }
 
-        if(IsServer)
-        {
-            OnSetInventorySlotClientRpc(inStorageBox, inventoryItemListNetworkObject.ToArray(), storageItemListNetworkObject.ToArray());
-        }
-        else
-        {
-            OnSetInventorySlotServerRpc(inStorageBox, inventoryItemListNetworkObject.ToArray(), storageItemListNetworkObject.ToArray());
-        }
+        OnSetInventorySlotClientRpc(inStorageBox, inventoryItemListNetworkObject.ToArray(), storageItemListNetworkObject.ToArray());
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void OnSetInventorySlotServerRpc(bool inStorageBox, NetworkObjectReference[] inventoryItemListReference, NetworkObjectReference[] storageItemListReference)
-    {
-        OnSetInventorySlotClientRpc(inStorageBox, inventoryItemListReference, storageItemListReference);
-    }
-
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void OnSetInventorySlotClientRpc(bool inStorageBox, NetworkObjectReference[] inventoryItemListReference, NetworkObjectReference[] storageItemListReference)
     {
         this.inStorageBox = inStorageBox;

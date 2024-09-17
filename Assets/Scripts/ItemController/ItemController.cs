@@ -47,13 +47,13 @@ public class ItemController : NetworkBehaviour
         {
             buttonHeld = true;
             OnButtonHeld();
-            HoldItemServerRpc(true);
+            HoldItemClientRpc(true);
         }
         else if (!buttonDown)
         {
             buttonHeld = false;
             OnButtonReleased();
-            HoldItemServerRpc(false);
+            HoldItemClientRpc(false);
         }
     }
 
@@ -66,7 +66,7 @@ public class ItemController : NetworkBehaviour
         if (heldTime > minHeldTime && cooldown <= 0)
         {
             cooldown = cooldownSetting;
-            ActivateItemServerRpc();
+            ActivateItemClientRpc();
             Activate();
         }
     }
@@ -74,26 +74,14 @@ public class ItemController : NetworkBehaviour
     public virtual void Activate()
     {
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void ActivateItemServerRpc()
-    {
-        ActivateItemClientRpc();
-    }
     
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void ActivateItemClientRpc()
     {
         inventoryItem.owner.playerAnimationController.armAnimator.SetTrigger("Activate");
     }
     
-    [ServerRpc(RequireOwnership = false)]
-    public void HoldItemServerRpc(bool buttonDown)
-    {
-        HoldItemClientRpc(buttonDown);
-    }
-    
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void HoldItemClientRpc(bool buttonDown)
     {
         if (inventoryItem.owner != null)

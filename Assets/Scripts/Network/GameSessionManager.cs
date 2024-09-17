@@ -314,7 +314,7 @@ public class GameSessionManager : NetworkBehaviour
             {
 	            if (localPlayerController.currentEquippedItem != null)
 	            {
-		            InventoryManager.instance.EquipItemServerRpc(
+		            InventoryManager.instance.EquipItemClientRpc(
 			            localPlayerController.currentEquippedItem.NetworkObject, localPlayerController.NetworkObject);
 	            }
             }

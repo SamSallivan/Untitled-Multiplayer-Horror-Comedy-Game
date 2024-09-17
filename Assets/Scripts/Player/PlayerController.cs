@@ -770,6 +770,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
             targetInteractable.UnTarget();
             targetInteractable = null;
         }
+        else
+        {
+            UIManager.instance.interactionName.text = "";
+            UIManager.instance.interactionPrompt.text = "";
+        }
     }
     
     #endregion
