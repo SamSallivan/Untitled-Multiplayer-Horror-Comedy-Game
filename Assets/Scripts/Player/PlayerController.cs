@@ -405,7 +405,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         LockMovement(false);
         LockCamera(false);
         animator.enabled = true;
-        RespawnServerRPC();
+        RespawnClientRpc();
     }
 
     public void DisconnectClientFromPlayerObject()
@@ -952,17 +952,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
             LockCamera(false);
             animator.enabled = true;
             TeleportPlayer(GameSessionManager.Instance.spawnTransform.position);
-            RespawnServerRPC();
+            RespawnClientRpc();
         }
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void RespawnServerRPC()
-    {
-        RespawnClientRpc();
-    }
     
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void RespawnClientRpc()
     {
         isPlayerDead = false;
