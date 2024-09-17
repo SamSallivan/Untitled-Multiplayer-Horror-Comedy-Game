@@ -87,10 +87,7 @@ namespace Dissonance.Integrations.Unity_NFGO
 
                 // If Dissonance has been started set the local player name to the correct value
                 if (_comms.LocalPlayerName != null){
-                    if(base.IsServer)
                         SetNameClientRpc(_comms.LocalPlayerName);
-                    if(base.IsClient)
-                        SetNameServerRpc(_comms.LocalPlayerName);
                 }
 
                 // It's possible the name will change in the future (if Dissonance is restarted)
@@ -111,13 +108,13 @@ namespace Dissonance.Integrations.Unity_NFGO
 			hasStartedTracking = true;
         }
 
-        [ServerRpc]
+        /*[ServerRpc]
         public void SetNameServerRpc(string playerName)
         {
             SetNameClientRpc(playerName);
-        }
+        }*/
 
-        [ClientRpc]
+        [Rpc(SendTo.Everyone)]
         public void SetNameClientRpc(string playerName)
         {
             PlayerId = playerName;

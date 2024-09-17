@@ -252,7 +252,7 @@ public class GameSessionManager : NetworkBehaviour
 
     }
 
-	[ClientRpc]
+	[Rpc(SendTo.Everyone)]
 	private void OnClientConnectedGameSessionClientRpc(ulong clientId, int targetPlayerId, ulong[] connectedClientIds, int[] connectedPlayerIds)
 	{
 		if (NetworkManager == null || !NetworkManager.IsListening)
@@ -374,7 +374,7 @@ public class GameSessionManager : NetworkBehaviour
 		}
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
 	public void OnClientDisconnectedGameSessionClientRpc(ulong clientId, int playerId)
 	{
         if (!ClientIdToPlayerIdDictionary.ContainsKey(clientId))
@@ -382,7 +382,7 @@ public class GameSessionManager : NetworkBehaviour
             Debug.Log("OnClientDisconnectClientRpc: Target clientId key already removed, ignoring");
             return;
         }
-        if (localPlayerController != null && clientId == localPlayerController.localPlayerId)
+        if (localPlayerController != null && playerId == localPlayerController.localPlayerId)
         {
             Debug.Log("OnClientDisconnectClientRpc: Local client disconnecting, ignoring");
             return;

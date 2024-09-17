@@ -46,8 +46,11 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        currentGameState.Value = GameState.NotStarted;
-        matchTimer.Value = preExtractionTime;
+        if (IsServer)
+        {
+            currentGameState.Value = GameState.NotStarted;
+            matchTimer.Value = preExtractionTime;
+        }
     }
 
     // Start is called before the first frame update

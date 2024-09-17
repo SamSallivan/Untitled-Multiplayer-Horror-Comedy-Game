@@ -37,13 +37,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public string playerUsername = "Player";
 
     [FoldoutGroup("Networks")]
-    public ulong localPlayerId;
+    public int localPlayerId;
 
     [FoldoutGroup("Networks")]
     public ulong localClientId;
 
+    /*[FoldoutGroup("Networks")]
+	public ulong localSteamId;*/
+
     [FoldoutGroup("Networks")]
-	public ulong localSteamId;
+    public NetworkVariable<ulong> localSteamId = new (writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Networks")]
     public bool controlledByClient;
@@ -124,7 +127,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public Vector3 inputDir;
     
     [FoldoutGroup("Inputs")]
-    public NetworkVariable<Vector3> inputDirNetworkVariable = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<Vector3> inputDirNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Settings")]
     public bool enableMovement = true;
@@ -139,13 +142,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public bool sprinting;
     
     [FoldoutGroup("Physics Based Movements")]
-    public NetworkVariable<bool> sprintingNetworkVariable = new NetworkVariable<bool>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<bool> sprintingNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
     
     [FoldoutGroup("Physics Based Movements")]
     public bool crouching;
     
     [FoldoutGroup("Physics Based Movements")]
-    public NetworkVariable<bool> crouchingNetworkVariable = new NetworkVariable<bool>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<bool> crouchingNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Physics Based Movements")]
     public float dynamicSpeedSprint = 1f;
@@ -154,7 +157,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public Vector3 vel;
     
     [FoldoutGroup("Physics Based Movements")]
-    public NetworkVariable<Vector3> velNetworkVariable = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<Vector3> velNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Physics Based Movements")]
     public Vector3 gVel;
@@ -190,7 +193,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float jumpCooldown;
     
     [FoldoutGroup("Physics Based Movements")]
-    public NetworkVariable<float> JumpCooldownNetworkVariable = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<float> JumpCooldownNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
     
     [FoldoutGroup("Physics Based Movements")]
     public float jumpCooldownSetting = 0.5f;
@@ -255,7 +258,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float maxHp = 100f;
 
     [FoldoutGroup("Health")] 
-    public NetworkVariable<float> currentHp = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<float> currentHp = new (100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Health")] 
     public GameObject ragdollPrefab;
@@ -305,7 +308,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerInputActions.FindAction("Jump").performed -= Jump_performed;
         playerInputActions.FindAction("Crouch").performed -= Crouch_performed;
         playerInputActions.FindAction("ActivateItem").performed -= ActivateItem_performed;
-        //playerInputActions.FindAction("ActivateItem").canceled -= ActivateItem_canceled;
+        playerInputActions.FindAction("ActivateItem").canceled -= ActivateItem_canceled;
         // playerInputActions.FindAction("ItemSecondaryUse").performed -= ItemSecondaryUse_performed;
         playerInputActions.FindAction("Interact").performed -= Interact_performed;
         playerInputActions.FindAction("Discard").performed -= Discard_performed;
@@ -376,7 +379,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             GameNetworkManager.Instance.localSteamClientUsername = SteamClient.Name.ToString();
             playerUsername = GameNetworkManager.Instance.localSteamClientUsername;
-            UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
+            localSteamId.Value = SteamClient.SteamId;
+            //UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
+            UpdatePlayerUsernameClientRpc(localPlayerId);
         }
 
         //GameSessionManager.Instance.spectateCamera.enabled = false;
@@ -409,7 +414,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         Cursor.visible = true;
     }
 
-    [ServerRpc]
+    /*[ServerRpc]
     private void UpdatePlayerSteamIdServerRpc(ulong steamId)
     {
         if (!GameNetworkManager.Instance.steamDisabled && GameNetworkManager.Instance.currentSteamLobby.HasValue)
@@ -430,20 +435,20 @@ public class PlayerController : NetworkBehaviour, IDamagable
             }
             else
             {
-                steamIdList.Add(GameSessionManager.Instance.playerControllerList[i].localSteamId);
+                steamIdList.Add(GameSessionManager.Instance.playerControllerList[i].localSteamId.Value);
             }
         }
 
         UpdatePlayerSteamIdClientRpc(steamIdList.ToArray());
 
-    }
+    }*/
 
-    [ClientRpc]
+    /*[ClientRpc]
     private void UpdatePlayerSteamIdClientRpc(ulong[] steamIdList)
     {
         for (int i = 0; i < steamIdList.Length; i++)
         {
-            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient) // || GameSessionManager.Instance.playerControllerList[i].isPlayerSpectating)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
             {
                 GameSessionManager.Instance.playerControllerList[i].localSteamId = steamIdList[i];
 
@@ -454,16 +459,21 @@ public class PlayerController : NetworkBehaviour, IDamagable
             }
         }
 
+    }*/
+    
+    [Rpc(SendTo.Everyone)]
+    private void UpdatePlayerUsernameClientRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        string playerName = new Friend(playerController.localSteamId.Value).Name;
+        playerController.playerUsername = playerName;
+        playerController.playerUsernameText.text = playerName;
+        
     }
 
     [Button]
     public void TeleportPlayer(Vector3 targetPosition)
     {
-        // bool flag = rb.isKinematic;
-        // rb.isKinematic = true;
-        // playerServerPosition = targetPosition;
-        // base.transform.position = targetPosition;
-        // rb.isKinematic = flag;
         rb.position = targetPosition;
     }
 
@@ -551,23 +561,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         crouching = false;
         crouchingNetworkVariable.Value = crouching;
-
-        //animator.SetTrigger("Jump");
-        //AnimatorSetTriggerServerRpc("Jump");
-
+        
         //playerAudio.PlayJumpSound();
-    }
-
-    [ServerRpc]
-    private void AnimatorSetTriggerServerRpc(string triggerName)
-    {
-        AnimatorSetTriggerClientRpc(triggerName);
-    }
-    
-    [ClientRpc]
-    private void AnimatorSetTriggerClientRpc(string triggerName)
-    {
-        animator.SetTrigger(triggerName);
     }
 
     private void Climb(Vector3 targetPos)
@@ -617,18 +612,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 break;
         }
     }
-
-    // public void WalkSoundUpdate()
-    // {
-    //     if (grounder.grounded && (inputDir != Vector3.zero))
-    //     {
-    //         StartCoroutine(playerAudio.PlayWalkSound());
-    //     }
-    //     else
-    //     {
-    //         StartCoroutine(playerAudio.StopWalkSound());
-    //     }
-    // }
 
     public void MovementUpdate()
     {
@@ -931,18 +914,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
             crouchingNetworkVariable.Value = crouching;
             animator.enabled = false;
             InventoryManager.instance.DropAllItemsFromInventory();
-            DieServerRPC();
+            DieClientRpc();
             InstantiateRagdollServerRPC();
         }
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void DieServerRPC()
-    {
-        DieClientRpc();
-    }
-
-    [ClientRpc]
+    
+    [Rpc(SendTo.Everyone)]
     public void DieClientRpc()
     {
         isPlayerDead = true;
@@ -956,8 +933,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         playerCollider.enabled = false;
     }
-
-    [ServerRpc(RequireOwnership = false)]
+    
+    [Rpc(SendTo.Server)]
     public void InstantiateRagdollServerRPC()
     {
         GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, transform.GetChild(0).rotation);
