@@ -413,53 +413,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
     }
-
-    /*[ServerRpc]
-    private void UpdatePlayerSteamIdServerRpc(ulong steamId)
-    {
-        if (!GameNetworkManager.Instance.steamDisabled && GameNetworkManager.Instance.currentSteamLobby.HasValue)
-        {
-            if (!GameNetworkManager.Instance.steamIdsInCurrentSteamLobby.Contains(steamId))
-            {
-                NetworkManager.Singleton.DisconnectClient(localPlayerId);
-                return;
-            }
-        }
-
-        List<ulong> steamIdList = new List<ulong>();
-        for (int i = 0; i < 4; i++)
-        {
-            if (i == (int)localPlayerId)
-            {
-                steamIdList.Add(steamId);
-            }
-            else
-            {
-                steamIdList.Add(GameSessionManager.Instance.playerControllerList[i].localSteamId.Value);
-            }
-        }
-
-        UpdatePlayerSteamIdClientRpc(steamIdList.ToArray());
-
-    }*/
-
-    /*[ClientRpc]
-    private void UpdatePlayerSteamIdClientRpc(ulong[] steamIdList)
-    {
-        for (int i = 0; i < steamIdList.Length; i++)
-        {
-            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
-            {
-                GameSessionManager.Instance.playerControllerList[i].localSteamId = steamIdList[i];
-
-                string playerName = new Friend(steamIdList[i]).Name;
-                GameSessionManager.Instance.playerControllerList[i].playerUsername = playerName;
-                GameSessionManager.Instance.playerControllerList[i].playerUsernameText.text = playerName;
-
-            }
-        }
-
-    }*/
     
     IEnumerator UpdatePlayerUsernameCoroutine()
     {
