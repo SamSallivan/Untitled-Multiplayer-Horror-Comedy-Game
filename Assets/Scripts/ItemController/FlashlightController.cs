@@ -6,24 +6,20 @@ using Unity.Netcode;
 public class FlashlightController : ItemController
 {
     public GameObject light;
-    public bool activated;
+    public NetworkVariable<bool> activated;
 
     public override void  OnNetworkSpawn(){
         base.OnNetworkSpawn();
-
-        if(IsServer){
-            SyncLightClientRpc(activated);
-        }
-        else{
-            SyncLightServerRpc();
-        }
+        //SyncLightServerRpc();
+        light.SetActive(activated.Value);
+        activated.OnValueChanged += OnActivatedChanged;
     }
 
     public override void ItemUpdate()
     {   
         if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameSessionManager.Instance.localPlayerController)
         {
-            if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped & activated) 
+            if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped & activated.Value) 
             {
                 ToggleLightServerRpc();
             }
@@ -35,25 +31,24 @@ public class FlashlightController : ItemController
         ToggleLightServerRpc();
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server)]
     public void ToggleLightServerRpc(){
-        ToggleLightClientRpc();
+        activated.Value = !activated.Value;
     }
 
-    [ClientRpc]
-    public void ToggleLightClientRpc(){
-        activated = !activated;
-        light.SetActive(activated);
+    public void OnActivatedChanged(bool previous, bool current)
+    {
+        light.SetActive(activated.Value);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    /*[Rpc(SendTo.Server)]
     public void SyncLightServerRpc(){
         SyncLightClientRpc(activated);
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void SyncLightClientRpc(bool state){
         activated = state;
         light.SetActive(activated);
-    }
+    }*/
 }

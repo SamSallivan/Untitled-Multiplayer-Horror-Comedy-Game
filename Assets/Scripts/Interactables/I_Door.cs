@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -8,6 +9,7 @@ public class I_Door : Interactable
     private NetworkVariable<bool> open = new NetworkVariable<bool>();
     public Vector3 openRotation;
     public Vector3 closedRotation;
+    public float doorRotationInterpolationSpeed = 5f;
     
     public override void OnNetworkSpawn()
     {
@@ -33,7 +35,7 @@ public class I_Door : Interactable
         yield return null; 
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server)]
     public void ToggleDoorServerRPC()
     {
         open.Value = !open.Value;
@@ -46,12 +48,24 @@ public class I_Door : Interactable
         {
             
             activated = true;
-            transform.localEulerAngles = openRotation;
+            //transform.localEulerAngles = openRotation;
         }
         else
         {
             activated = false;
-            transform.localEulerAngles = closedRotation;
+            //transform.localEulerAngles = closedRotation;
+        }
+    }
+
+    public void Update()
+    {
+        if (open.Value)
+        {
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(openRotation), Time.deltaTime * doorRotationInterpolationSpeed);
+        }
+        else
+        {
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(closedRotation), Time.deltaTime * doorRotationInterpolationSpeed);
         }
     }
 }

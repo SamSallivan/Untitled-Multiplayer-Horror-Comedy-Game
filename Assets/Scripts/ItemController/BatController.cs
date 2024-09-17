@@ -13,20 +13,6 @@ public class BatController : ItemController
     {
         base.Update();
     }
-
-    /*public override void UseItem(bool buttonDown = true)
-    {
-        if(buttonDown && cooldown <= 0)
-        {
-            
-        }
-        else if (!buttonDown && cooldown <= 0)
-        {
-            BatSwingServerRpc();
-            cooldown = 1;
-        }
-    }*/
-    
     
     /*public override void OnButtonHeld()
     {
@@ -38,16 +24,10 @@ public class BatController : ItemController
 
     public override void Activate()
     {
-        BatSwingServerRpc();
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void BatSwingServerRpc()
-    {
         BatSwingClientRpc();
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.Everyone)]
     public void BatSwingClientRpc()
     {
         PlayerController owner = GetComponent<I_InventoryItem>().owner;
