@@ -19,10 +19,11 @@ public class PlayerAnimationController : MonoBehaviour
     public MultiRotationConstraint chestRotationalConstraint;
     public ChainIKConstraint leftFootIKConstraint;
     public ChainIKConstraint rightFootIKConstraint;
-    public ChainIKConstraint leftArmIKConstraint;
-    public ChainIKConstraint rightArmIKConstraint;
-    /*public TwoBoneIKConstraint leftArmIKConstraint;
-    public TwoBoneIKConstraint rightArmIKConstraint;*/
+    /*public ChainIKConstraint leftArmIKConstraint;
+    public ChainIKConstraint rightArmIKConstraint;*/
+    public TwoBoneIKConstraint leftArmIKConstraint;
+    public TwoBoneIKConstraint rightArmIKConstraint;
+    public List<ChainIKConstraint> rightFingerIKConstraints = new List<ChainIKConstraint>();
     public Transform leftFootIKTarget;
     public Transform rightFootIKTarget;
         
@@ -108,11 +109,21 @@ public class PlayerAnimationController : MonoBehaviour
             }
 
             rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            
+            foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
+            {
+                constraint.weight = Mathf.Lerp(constraint.weight, 1f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            }
         }
         else
         {
             leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
             rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            
+            foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
+            {
+                constraint.weight = Mathf.Lerp(constraint.weight, 0f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            }
         }
     }
 

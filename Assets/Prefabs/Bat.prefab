@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1167910990
+  GlobalObjectIdHash: 1071830708
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -280,8 +280,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08f17735d16c2d54da5edb82fcdd0994, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  inventoryItem: {fileID: 0}
+  buttonHeld: 0
+  heldTime: 0
+  minHeldTime: 0
   cooldown: 0
+  cooldownSetting: 0
+  damage: 20
   attackMask:
     serializedVersion: 2
-    m_Bits: 257
+    m_Bits: 385
