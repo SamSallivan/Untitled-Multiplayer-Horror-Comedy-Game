@@ -10,7 +10,8 @@ public class OccludeAudio : MonoBehaviour
 	public LayerMask occluderMask;
 
 	public bool useReverb;
-
+	
+	[SerializeField]
 	private bool occluded;
 
 	private AudioSource thisAudio;
@@ -38,7 +39,6 @@ public class OccludeAudio : MonoBehaviour
 			{
 				reverbFilter = base.gameObject.AddComponent<AudioReverbFilter>();
 			}
-			reverbFilter.reverbPreset = AudioReverbPreset.Hallway;
 			reverbFilter.reverbPreset = AudioReverbPreset.User;
 			reverbFilter.dryLevel = -1f;
 			reverbFilter.decayTime = 0.8f;
@@ -94,7 +94,7 @@ public class OccludeAudio : MonoBehaviour
 		if (checkInterval >= 0.5f)
 		{
 			checkInterval = 0f;
-			if (Physics.Linecast(base.transform.position, GameSessionManager.Instance.audioListener.transform.position, out var _, 256, QueryTriggerInteraction.Ignore))
+			if (Physics.Linecast(base.transform.position, GameSessionManager.Instance.audioListener.transform.position, out var _, occluderMask, QueryTriggerInteraction.Ignore))
 			{
 				_ = debugLog;
 				occluded = true;

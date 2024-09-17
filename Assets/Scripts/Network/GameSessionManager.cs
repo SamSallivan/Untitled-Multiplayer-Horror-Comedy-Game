@@ -447,10 +447,10 @@ public class GameSessionManager : NetworkBehaviour
 			return;
 		}
 		
-		//PlayerController playerControllerB = ((!GameNetworkManager.Instance.localPlayerController.isPlayerDead || !(GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript != null)) ? GameNetworkManager.Instance.localPlayerController : GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript);
+		//PlayerController playerControllerListener = !localPlayerController.isPlayerDead ? localPlayerController : localPlayerController.spectatedPlayerController;
+		
 		foreach (PlayerController playerController in playerControllerList)
 		{
-			//if ((!playerController.isPlayerControlled && !playerController.isPlayerDead) || playerController == GameNetworkManager.Instance.localPlayerController)
 			if (!playerController.controlledByClient || playerController == localPlayerController)
 			{
 				continue;
@@ -465,47 +465,49 @@ public class GameSessionManager : NetworkBehaviour
 					continue;
 				}
 			}
+			
 			AudioSource currentVoiceChatAudioSource = playerController.currentVoiceChatAudioSource;
-
-			// if (playerController.isPlayerDead)
-			// {
-			// 	currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>().enabled = false;
-			// 	currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = false;
-			// 	currentVoiceChatAudioSource.panStereo = 0f;
-			// 	SoundManager.Instance.playerVoicePitchTargets[playerController.playerClientId] = 1f;
-			// 	SoundManager.Instance.SetPlayerPitch(1f, (int)playerController.playerClientId);
-			// 	if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
-			// 	{
-			// 		currentVoiceChatAudioSource.spatialBlend = 0f;
-			// 		playerController.currentVoiceChatIngameSettings.set2D = true;
-			// 		playerController.voicePlayerState.Volume = 1f;
-			// 	}
-			// 	else
-			// 	{
-			// 		currentVoiceChatAudioSource.spatialBlend = 1f;
-			// 		playerController.currentVoiceChatIngameSettings.set2D = false;
-			// 		playerController.voicePlayerState.Volume = 0f;
-			// 	}
-			// 	continue;
-			// }
+			AudioLowPassFilter lowPassFilter = currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>();
+			AudioHighPassFilter highPassFilter = currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>();
+			OccludeAudio occludeAudio = currentVoiceChatAudioSource.GetComponent<OccludeAudio>();
+			
+			if (playerController.isPlayerDead)
+			{ 
+				lowPassFilter.enabled = false; 
+				highPassFilter.enabled = false;
+				currentVoiceChatAudioSource.panStereo = 0f;
+				if (localPlayerController.isPlayerDead)
+				{
+			 		currentVoiceChatAudioSource.spatialBlend = 0f;
+			 		playerController.currentVoiceChatIngameSettings.set2D = true;
+			 		playerController.voicePlayerState.Volume = 1f;
+				}
+				else
+				{
+			 		currentVoiceChatAudioSource.spatialBlend = 1f;
+			 		playerController.currentVoiceChatIngameSettings.set2D = false;
+			 		playerController.voicePlayerState.Volume = 0f;
+				}
+				continue;
+			}
 
 			bool flag = false;//playerController.speakingToWalkieTalkie && playerControllerB.holdingWalkieTalkie && playerController != playerControllerB;
-			AudioLowPassFilter component = currentVoiceChatAudioSource.GetComponent<AudioLowPassFilter>();
-			OccludeAudio component2 = currentVoiceChatAudioSource.GetComponent<OccludeAudio>();
-			component.enabled = true;
-			component2.overridingLowPass = flag;// || playerController.voiceMuffledByEnemy;
-			currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = flag;
+			lowPassFilter.enabled = true;
 			if (!flag)
 			{
+				highPassFilter.enabled = false;
+				occludeAudio.overridingLowPass = false;// || playerController.voiceMuffledByEnemy;
 				currentVoiceChatAudioSource.spatialBlend = 1f;
 				playerController.currentVoiceChatIngameSettings.set2D = false;
 				currentVoiceChatAudioSource.bypassListenerEffects = false;
 				currentVoiceChatAudioSource.bypassEffects = false;
 				//currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
-				component.lowpassResonanceQ = 1f;
+				lowPassFilter.lowpassResonanceQ = 1f;
 			}
 			// else
 			// {
+			//	highPassFilter.enabled = true;
+			//	occludeAudio.overridingLowPass = true;// || playerController.voiceMuffledByEnemy;
 			// 	currentVoiceChatAudioSource.spatialBlend = 0f;
 			// 	playerController.currentVoiceChatIngameSettings.set2D = true;
 			// 	if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
@@ -523,17 +525,17 @@ public class GameSessionManager : NetworkBehaviour
 			// 		currentVoiceChatAudioSource.outputAudioMixerGroup = SoundManager.Instance.playerVoiceMixers[playerController.playerClientId];
 			// 	}
 			// 	component2.lowPassOverride = 4000f;
-			// 	component.lowpassResonanceQ = 3f;
+			// 	lowPassFilter.lowpassResonanceQ = 3f;
 			// }
 
-			// if (GameNetworkManager.Instance.localPlayerController.isPlayerDead)
-			// {
-			// 	playerController.voicePlayerState.Volume = 0.8f;
-			// }
-			// else
-			// {
-			// 	playerController.voicePlayerState.Volume = 1f;
-			// }
+			 if (localPlayerController.isPlayerDead)
+			 {
+			 	playerController.voicePlayerState.Volume = 0.8f;
+			 }
+			 else
+			 {
+			 	playerController.voicePlayerState.Volume = 1f;
+			 }
 		}
 	}
 

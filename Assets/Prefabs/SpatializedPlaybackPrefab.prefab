@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -6587089677248051365}
   - component: {fileID: -3209364548041505601}
   - component: {fileID: -4716824821733182158}
+  - component: {fileID: -8156527071672678044}
   m_Layer: 0
   m_Name: SpatializedPlaybackPrefab
   m_TagString: Untagged
@@ -251,8 +252,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   occluderMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   useReverb: 0
   overridingLowPass: 0
   lowPassOverride: 20000
   debugLog: 0
+--- !u!164 &-8156527071672678044
+AudioReverbFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041743830464418}
+  m_Enabled: 0
+  m_DryLevel: 0
+  m_Room: 0
+  m_RoomHF: 0
+  m_DecayTime: 1
+  m_DecayHFRatio: 0.5
+  m_ReflectionsLevel: -10000
+  m_ReverbLevel: 0
+  m_ReverbDelay: 0.04
+  m_Diffusion: 100
+  m_Density: 100
+  m_HFReference: 5000
+  m_RoomLF: 0
+  m_LFReference: 250
+  m_ReflectionsDelay: 0
+  m_ReverbPreset: 27

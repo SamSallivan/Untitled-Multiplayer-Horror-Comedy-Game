@@ -57,6 +57,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Networks")]
     public bool awaitInitialization;
 
+    [FoldoutGroup("Networks")]
+    public PlayerController spectatedPlayerController;
+
     // [FoldoutGroup("Networks")]
     // public Vector3 playerServerPosition;
 
