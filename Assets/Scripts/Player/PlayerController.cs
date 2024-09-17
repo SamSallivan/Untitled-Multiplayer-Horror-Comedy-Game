@@ -377,11 +377,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         if (!GameNetworkManager.Instance.steamDisabled)
         {
+            localSteamId.Value = SteamClient.SteamId;
             GameNetworkManager.Instance.localSteamClientUsername = SteamClient.Name.ToString();
             playerUsername = GameNetworkManager.Instance.localSteamClientUsername;
-            localSteamId.Value = SteamClient.SteamId;
             //UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
-            UpdatePlayerUsernameClientRpc(localPlayerId);
+            UpdatePlayerUsernameClientRpc();
         }
 
         //GameSessionManager.Instance.spectateCamera.enabled = false;
@@ -462,13 +462,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
     }*/
     
     [Rpc(SendTo.Everyone)]
-    private void UpdatePlayerUsernameClientRpc(int playerId)
+    private void UpdatePlayerUsernameClientRpc()
     {
         foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
         {
             string playerName = new Friend(playerController.localSteamId.Value).Name;
             playerController.playerUsername = playerName;
             playerController.playerUsernameText.text = playerName;
+
+            if (playerController == GameSessionManager.Instance.localPlayerController)
+            {
+                playerController.playerUsernameText.text = string.Empty;
+            }
         }
         
     }
