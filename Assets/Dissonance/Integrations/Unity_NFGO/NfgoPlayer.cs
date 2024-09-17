@@ -102,6 +102,8 @@ namespace Dissonance.Integrations.Unity_NFGO
             else
             {
                 if (PlayerId != null){
+                    if (IsTracking)
+                        StopTracking();
                     StartTracking();
                 }
             }

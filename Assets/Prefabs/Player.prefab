@@ -4697,6 +4697,9 @@ MonoBehaviour:
   mouseLookY: {fileID: 0}
   cameraBob: {fileID: 0}
   headPosition: {fileID: 0}
+  playerMeshRendererList:
+  - {fileID: 221613541788831206}
+  - {fileID: 7151276337529302977}
   playerInput: {fileID: 0}
   inputDir: {x: 0, y: 0, z: 0}
   inputDirNetworkVariable:
@@ -4767,6 +4770,7 @@ MonoBehaviour:
   maxHp: 100
   currentHp:
     m_InternalValue: 0
+  ragdollPrefab: {fileID: 8888912781250069987, guid: 9453f7970b319e24ea7331dbe6ed3bd0, type: 3}
 --- !u!114 &8793975911923707449
 MonoBehaviour:
   m_ObjectHideFlags: 0

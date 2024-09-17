@@ -98,6 +98,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     
     [FoldoutGroup("References")]
     public HeadPosition headPosition;
+    
+    [FoldoutGroup("References")]
+    public List<SkinnedMeshRenderer> playerMeshRendererList = new List<SkinnedMeshRenderer>();
 
     [FoldoutGroup("Inputs")]
     public PlayerInputActions playerInputActions;
@@ -254,6 +257,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Health")] 
     public NetworkVariable<float> currentHp = new NetworkVariable<float>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
+    [FoldoutGroup("Health")] 
+    public GameObject ragdollPrefab;
+
 
     private void Awake()
     {
@@ -394,8 +400,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         LockMovement(false);
         LockCamera(false);
         animator.enabled = true;
-        rb.rotation = Quaternion.identity;
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
         RespawnServerRPC();
     }
 
@@ -693,7 +697,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
             //applies gravity in the direction of ground normal
             //so player does not slide off within the tolerable angle
-            if(grounder.grounded && !isPlayerDead && grounder.regroundCooldown <= 0)
+            if(grounder.grounded && grounder.regroundCooldown <= 0)
             {
                 //lerp from current position to target ground position
                 Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
@@ -926,10 +930,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
             crouching = false;
             crouchingNetworkVariable.Value = crouching;
             animator.enabled = false;
-            rb.constraints = RigidbodyConstraints.None;
-            rb.AddTorque(base.transform.right);
             InventoryManager.instance.DropAllItemsFromInventory();
             DieServerRPC();
+            InstantiateRagdollServerRPC();
         }
     }
 
@@ -943,6 +946,22 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public void DieClientRpc()
     {
         isPlayerDead = true;
+        
+        for (int i = 0; i < playerMeshRendererList.Count; i++)
+        {
+            playerMeshRendererList[i].enabled = false;
+        }
+        
+        playerUsernameCanvasTransform.gameObject.SetActive(false);
+
+        playerCollider.enabled = false;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void InstantiateRagdollServerRPC()
+    {
+        GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, transform.GetChild(0).rotation);
+        ragdoll.GetComponent<NetworkObject>().Spawn();
     }
 
     [Button]
@@ -955,9 +974,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             LockMovement(false);
             LockCamera(false);
             animator.enabled = true;
-            TeleportPlayer(rb.position + new Vector3(0f, 1f, 0f));
-            rb.rotation = Quaternion.identity;
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            TeleportPlayer(GameSessionManager.Instance.spawnTransform.position);
             RespawnServerRPC();
         }
     }
@@ -972,6 +989,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public void RespawnClientRpc()
     {
         isPlayerDead = false;
+        
+        for (int i = 0; i < playerMeshRendererList.Count; i++)
+        {
+            playerMeshRendererList[i].enabled = true;
+        }
+        
+        playerUsernameCanvasTransform.gameObject.SetActive(true);
+
+        playerCollider.enabled = true;
     }
     
     #endregion

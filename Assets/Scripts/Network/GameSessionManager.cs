@@ -297,7 +297,7 @@ public class GameSessionManager : NetworkBehaviour
 			//Reinitialize NfgoPlayer Component Tracking for every PlayerController on all clients
 			foreach (PlayerController playerController1 in playerControllerList)
 			{
-				if (playerController1.GetComponent<NfgoPlayer>() && !playerController1.GetComponent<NfgoPlayer>().IsTracking)
+				if (playerController1.GetComponent<NfgoPlayer>()) // && !playerController1.GetComponent<NfgoPlayer>().IsTracking)
 				{
 					playerController1.GetComponent<NfgoPlayer>().InitializeVoiceChatTracking();
 				}
@@ -430,7 +430,7 @@ public class GameSessionManager : NetworkBehaviour
 
 		foreach (PlayerController playerController in playerControllerList)
 		{
-			if (playerController.GetComponent<NfgoPlayer>() && !playerController.GetComponent<NfgoPlayer>().IsTracking)
+			if (playerController.GetComponent<NfgoPlayer>())// && !playerController.GetComponent<NfgoPlayer>().IsTracking)
 			{
 				playerController.GetComponent<NfgoPlayer>().InitializeVoiceChatTracking();
 			}
@@ -551,7 +551,6 @@ public class GameSessionManager : NetworkBehaviour
 		{
 			if (!playerController.controlledByClient && !playerController.isPlayerDead)
 			{
-				Debug.Log($"Skipping {playerController.name} as they are not controlled or dead");
 				continue;
 			}
 
@@ -573,7 +572,7 @@ public class GameSessionManager : NetworkBehaviour
 					return;
 				}
 				
-				Debug.Log(array[j]._playerState.Name + ", " + playerController.gameObject.GetComponentInChildren<NfgoPlayer>().PlayerId);
+				Debug.Log($"Comparing Voice object #{j}: {array[j]._playerState.Name} to {playerController.name}: {playerController.gameObject.GetComponentInChildren<NfgoPlayer>().PlayerId}");
 				if (array[j]._playerState.Name == playerController.gameObject.GetComponentInChildren<NfgoPlayer>().PlayerId)
 				{
 					Debug.Log($"Found a match for voice object #{j} and player object {playerController.name}");

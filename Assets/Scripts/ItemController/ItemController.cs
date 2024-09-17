@@ -75,7 +75,7 @@ public class ItemController : NetworkBehaviour
     {
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void ActivateItemServerRpc()
     {
         ActivateItemClientRpc();
@@ -87,7 +87,7 @@ public class ItemController : NetworkBehaviour
         inventoryItem.owner.playerAnimationController.armAnimator.SetTrigger("Activate");
     }
     
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void HoldItemServerRpc(bool buttonDown)
     {
         HoldItemClientRpc(buttonDown);
@@ -96,10 +96,14 @@ public class ItemController : NetworkBehaviour
     [ClientRpc]
     public void HoldItemClientRpc(bool buttonDown)
     {
-        if (buttonDown)
+        if (inventoryItem.owner != null)
         {
-            inventoryItem.owner.playerAnimationController.armAnimator.ResetTrigger("Activate");
+            if (buttonDown)
+            {
+                inventoryItem.owner.playerAnimationController.armAnimator.ResetTrigger("Activate");
+            }
+
+            inventoryItem.owner.playerAnimationController.armAnimator.SetBool("Held", buttonDown);
         }
-        inventoryItem.owner.playerAnimationController.armAnimator.SetBool("Held", buttonDown);
     }
 }
