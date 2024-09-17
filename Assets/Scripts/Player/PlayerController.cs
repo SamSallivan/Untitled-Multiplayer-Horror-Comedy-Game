@@ -381,7 +381,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             GameNetworkManager.Instance.localSteamClientUsername = SteamClient.Name.ToString();
             playerUsername = GameNetworkManager.Instance.localSteamClientUsername;
             //UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
-            UpdatePlayerUsernameClientRpc();
+            StartCoroutine(UpdatePlayerUsernameCoroutine());
         }
 
         //GameSessionManager.Instance.spectateCamera.enabled = false;
@@ -461,6 +461,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     }*/
     
+    IEnumerator UpdatePlayerUsernameCoroutine()
+    {
+        yield return new WaitForSeconds(0.1f);
+        UpdatePlayerUsernameClientRpc();
+    }
+    
     [Rpc(SendTo.Everyone)]
     private void UpdatePlayerUsernameClientRpc()
     {
@@ -475,7 +481,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 playerController.playerUsernameText.text = string.Empty;
             }
         }
-        
     }
 
     [Button]
