@@ -128,7 +128,7 @@ public class GameSessionManager : NetworkBehaviour
 		{
 			if(list[i].index != -1)
 			{
-				InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, i, NetworkManager.Singleton.LocalClientId);
+				InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, i, localPlayerController.NetworkObject);
 			}
 		}
 	}

@@ -19,7 +19,7 @@ MonoBehaviour:
   maxStackAmount: 1
   equipPosition: {x: 0, y: 0, z: 0}
   equipRotation: {x: 0, y: 0, z: 0}
-  dropObject: {fileID: 7074802747145682746, guid: 85e38e86e450d724783feab416cbe01d, type: 3}
+  dropObject: {fileID: 7596440031121015847, guid: 3e64d7c08f9bac849820cdd80b4674c3, type: 3}
   examineScale: 1
   examineRotation: {x: 0.25881904, y: 0, z: 0, w: 0.9659258}
   equipAnimatorParameter: Bat

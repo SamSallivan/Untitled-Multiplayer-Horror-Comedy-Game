@@ -12,8 +12,6 @@ public class I_InventoryItem : Interactable
 
     public PlayerController owner;
 
-    public bool isCurrentlyEquipped;
-
     private InventorySlot _inventorySlot;
 
     public InventorySlot inventorySlot
@@ -29,11 +27,13 @@ public class I_InventoryItem : Interactable
         }
     }
 
-    public bool enableItemMeshes = true;
+    public NetworkVariable<bool> isCurrentlyEquipped = new(writePerm: NetworkVariableWritePermission.Owner);
 
-    public bool enableItemPhysics = true;
+    public NetworkVariable<bool> enableItemMeshes = new(true, writePerm: NetworkVariableWritePermission.Owner);
 
-    public bool inStorageBox = false;
+    public NetworkVariable<bool> enableItemPhysics = new(true, writePerm: NetworkVariableWritePermission.Owner);
+
+    public NetworkVariable<bool> inStorageBox = new(writePerm: NetworkVariableWritePermission.Owner);
     
     void Start()
     {
@@ -50,7 +50,7 @@ public class I_InventoryItem : Interactable
         if(IsServer)
         {
             int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
-            SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics, itemStatus.amount, inStorageBox);
+            SyncItemStateClientRpc(ownerPlayerId, itemStatus.amount);
         }
         else
         {
@@ -61,7 +61,11 @@ public class I_InventoryItem : Interactable
     public void OnEquip()
     {
         EnableItemMeshes(true);
-        isCurrentlyEquipped = true;
+        if (IsServer)
+        {
+            isCurrentlyEquipped.Value = true;
+        }
+
         if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
         {
             owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
@@ -71,7 +75,11 @@ public class I_InventoryItem : Interactable
     public void OnUnequip()
     {
         EnableItemMeshes(false);
-        isCurrentlyEquipped = false;
+        if (IsServer)
+        {
+            isCurrentlyEquipped.Value = false;
+        }
+
         if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
         {
             owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
@@ -96,11 +104,11 @@ public class I_InventoryItem : Interactable
             }
             else if (IsServer)
             {
-                if (!owner.controlledByClient && inStorageBox)
+                if (!owner.controlledByClient && inStorageBox.Value)
                 {
                     InventoryManager.instance.DestoryItemServerRpc(this.NetworkObject);
                 }
-                else if (!inStorageBox)
+                else if (!inStorageBox.Value)
                 {
                     InventoryManager.instance.UnpocketItemClientRpc(this.NetworkObject);
                 }
@@ -137,9 +145,12 @@ public class I_InventoryItem : Interactable
 
 	public void EnableItemMeshes(bool enable)
 	{
-        enableItemMeshes = enable;
+        if (IsServer)
+        {
+            enableItemMeshes.Value = enable;
+        }
 
-		MeshRenderer[] meshRenderers = base.gameObject.GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] meshRenderers = base.gameObject.GetComponentsInChildren<MeshRenderer>();
 		for (int i = 0; i < meshRenderers.Length; i++)
 		{
             meshRenderers[i].enabled = enable;
@@ -161,7 +172,11 @@ public class I_InventoryItem : Interactable
     
 	public void EnableItemPhysics(bool enable)
 	{
-        enableItemPhysics = enable;
+        if (IsServer)
+        {
+            enableItemPhysics.Value = enable;
+        }
+
         base.gameObject.GetComponent<Rigidbody>().isKinematic = !enable;
         Collider[] colliders = base.gameObject.GetComponentsInChildren<Collider>();
 		for (int i = 0; i < colliders.Length; i++)
@@ -198,11 +213,11 @@ public class I_InventoryItem : Interactable
     public void SyncItemStateServerRpc()
     {
         int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
-        SyncItemStateClientRpc(ownerPlayerId, isCurrentlyEquipped, enableItemMeshes, enableItemPhysics, itemStatus.amount, inStorageBox);
+        SyncItemStateClientRpc(ownerPlayerId,itemStatus.amount);
     }
 
     [Rpc(SendTo.Everyone)]
-    public void SyncItemStateClientRpc(int ownerPlayerId, bool isCurrentlyEquipped, bool enableMeshes, bool enablePhysics, int amount, bool inStorageBox)
+    public void SyncItemStateClientRpc(int ownerPlayerId, int amount)
     {
         if(ownerPlayerId != -1)
         {
@@ -212,13 +227,9 @@ public class I_InventoryItem : Interactable
         {
             this.owner = null;
         }
-        this.isCurrentlyEquipped = isCurrentlyEquipped;
-        enableItemMeshes = enableMeshes;
-        enableItemPhysics = enablePhysics;
-        EnableItemMeshes(enableItemMeshes);
-        EnableItemPhysics(enableItemPhysics);
+        EnableItemMeshes(enableItemMeshes.Value);
+        EnableItemPhysics(enableItemPhysics.Value);
         itemStatus.amount = amount;
-        this.inStorageBox = inStorageBox;
     }
 
     public void OnSetInventorySlot()
@@ -227,62 +238,18 @@ public class I_InventoryItem : Interactable
         {
             if(InventoryManager.instance.storageSlotList.Contains(inventorySlot))
             {
-                inStorageBox = true;
-                // owner.storageItemList.Add(this);
-                // owner.inventoryItemList.Remove(this);
+                SetInStorageBoxRpc(true);
             }
             else if(InventoryManager.instance.inventorySlotList.Contains(inventorySlot))
             {
-                inStorageBox = false;
-                // owner.storageItemList.Remove(this);
-                // owner.inventoryItemList.Add(this);
+                SetInStorageBoxRpc(false);
             }
         }
-        else
-        {
-            // owner.storageItemList.Remove(this);
-            // owner.inventoryItemList.Remove(this);
-        }
-        
-        List<NetworkObjectReference> inventoryItemListNetworkObject = new List<NetworkObjectReference>();
-        // foreach(I_InventoryItem inventoryItem in owner.inventoryItemList)
-        // {
-        //     inventoryItemListNetworkObject.Add(inventoryItem.NetworkObject);
-        // }
-
-        List<NetworkObjectReference> storageItemListNetworkObject = new List<NetworkObjectReference>();
-        // foreach(I_InventoryItem storageItem in owner.storageItemList)
-        // {
-        //     storageItemListNetworkObject.Add(storageItem.NetworkObject);
-        // }
-
-        OnSetInventorySlotClientRpc(inStorageBox, inventoryItemListNetworkObject.ToArray(), storageItemListNetworkObject.ToArray());
     }
 
-    [Rpc(SendTo.Everyone)]
-    public void OnSetInventorySlotClientRpc(bool inStorageBox, NetworkObjectReference[] inventoryItemListReference, NetworkObjectReference[] storageItemListReference)
+    [Rpc(SendTo.Server)]
+    public void SetInStorageBoxRpc(bool value)
     {
-        this.inStorageBox = inStorageBox;
-
-        // List<I_InventoryItem> inventoryItemList = new List<I_InventoryItem>();
-        // foreach(NetworkObjectReference inventoryItem in inventoryItemListReference)
-        // {
-        //     if(inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        //     {
-        //         inventoryItemList.Add(inventoryItemObject.GetComponent<I_InventoryItem>());
-        //     }
-        // }
-
-        // List<I_InventoryItem> storageItemList = new List<I_InventoryItem>();
-        // foreach(NetworkObjectReference inventoryItem in storageItemListReference)
-        // {
-        //     if(inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        //     {
-        //         storageItemList.Add(inventoryItemObject.GetComponent<I_InventoryItem>());
-        //     }
-        // }
-
-        // owner.inventoryItemList = inventoryItemList;
-        // owner.storageItemList = storageItemList;
+        inStorageBox.Value = value;
     }
 }

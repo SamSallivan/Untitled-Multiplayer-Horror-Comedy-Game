@@ -602,6 +602,7 @@ public class InventoryManager : NetworkBehaviour
             gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
             gameObject.GetComponent<NetworkObject>().Spawn();
             InstantiateUnpocketedItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
+            UnpocketItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
         }
     }
 
@@ -610,25 +611,28 @@ public class InventoryManager : NetworkBehaviour
     {
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject) && this.playerController == playerControllerObject.GetComponent<PlayerController>())
         {
-            UnpocketItemClientRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerControllerObject);
+            inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = null;
         }
     }
 
     [Rpc(SendTo.Server)]
-    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, int storageSlotIndex, ulong clientId)
+    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, int storageSlotIndex, NetworkObjectReference playerController)
     {
-        var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
-        gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
-        gameObject.GetComponent<NetworkObject>().Spawn();
-        InstantiatePocketedItemClientRpc(storageSlotIndex, gameObject.GetComponent<NetworkObject>(), clientId);
+        if (playerController.TryGet(out NetworkObject playerControllerObject))
+        {
+            var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
+            gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
+            gameObject.GetComponent<NetworkObject>().Spawn();
+            InstantiatePocketedItemClientRpc(storageSlotIndex, gameObject.GetComponent<NetworkObject>(), playerControllerObject);
+            PocketItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
+        }
     }
     
     [Rpc(SendTo.Everyone)]
-    public void InstantiatePocketedItemClientRpc(int storageSlotIndex, NetworkObjectReference inventoryItem, ulong clientId)
+    public void InstantiatePocketedItemClientRpc(int storageSlotIndex, NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
     {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && NetworkManager.Singleton.LocalClientId == clientId)
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject) && playerControllerObject.GetComponent<PlayerController>() == GameSessionManager.Instance.localPlayerController)
         {
-            PocketItemClientRpc(inventoryItemObject.GetComponent<NetworkObject>(), playerController.NetworkObject);
             storageSlotList[storageSlotIndex].inventoryItem = inventoryItemObject.GetComponent<I_InventoryItem>();
             storageSlotList[storageSlotIndex].UpdateInventorySlotDisplay();
             inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = storageSlotList[storageSlotIndex];

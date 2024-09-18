@@ -19,7 +19,7 @@ public class FlashlightController : ItemController
     {   
         if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameSessionManager.Instance.localPlayerController)
         {
-            if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped & activated.Value) 
+            if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped.Value & activated.Value) 
             {
                 ToggleLightServerRpc();
             }
