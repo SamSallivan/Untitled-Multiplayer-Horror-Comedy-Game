@@ -119,7 +119,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         GetComponent<Collider>().isTrigger = true;
         if (attatchedPlayer != null)
         {
-            if (attatchedPlayer.isPlayerDead)
+            if (attatchedPlayer.isPlayerDead.Value)
             {
                 unattatch();
             }
@@ -236,7 +236,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         target = null;
         for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
         {
-            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient&&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient&&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead.Value)
             {
                 float dist= Vector3.Distance(transform.position,
                     GameSessionManager.Instance.playerControllerList[i].transform.position);

@@ -15,9 +15,6 @@ using System;
 
 public class MouseLook : NetworkBehaviour
 {
-
-    public bool enableLook = true;
-
     public enum RotationAxes { MouseX = 1, MouseY = 2 }
 	public RotationAxes axes = RotationAxes.MouseX;
 	public bool invertY = false;
@@ -34,10 +31,10 @@ public class MouseLook : NetworkBehaviour
 	float rotationX = 0F;
 	float rotationY = 0F;
 
-    private List<float> rotArrayX = new List<float>();
+	public List<float> rotArrayX = new List<float>();
     public float rotAverageX = 0F;	
  
-	private List<float> rotArrayY = new List<float>();
+    public List<float> rotArrayY = new List<float>();
     public float rotAverageY = 0F;
  
 	public float framesOfSmoothing = 5;
@@ -59,20 +56,11 @@ public class MouseLook : NetworkBehaviour
 			GetComponent<Rigidbody>().freezeRotation = true;
 		}
 		
-		originalRotation = transform.rotation;
-        originalLocalRotation = transform.localRotation;
+		//originalRotation = transform.rotation;
+        //originalLocalRotation = transform.localRotation;
+        originalRotation = Quaternion.identity;
+        originalLocalRotation = Quaternion.identity;
 
-    }
-
-    void Update ()
-	{
-        if (IsOwner)
-        {
-            if (enableLook)
-            {
-                //UpdateCameraRotation();
-            }
-        }
     }
 
     public void UpdateCameraRotation(float input)
@@ -184,8 +172,8 @@ public class MouseLook : NetworkBehaviour
         rotationY = 0f;
         rotAverageX = 0f;
         rotAverageY = 0f;
-        originalRotation = transform.rotation;
-        originalLocalRotation = transform.localRotation;
+        /*originalRotation = transform.rotation;
+        originalLocalRotation = transform.localRotation;*/
     }
 
     public void SetClamp(float x1, float x2, float y1, float y2)

@@ -9,10 +9,8 @@ public class SpectateManager : MonoBehaviour
     
     [Header("References")]
     public Transform SpectateTargetTransform;
-    public Transform SpectateCameraTransform;
+    //public Transform SpectateCameraTransform;
     public PlayerController spectateTargetPlayerController;
-    public MouseLook mouseLookX;
-    public MouseLook mouseLookY;
     
     [Header("Values")]
     public bool isSpectating = false;
@@ -20,8 +18,11 @@ public class SpectateManager : MonoBehaviour
     [Header("Settings")]
     public float CameraPositionInterpolationSpeed = 10f;
     public LayerMask cameraOcclusionMask;
+    public float cameraRadius = 1f;
     public float minCameraDistance = 0.5f;
     public float maxCameraDistance = 3f;
+    public float onDeathZoomOutTime;
+    public float onDeathZoomOutTimeSetting = 0.75f;
     
     private void Awake()
     {
@@ -42,36 +43,50 @@ public class SpectateManager : MonoBehaviour
         {
             return;
         }
-        
-        if (spectateTargetPlayerController.isPlayerDead)
+
+        if (onDeathZoomOutTime < onDeathZoomOutTimeSetting * 2f)
         {
-            SpectateNextPlayer();
+            onDeathZoomOutTime += Time.deltaTime;
+        }
+        else
+        {
+            if (spectateTargetPlayerController.isPlayerDead.Value || !spectateTargetPlayerController.controlledByClient)
+            {
+                SpectateNextPlayer();
+            }
         }
         
-        SpectateTargetTransform.position = Vector3.Lerp(SpectateTargetTransform.position, spectateTargetPlayerController.transform.position, Time.deltaTime * CameraPositionInterpolationSpeed);
-        UpdateCameraRotation();
-        UpdateCameraPosition();
+        UpdatePivot();
+        UpdateCamera();
     }
 
     public void StartSpectating()
     {
-        SpectateTargetTransform.position = GameSessionManager.Instance.localPlayerController.transform.position;
-        
         isSpectating = true;
-        SpectateNextPlayer();
-        GameSessionManager.Instance.localPlayerController.headPosition.targetPositionTransform = SpectateCameraTransform;
+        spectateTargetPlayerController = GameSessionManager.Instance.localPlayerController;
+        GameSessionManager.Instance.localPlayerController.headPosition.transform.GetChild(0).parent = SpectateTargetTransform;
+        SpectateTargetTransform.position = GameSessionManager.Instance.localPlayerController.transform.position;
+        onDeathZoomOutTime = 0;
     }
 
     public void StopSpectating()
     {
         isSpectating = false;
         spectateTargetPlayerController = null;
-        GameSessionManager.Instance.localPlayerController.headPosition.targetPositionTransform = GameSessionManager.Instance.localPlayerController.headPosition.targetPositionTransformDefault;
-        GameSessionManager.Instance.localPlayerController.headPosition.transform.localRotation = Quaternion.identity;
+        if (SpectateTargetTransform.childCount > 0)
+        {
+            SpectateTargetTransform.GetChild(0).parent = GameSessionManager.Instance.localPlayerController.headPosition.transform;
+            GameSessionManager.Instance.localPlayerController.headPosition.transform.GetChild(0).localPosition = Vector3.zero;
+        }
     }
     
     public void SpectateNextPlayer()
     {
+        if (onDeathZoomOutTime < onDeathZoomOutTimeSetting * 2f)
+        {
+            return;
+        }
+        
         int targetPlayerId = spectateTargetPlayerController ? spectateTargetPlayerController.localPlayerId : 0;
         
         for (int i = 0; i < GameNetworkManager.Instance.maxPlayerNumber; i++)
@@ -79,7 +94,7 @@ public class SpectateManager : MonoBehaviour
             targetPlayerId = (targetPlayerId + 1) % 4;
             PlayerController targetPlayerController = GameSessionManager.Instance.playerControllerList[targetPlayerId];
             
-            if (targetPlayerController.controlledByClient && !targetPlayerController.isPlayerDead && targetPlayerController != GameSessionManager.Instance.localPlayerController)
+            if (targetPlayerController.controlledByClient && !targetPlayerController.isPlayerDead.Value && targetPlayerController != GameSessionManager.Instance.localPlayerController)
             {
                 spectateTargetPlayerController = targetPlayerController;
                 return;
@@ -89,25 +104,26 @@ public class SpectateManager : MonoBehaviour
         spectateTargetPlayerController = GameSessionManager.Instance.localPlayerController;
     }
 
-    private void UpdateCameraRotation()
+    private void UpdatePivot()
     {
-        Vector2 mouseInput = GameSessionManager.Instance.localPlayerController.playerInputActions.FindAction("Look").ReadValue<Vector2>();
-        mouseLookX.UpdateCameraRotation(mouseInput.x);
-        mouseLookY.UpdateCameraRotation(mouseInput.y);
+        SpectateTargetTransform.position = Vector3.Lerp(SpectateTargetTransform.position, spectateTargetPlayerController.transform.position, Time.deltaTime * CameraPositionInterpolationSpeed);
+        SpectateTargetTransform.rotation = GameSessionManager.Instance.localPlayerController.headPosition.transform.rotation;
     }
     
-    private void UpdateCameraPosition()
+    private void UpdateCamera()
     {
+        float maxDistance = Mathf.Lerp(0, maxCameraDistance, Mathf.Clamp(onDeathZoomOutTime / onDeathZoomOutTimeSetting, 0f, 1f));
+        
         Ray ray = new Ray(SpectateTargetTransform.position, -SpectateTargetTransform.GetChild(0).forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, 1.4f, cameraOcclusionMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, cameraOcclusionMask, QueryTriggerInteraction.Ignore))
         {
-            SpectateCameraTransform.position = ray.GetPoint(Mathf.Clamp(hit.distance - 0.25f, minCameraDistance, maxCameraDistance));
+            SpectateTargetTransform.transform.GetChild(0).position = ray.GetPoint(Mathf.Clamp(hit.distance, minCameraDistance, maxDistance) - cameraRadius);
         }
         else
         {
-            SpectateCameraTransform.transform.position = ray.GetPoint(maxCameraDistance);
+            SpectateTargetTransform.transform.GetChild(0).position = ray.GetPoint(maxDistance - cameraRadius);
         }
-        SpectateCameraTransform.transform.LookAt(SpectateTargetTransform);
-        GameSessionManager.Instance.localPlayerController.headPosition.transform.rotation = SpectateCameraTransform.rotation;
+        
+        SpectateTargetTransform.transform.GetChild(0).transform.LookAt(SpectateTargetTransform);
     }
 }

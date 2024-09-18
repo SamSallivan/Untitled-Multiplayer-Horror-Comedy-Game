@@ -25,8 +25,6 @@ public class HeadPosition : MonoBehaviour
 	
 	public Transform targetPositionTransform;
 	
-	public Transform targetPositionTransformDefault;
-	
 	public Vector3 targetPositionOffset;
 
 	public void Awake(){

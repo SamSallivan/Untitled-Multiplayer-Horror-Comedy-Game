@@ -66,7 +66,7 @@ public class PlayerAnimationController : MonoBehaviour
     
     void Update()
     {
-        if (playerController.controlledByClient && !playerController.isPlayerDead)
+        if (playerController.controlledByClient && !playerController.isPlayerDead.Value)
         {
             if (playerController.NetworkObject.IsOwner)
             {

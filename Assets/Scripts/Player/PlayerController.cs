@@ -133,6 +133,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public bool enableMovement = true;
 
     [FoldoutGroup("Settings")]
+    public bool enableLook = true;
+
+    [FoldoutGroup("Settings")]
     public bool isNonPhysics;
 
     [FoldoutGroup("Physics Based Movements")]
@@ -255,7 +258,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public LayerMask interactableLayer;
 
     [FoldoutGroup("Health")]
-    public bool isPlayerDead;
+    public NetworkVariable<bool> isPlayerDead = new (writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Health")] 
     public float maxHp = 100f;
@@ -291,6 +294,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     }
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        OnIsPlayerDeadChanged(false, isPlayerDead.Value);
+
+    }
+
     private void OnEnable() 
     {
         playerInputActions.Enable();
@@ -303,6 +313,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerInputActions.FindAction("Interact").performed += Interact_performed;
         playerInputActions.FindAction("Discard").performed += Discard_performed;
         playerInputActions.FindAction("SwitchItem").performed += SwitchItem_performed;
+        
+        isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
     }
 
     private void OnDisable() 
@@ -317,6 +329,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerInputActions.FindAction("Discard").performed -= Discard_performed;
         playerInputActions.FindAction("SwitchItem").performed -= SwitchItem_performed;
         playerInputActions.Disable();
+        
+        isPlayerDead.OnValueChanged -= OnIsPlayerDeadChanged;
     }
 
     private void Update()
@@ -402,13 +416,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        isPlayerDead = false;
-        currentHp.Value = maxHp;
-        LockMovement(false);
-        LockCamera(false);
-        animator.enabled = true;
-        RespawnClientRpc();
+        
+        Respawn();
     }
 
     public void DisconnectClientFromPlayerObject()
@@ -789,8 +798,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     public void LockCamera(bool state)
     {
-        mouseLookX.enabled = !state;
-        mouseLookY.enabled = !state;
+        enableLook = !state;
+    }
+
+    public void ResetCamera()
+    {
+        mouseLookX.Reset();
+        mouseLookY.Reset();
     }
 
     public void SetCameraClamp(float x1, float x2, float y1, float y2)
@@ -867,7 +881,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
             rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
 
-            if (currentHp.Value <= 0 && !isPlayerDead)
+            if (currentHp.Value <= 0 && !isPlayerDead.Value)
             {
                 Die();
             }
@@ -878,34 +892,17 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [Button]
     public void Die()
     {
-        if (IsOwner && !isPlayerDead)
+        if (IsOwner && !isPlayerDead.Value)
         {
-            isPlayerDead = true;
+            isPlayerDead.Value = true;
             LockMovement(true);
-            LockCamera(true);
             crouching = false;
             crouchingNetworkVariable.Value = crouching;
             animator.enabled = false;
-            InventoryManager.instance.DropAllItemsFromInventory();
             SpectateManager.Instance.StartSpectating();
+            InventoryManager.instance.DropAllItemsFromInventory();
             InstantiateRagdollServerRPC();
-            DieClientRpc();
         }
-    }
-    
-    [Rpc(SendTo.Everyone)]
-    public void DieClientRpc()
-    {
-        isPlayerDead = true;
-        
-        for (int i = 0; i < playerMeshRendererList.Count; i++)
-        {
-            playerMeshRendererList[i].enabled = false;
-        }
-        
-        playerUsernameCanvasTransform.gameObject.SetActive(false);
-
-        playerCollider.enabled = false;
     }
     
     [Rpc(SendTo.Server)]
@@ -918,32 +915,28 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [Button]
     public void Respawn()
     {
-        if (IsOwner && isPlayerDead)
+        if (IsOwner)
         {
-            isPlayerDead = false;
+            isPlayerDead.Value = false;
             currentHp.Value = maxHp;
             LockMovement(false);
-            LockCamera(false);
+            ResetCamera();
             animator.enabled = true;
             TeleportPlayer(GameSessionManager.Instance.spawnTransform.position);
             SpectateManager.Instance.StopSpectating();
-            RespawnClientRpc();
         }
     }
-    
-    [Rpc(SendTo.Everyone)]
-    public void RespawnClientRpc()
+
+    public void OnIsPlayerDeadChanged(bool prevIsPlayerDead, bool newIsPlayerDead)
     {
-        isPlayerDead = false;
-        
         for (int i = 0; i < playerMeshRendererList.Count; i++)
         {
-            playerMeshRendererList[i].enabled = true;
+            playerMeshRendererList[i].enabled = !isPlayerDead.Value;
         }
         
-        playerUsernameCanvasTransform.gameObject.SetActive(true);
+        playerUsernameCanvasTransform.gameObject.SetActive(!isPlayerDead.Value);
 
-        playerCollider.enabled = true;
+        playerCollider.enabled = !isPlayerDead.Value;
     }
     
     #endregion
@@ -969,14 +962,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     private void LookUpdate()
     {
-        if (base.IsOwner && controlledByClient & enableMovement)
+        if (base.IsOwner && controlledByClient & enableLook)
         {   
             Vector2 mouseInput = playerInputActions.FindAction("Look").ReadValue<Vector2>();
 
-            if(mouseLookX.enabled)
+            if (mouseLookX.enabled)
             {
                 mouseLookX.UpdateCameraRotation(mouseInput.x);
             }
+
             if (mouseLookY.enabled)
             {
                 mouseLookY.UpdateCameraRotation(mouseInput.y);

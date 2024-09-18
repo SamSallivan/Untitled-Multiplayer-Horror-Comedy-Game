@@ -87,7 +87,7 @@ public class I_InventoryItem : Interactable
 	{
         if (owner != null)
         {
-            if (owner.controlledByClient && !owner.isPlayerDead) 
+            if (owner.controlledByClient && !owner.isPlayerDead.Value) 
             {
                 Transform targetTransform = owner.equippedTransform;
                 base.transform.position = targetTransform.TransformPoint(itemData.equipPosition);;

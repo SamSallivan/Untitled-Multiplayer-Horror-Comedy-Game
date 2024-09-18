@@ -92,12 +92,12 @@ public class VoiceChatManager : MonoBehaviour
 			AudioHighPassFilter highPassFilter = currentVoiceChatAudioSource.GetComponent<AudioHighPassFilter>();
 			AudioOccluder audioOccluder = currentVoiceChatAudioSource.GetComponent<AudioOccluder>();
 			
-			if (playerController.isPlayerDead)
+			if (playerController.isPlayerDead.Value)
 			{ 
 				lowPassFilter.enabled = false; 
 				highPassFilter.enabled = false;
 				currentVoiceChatAudioSource.panStereo = 0f;
-				if (GameSessionManager.Instance.localPlayerController.isPlayerDead)
+				if (GameSessionManager.Instance.localPlayerController.isPlayerDead.Value)
 				{
 			 		currentVoiceChatAudioSource.spatialBlend = 0f;
 			 		playerController.playerVoiceChatPlaybackObject.set2D = true;
@@ -149,7 +149,7 @@ public class VoiceChatManager : MonoBehaviour
 			// 	lowPassFilter.lowpassResonanceQ = 3f;
 			// }
 
-			 if (GameSessionManager.Instance.localPlayerController.isPlayerDead)
+			 if (GameSessionManager.Instance.localPlayerController.isPlayerDead.Value)
 			 {
 			 	playerController.voicePlayerState.Volume = 0.8f;
 			 }
@@ -172,7 +172,7 @@ public class VoiceChatManager : MonoBehaviour
 
 		foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
 		{
-			if (!playerController.controlledByClient && !playerController.isPlayerDead)
+			if (!playerController.controlledByClient && !playerController.isPlayerDead.Value)
 			{
 				continue;
 			}

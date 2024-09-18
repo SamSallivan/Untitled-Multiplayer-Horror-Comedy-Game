@@ -289,6 +289,7 @@ public class GameSessionManager : NetworkBehaviour
 				StartCoroutine(LoadCoroutine());
 				//Teleport player controller to its spawn position.
 				playerController.TeleportPlayer(spawnTransform.position);
+				//playerController.Respawn();
             }
             else
             {
