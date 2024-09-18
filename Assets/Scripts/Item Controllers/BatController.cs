@@ -37,6 +37,8 @@ public class BatController : ItemController
         {
             IDamagable component;
             Rigidbody rb;
+            PlayerController pc;
+            MonsterAI ma;
             
             if (hitList[i].transform.TryGetComponent<IDamagable>(out component) && hitList[i].transform != owner.transform)
             {
@@ -48,6 +50,18 @@ public class BatController : ItemController
             {
                 Vector3 direction = owner.headTransform.forward;
                 rb.AddForce(direction * damage, ForceMode.Impulse);
+            }
+            
+            if (hitList[i].transform.TryGetComponent<PlayerController>(out pc) && hitList[i].transform != owner.transform)
+            {
+                if(pc!=null)
+                    RatingManager.instance.AddScore(20,"Friendly Fire!");
+            }
+            
+            if (hitList[i].transform.TryGetComponent<MonsterAI>(out ma) && hitList[i].transform != owner.transform)
+            {
+                if(ma!=null)
+                    RatingManager.instance.AddScore(30,"Enemy Hit!");
             }
         }
         

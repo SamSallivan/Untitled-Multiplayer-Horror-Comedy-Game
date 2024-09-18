@@ -316,7 +316,7 @@ public class InventoryManager : NetworkBehaviour
 
     public I_InventoryItem AddItemToInventory(I_InventoryItem inventoryItem)
     {
-        RatingManager.instance.AddScore(50,playerController);
+        RatingManager.instance.AddScore(50,"Found a " + inventoryItem.name + "!");
 
         PocketItemClientRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
 

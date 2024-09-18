@@ -21,10 +21,13 @@ public class PlayerRating : NetworkBehaviour
     private NetworkVariable<Rating> rating = new NetworkVariable<Rating>();
     public float ratingMeter;
     public float scoreTextTimer;
+
+    private PlayerController playerController;
     
     // Start is called before the first frame update
     void Start()
     {
+        playerController = GetComponent<PlayerController>();
         rating.Value = Rating.B;
         ratingMeter = 0.5f;
         score.Value = 0;
@@ -34,30 +37,34 @@ public class PlayerRating : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(scoreTextTimer > 0)
+        if (playerController.IsOwner&& playerController.controlledByClient)
         {
-            scoreTextTimer -= Time.deltaTime;
-        }
-        else
-        {
-            UIManager.instance.addScoreText.text = "";
-        }
+            if(scoreTextTimer > 0)
+            {
+                scoreTextTimer -= Time.deltaTime;
+            }
+            else
+            {
+                UIManager.instance.addScoreText.text = "";
+            }
 
-        ratingMeter -= Time.deltaTime * GetMeterDropRatePerSecond();
-        UIManager.instance.ratingBar.fillAmount = ratingMeter;
+            ratingMeter -= Time.deltaTime * GetMeterDropRatePerSecond();
+            UIManager.instance.ratingBar.fillAmount = ratingMeter;
 
-        if(ratingMeter <= 0 && rating.Value != Rating.D)
-        {
-            rating.Value--;
-            ratingMeter += 1;
-            UpdateRatingText();
+            if(ratingMeter <= 0 && rating.Value != Rating.D)
+            {
+                rating.Value--;
+                ratingMeter += 1;
+                UpdateRatingText();
+            }
+            else if(ratingMeter >= 1 && rating.Value != Rating.SSS)
+            {
+                rating.Value++;
+                ratingMeter -= 1;
+                UpdateRatingText();
+            }
         }
-        else if(ratingMeter >= 1 && rating.Value != Rating.SSS)
-        {
-            rating.Value++;
-            ratingMeter -= 1;
-            UpdateRatingText();
-        }
+        
     }
     
     public float GetMeterDropRatePerSecond()
@@ -126,15 +133,20 @@ public class PlayerRating : NetworkBehaviour
     
     public void AddScore(int score)
     {
+        AddScore(score,"");
+    }
+    public void AddScore(int score, string message)
+    {
         this.score.Value += score;
         ratingMeter += (float)score/100;
         if(ratingMeter >= 1 && rating.Value == Rating.SSS)
         {
             ratingMeter = 1;
         }
-        UIManager.instance.addScoreText.text = "+ " + score;
+        UIManager.instance.addScoreText.text = "+ " + score + " " + message;
         scoreTextTimer = 1;
     }
+
     
     
 }

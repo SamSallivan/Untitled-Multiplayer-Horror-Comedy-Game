@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class RatingManager : MonoBehaviour
+public class RatingManager : NetworkBehaviour
 {
     public static RatingManager instance;
     
@@ -35,14 +35,28 @@ public class RatingManager : MonoBehaviour
     {
         playerController.GetComponent<PlayerRating>().AddScore(score);
     }
+    public void AddScore(int score,string message)
+    {
+        playerController.GetComponent<PlayerRating>().AddScore(score,message);
+    }
     public void AddScore(int score,PlayerController player)
     {
         player.GetComponent<PlayerRating>().AddScore(score);
     }
     
+    public void AddScore(int score,string message,PlayerController player)
+    {
+        player.GetComponent<PlayerRating>().AddScore(score,message);
+    }
+    
     public void AddScore(int score,int playerID)
     {
         GameSessionManager.Instance.playerControllerList[playerID].GetComponent<PlayerRating>().AddScore(score);
+    }
+    
+    public void AddScore(int score,string message,int playerID)
+    {
+        GameSessionManager.Instance.playerControllerList[playerID].GetComponent<PlayerRating>().AddScore(score,message);
     }
     
     

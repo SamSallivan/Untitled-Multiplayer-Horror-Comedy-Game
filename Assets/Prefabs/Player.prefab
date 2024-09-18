@@ -1143,7 +1143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e0decb6bed12f54e8bf909fe2d95830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableLook: 1
   axes: 1
   invertY: 0
   sensitivityX: 0.2
@@ -1152,7 +1151,9 @@ MonoBehaviour:
   maximumX: 360
   minimumY: -75
   maximumY: 55
+  rotArrayX: []
   rotAverageX: 0
+  rotArrayY: []
   rotAverageY: -8.499961
   framesOfSmoothing: 5
 --- !u!114 &749386978981623756
@@ -4514,6 +4515,7 @@ GameObject:
   - component: {fileID: 6708520134979418985}
   - component: {fileID: 6474330115237772916}
   - component: {fileID: 5510620420523601156}
+  - component: {fileID: 2253766003496438379}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -4706,6 +4708,7 @@ MonoBehaviour:
   inputDirNetworkVariable:
     m_InternalValue: {x: 0, y: 0, z: 0}
   enableMovement: 1
+  enableLook: 1
   isNonPhysics: 0
   dynamicSpeed: 2.5
   sprinting: 0
@@ -4768,7 +4771,8 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 128
-  isPlayerDead: 0
+  isPlayerDead:
+    m_InternalValue: 0
   maxHp: 100
   currentHp:
     m_InternalValue: 0
@@ -4868,6 +4872,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06a892ac1d6c864dad7c6c575b6e640, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2253766003496438379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738643314197950141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d864bb10410bf142862122a64351057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ratingMeter: 0
+  scoreTextTimer: 0
 --- !u!1 &6788842259213357691
 GameObject:
   m_ObjectHideFlags: 0
@@ -5285,7 +5303,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e0decb6bed12f54e8bf909fe2d95830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableLook: 1
   axes: 2
   invertY: 0
   sensitivityX: 0.2
@@ -5294,7 +5311,9 @@ MonoBehaviour:
   maximumX: 360
   minimumY: -75
   maximumY: 55
+  rotArrayX: []
   rotAverageX: 0
+  rotArrayY: []
   rotAverageY: 0
   framesOfSmoothing: 5
 --- !u!114 &4680189524970998394
@@ -5383,7 +5402,6 @@ MonoBehaviour:
   slideTimer: 0
   bounceTimer: 1
   targetPositionTransform: {fileID: 7461603081360502610}
-  targetPositionTransformDefault: {fileID: 7461603081360502610}
   targetPositionOffset: {x: 0, y: 0.1, z: 0}
 --- !u!114 &2627575135617473334
 MonoBehaviour:
