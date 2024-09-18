@@ -98,9 +98,9 @@ public class I_InventoryItem : Interactable
             if (owner.controlledByClient && !owner.isPlayerDead.Value) 
             {
                 Transform targetTransform = owner.equippedTransform;
-                base.transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
-                base.transform.rotation = targetTransform.rotation;
-                base.transform.Rotate(itemData.equipRotation);
+                transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
+                transform.rotation = targetTransform.rotation;
+                transform.Rotate(itemData.equipRotation);
             }
             else if (IsServer)
             {
@@ -110,7 +110,7 @@ public class I_InventoryItem : Interactable
                 }
                 else if (!inStorageBox.Value)
                 {
-                    InventoryManager.instance.UnpocketItemClientRpc(this.NetworkObject);
+                    InventoryManager.instance.UnpocketItemRpc(this.NetworkObject);
                 }
             }
         }
@@ -121,23 +121,15 @@ public class I_InventoryItem : Interactable
         if(itemData != null)
         {
             I_InventoryItem item = InventoryManager.instance.AddItemToInventory(this);
-            //InventoryItem newItem = InventoryManager.instance.AddItem(itemData, itemStatus);
-            //Destroy(transform.gameObject);
             OnPickUp?.Invoke();
             if (item != null)
             {
-                /*if (equipOnPickUp && itemData.isEquippable)
-                {
-                    InventoryManager.instance.EquipItem(item);
-                }*/
-
                 if (openInventoryOnPickUp)
                 {
                     InventoryManager.instance.OpenInventory();
                     InventoryManager.instance.selectedSlot = item.inventorySlot;
                 }
             }
-            //UnTarget();
         }
         yield return null; 
     }
@@ -162,12 +154,6 @@ public class I_InventoryItem : Interactable
 			skinnedMeshRenderers[j].enabled = enable;
 			Debug.Log("DISABLING/ENABLING SKINNEDMESH: " + skinnedMeshRenderers[j].gameObject.name);
 		}
-
-		// Light[] lights = base.gameObject.GetComponentsInChildren<Light>();
-		// for (int j = 0; j < lights.Length; j++)
-		// {
-		// 	lights[j].enabled = enable;
-		// }
 	}
     
 	public void EnableItemPhysics(bool enable)
@@ -198,14 +184,11 @@ public class I_InventoryItem : Interactable
         }
         UIManager.instance.interactionName.text = textName;
         UIManager.instance.interactionName.text += !itemData.isStackable ? "" : " x " + itemStatus.amount;
-        //UI.instance.interactionPrompt.text = textPrompt;
 
         if (textPrompt != "" && interactionType != InteractionType.None)
         {
             UIManager.instance.interactionPrompt.text = "[E] ";
             UIManager.instance.interactionPrompt.text += activated ? textPromptActivated : textPrompt;
-            //enable button prompt image instead
-            //UIManager.instance.interactionPromptAnimation.Play("PromptButtonAppear");
         }
     }
 

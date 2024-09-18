@@ -895,12 +895,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (IsOwner && !isPlayerDead.Value)
         {
             isPlayerDead.Value = true;
+            
+            InventoryManager.instance.DropAllItemsFromInventory();
+            InventoryManager.instance.CloseInventory();
+            
             LockMovement(true);
             crouching = false;
             crouchingNetworkVariable.Value = crouching;
             animator.enabled = false;
             SpectateManager.Instance.StartSpectating();
-            InventoryManager.instance.DropAllItemsFromInventory();
             InstantiateRagdollServerRPC();
         }
     }
@@ -919,6 +922,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             isPlayerDead.Value = false;
             currentHp.Value = maxHp;
+            
             LockMovement(false);
             ResetCamera();
             animator.enabled = true;
@@ -1067,7 +1071,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         if (base.IsOwner && controlledByClient & enableMovement)
         {        
-            if (!InventoryManager.instance.activated)
+            if (!InventoryManager.instance.inventoryOpened)
             {
                 InventoryManager.instance.DiscardEquippedItem();
             }
