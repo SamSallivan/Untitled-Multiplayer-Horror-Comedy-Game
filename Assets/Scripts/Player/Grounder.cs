@@ -360,7 +360,7 @@ public class Grounder : MonoBehaviour
         RaycastHit hit;
         Vector3 raycastFloorPos = transform.TransformPoint(offsetx, 0, offsetz) + detectionOffset;
  
-        if (Physics.Raycast(raycastFloorPos, -Vector3.up, out hit, detectionDistance))
+        if (Physics.Raycast(raycastFloorPos, -Vector3.up, out hit, detectionDistance, groundMask))
         {
 			Debug.DrawLine(raycastFloorPos, raycastFloorPos + -Vector3.up * detectionDistance, Color.green);
 			hitOut = hit;

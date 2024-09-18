@@ -887,8 +887,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
             crouchingNetworkVariable.Value = crouching;
             animator.enabled = false;
             InventoryManager.instance.DropAllItemsFromInventory();
-            DieClientRpc();
+            SpectateManager.Instance.StartSpectating();
             InstantiateRagdollServerRPC();
+            DieClientRpc();
         }
     }
     
@@ -925,6 +926,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             LockCamera(false);
             animator.enabled = true;
             TeleportPlayer(GameSessionManager.Instance.spawnTransform.position);
+            SpectateManager.Instance.StopSpectating();
             RespawnClientRpc();
         }
     }
@@ -1033,14 +1035,22 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     private void ActivateItem_performed(InputAction.CallbackContext context)
     {
-        if (base.IsOwner && controlledByClient & enableMovement)
+        if (base.IsOwner && controlledByClient)
         {
-            if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner && InventoryManager.instance.equippedItem.owner == this)
+            if (enableMovement)
             {
-                if (InventoryManager.instance.equippedItem.GetComponent<ItemController>()) 
+                if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner &&
+                    InventoryManager.instance.equippedItem.owner == this)
                 {
-                    InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(true);
+                    if (InventoryManager.instance.equippedItem.GetComponent<ItemController>())
+                    {
+                        InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(true);
+                    }
                 }
+            }
+            else if(SpectateManager.Instance.isSpectating)
+            {
+                SpectateManager.Instance.SpectateNextPlayer();
             }
         }
     }
