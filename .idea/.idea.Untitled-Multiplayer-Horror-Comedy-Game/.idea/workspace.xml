@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ae88ff3d-798b-444a-9315-8e5f906c02c9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/PlayerRating.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PlayerRating.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BatController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BatController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +18,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/IDamagable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Assets/PlayerRating.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Assets/Scripts/Player/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Library/PackageCache/com.unity.netcode.gameobjects@1.9.1/Runtime/NetworkVariable/NetworkVariable.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -118,7 +119,8 @@
       <workItem from="1726469342539" duration="4219000" />
       <workItem from="1726504193611" duration="4087000" />
       <workItem from="1726641382051" duration="8048000" />
-      <workItem from="1726675218033" duration="1812000" />
+      <workItem from="1726675218033" duration="2372000" />
+      <workItem from="1726680081520" duration="39000" />
     </task>
     <servers />
   </component>

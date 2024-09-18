@@ -55,13 +55,13 @@ public class BatController : ItemController
             if (hitList[i].transform.TryGetComponent<PlayerController>(out pc) && hitList[i].transform != owner.transform)
             {
                 if(pc!=null)
-                    RatingManager.instance.AddScore(20,"Friendly Fire!");
+                    RatingManager.instance.AddScore(20,"Friendly Fire!", owner);
             }
             
             if (hitList[i].transform.TryGetComponent<MonsterAI>(out ma) && hitList[i].transform != owner.transform)
             {
                 if(ma!=null)
-                    RatingManager.instance.AddScore(30,"Enemy Hit!");
+                    RatingManager.instance.AddScore(30,"Enemy Hit!", owner);
             }
         }
         
