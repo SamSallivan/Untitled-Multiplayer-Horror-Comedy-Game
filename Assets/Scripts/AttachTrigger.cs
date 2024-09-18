@@ -20,10 +20,12 @@ public class AttachTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_monsterAI.monState != MonsterAI.MonsterState.Attached&&other.GetComponentInParent<PlayerController>())
+        if (_monsterAI.monState.Value != MonsterAI.MonsterState.Attached&&other.GetComponentInParent<PlayerController>())
         {
-            _monsterAI.monState = MonsterAI.MonsterState.Attached;
-            _monsterAI.attatchedPlayer = other.GetComponentInParent<PlayerController>();
+            _monsterAI.monState.Value = MonsterAI.MonsterState.Attached;
+            _monsterAI.setAttachedPlayer(other.GetComponentInParent<PlayerController>());
+            
+            
         }
         
     }

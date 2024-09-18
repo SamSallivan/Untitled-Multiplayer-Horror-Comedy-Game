@@ -16,7 +16,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
 
     Transform closestplayer;
     public Transform target;
-    
+
     public PlayerController attatchedPlayer;
 
     public GameObject stuckHitbox;
@@ -62,14 +62,15 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         Dead,
     }
 
-    public MonsterState monState;
+    public NetworkVariable<MonsterState> monState;
 
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        monState = MonsterState.Idle;
-        health.Value = maxHealth;
+        //monState = MonsterState.Idle;
+        if(IsServer)
+            health.Value = maxHealth;
     }
 
     // Start is called before the first frame update
@@ -84,34 +85,55 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     {
         if (IsServer)
         {
-            if (monState != MonsterState.Dead)
+            if (monState.Value != MonsterState.Dead)
             {
-                if (monState != MonsterState.HitStunned)
+                if (monState.Value != MonsterState.HitStunned)
                 {
-                    if (monState != MonsterState.Attached)
+                    if (monState.Value != MonsterState.Attached)
                     {
-                        if (monState != MonsterState.Attacking)
+                        if (monState.Value != MonsterState.Attacking)
                         {
                             UpdateTarget();
                             Chase();
                             JumpAttack();
+                            if (monState.Value == MonsterState.Attached)
+                            {
+                                AttachedUpdate();
+                            }
                         }
                     }
-                    else
-                    {
-                        AttachedUpdate();
-                    }
-
                 }
             }
 
 
         }
         
+        if (monState.Value == MonsterState.Attached)
+        {
+            AttachedPositionUpdate();
+        }
+        
+        
+        
     }
 
 
+    public void AttachedPositionUpdate()
+    {
+        if (attatchedPlayer != null)
+        {
+            if (attatchedPlayer.isPlayerDead.Value)
+            {
+                
+            }
+            else
+            {
+                transform.position = attatchedPlayer.headTransform.position + attatchedPlayer.headTransform.forward * 0.3f + attatchedPlayer.headTransform.up*-0.2f;
+                transform.forward = -attatchedPlayer.headTransform.forward;
+            }
+        }
 
+    }
 
     public void AttachedUpdate()
     {
@@ -125,8 +147,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
             }
             else
             {
-                transform.position = attatchedPlayer.headTransform.position + attatchedPlayer.headTransform.forward * 0.3f + attatchedPlayer.headTransform.up*-0.2f;
-                transform.forward = -attatchedPlayer.headTransform.forward;
+
                 if(currentAttackCD <= 0f)
                 {
                     currentAttackCD = maxAttackCD;
@@ -169,7 +190,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     public IEnumerator Jump()
     {
         
-        monState = MonsterState.Attacking;
+        monState.Value = MonsterState.Attacking;
         yield return new WaitForSeconds(0.5f);
         transform.LookAt(target.position);
         _agent.enabled = false;
@@ -180,14 +201,14 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         stuckHitbox.SetActive(true);
         yield return new WaitForSeconds(1f);
         stuckHitbox.SetActive(false);
-        if (monState == MonsterState.Attached)
+        if (monState.Value == MonsterState.Attached)
             yield break;
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() =>
             NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 0.5f, _agent.areaMask));
         _agent.enabled = true;
         rb.velocity = Vector3.zero;
-        monState = MonsterState.Chasing;
+        monState.Value = MonsterState.Chasing;
         currentJumpCD = maxJumpCD;
     }
     
@@ -282,34 +303,52 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     public IEnumerator Knockback(float damage, Vector3 direction)
     {
         _agent.enabled = false;
-        if (monState == MonsterState.Attached)
+        if (monState.Value == MonsterState.Attached)
         {
             GetComponent<Collider>().isTrigger = false;
-            attatchedPlayer = null;
+            UnattachPlayerClientRpc();
         }
         
         rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
-        monState = MonsterState.HitStunned;
+        monState.Value = MonsterState.HitStunned;
         yield return new WaitForSeconds(1.5f);
         yield return new WaitUntil(() =>
             NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 1f, _agent.areaMask));
         rb.velocity = Vector3.zero;
         _agent.enabled = true;
-        monState = MonsterState.Idle;
+        monState.Value = MonsterState.Idle;
 
     }
 
     void unattatch()
     {
         GetComponent<Collider>().isTrigger = false;
-        attatchedPlayer = null;
+        UnattachPlayerClientRpc();
         if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
         {
             _agent.Warp(hit.position+ new Vector3(0,2,0));
             _agent.enabled = true;
-            monState = MonsterState.Idle;
+            monState.Value = MonsterState.Idle;
         }
         
 
+    }
+
+    public void setAttachedPlayer(PlayerController playerController)
+    {
+        SetAttachedPlayerClientRpc(playerController.NetworkObject);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void SetAttachedPlayerClientRpc(NetworkObjectReference playerController)
+    {
+        if(playerController.TryGet(out NetworkObject playerControllerObject))
+        attatchedPlayer = playerControllerObject.GetComponent<PlayerController>();
+        ;
+    }
+    [Rpc(SendTo.Everyone)]
+    public void UnattachPlayerClientRpc()
+    {
+        attatchedPlayer = null;
     }
 }
