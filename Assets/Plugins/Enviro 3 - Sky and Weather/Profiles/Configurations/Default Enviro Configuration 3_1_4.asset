@@ -130,9 +130,9 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 0fcdd472bd6a8ec429fc1e9bc978c4fa, type: 2}
   showCirrusCloudsControls: 0
   show2DCloudsControls: 0
-  cloudFlatBaseAnim: {x: -0.85868615, y: -0.45594966}
-  cloudFlatDetailAnim: {x: -0.79162794, y: 0.37613344}
-  cirrusAnim: {x: -0.42567146, y: 0.76327854}
+  cloudFlatBaseAnim: {x: -0.48593783, y: -0.828698}
+  cloudFlatDetailAnim: {x: -0.9291758, y: 0.51250964}
+  cirrusAnim: {x: -0.23929721, y: 0.5769012}
 --- !u!114 &-5447272849285213076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,12 +151,12 @@ MonoBehaviour:
   Settings:
     simulate: 0
     secSerial: 0
-    minSerial: 0
-    hourSerial: 21
+    minSerial: 44
+    hourSerial: 5
     daySerial: 26
     monthSerial: 6
     yearSerial: 2024
-    timeOfDay: 21
+    timeOfDay: 5.7333345
     latitude: 0
     longitude: 0
     utcOffset: 0
@@ -166,7 +166,7 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 82acdd278499d74498ad37dd931734d1, type: 2}
   showTimeControls: 1
   showLocationControls: 0
-  LST: 230.4798
+  LST: 0.85284424
 --- !u!114 &-1033463005042072443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2098,7 +2098,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    temperature: 18.216621
+    temperature: 21.350557
     temperatureWeatherMod: 1.7
     temperatureCustomMod: 0
     temperatureChangingSpeed: 0.1
@@ -2320,7 +2320,7 @@ MonoBehaviour:
   showDensityControls: 0
   showTextureControls: 0
   showWindControls: 0
-  cloudAnimLayer1: {x: 0.5518231, y: -0.45055285, z: 0.2832796}
+  cloudAnimLayer1: {x: -0.88908976, y: 0.9903491, z: -0.6983544}
   cloudAnimLayer2: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer1: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer2: {x: 0, y: 0, z: 0}
@@ -2359,7 +2359,7 @@ MonoBehaviour:
     defaultSkyReflectionTex: {fileID: 0}
   preset: {fileID: 11400000, guid: da668770e38694d49af97ecfd05fd7eb, type: 2}
   showReflectionControls: 0
-  lastReflectionUpdate: 21.025
+  lastReflectionUpdate: 5.7583346
   lastReflectionUpdatePos: {x: 0, y: -9.25, z: 0.1}
 --- !u!114 &4011421771873438716
 MonoBehaviour:
@@ -2581,6 +2581,9 @@ MonoBehaviour:
   showVolumetricsControls: 0
   showUnityFogControls: 1
   fogLights:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
