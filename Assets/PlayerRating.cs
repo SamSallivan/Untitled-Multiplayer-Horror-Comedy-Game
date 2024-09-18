@@ -17,27 +17,34 @@ public class PlayerRating : NetworkBehaviour
         SSS = 6
     }
 
-    private NetworkVariable<float> score = new NetworkVariable<float>();
-    private NetworkVariable<Rating> rating = new NetworkVariable<Rating>();
+    private NetworkVariable<float> score = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
+    private NetworkVariable<Rating> rating = new NetworkVariable<Rating>(writePerm: NetworkVariableWritePermission.Owner);
     public float ratingMeter;
     public float scoreTextTimer;
 
     private PlayerController playerController;
     
+
     // Start is called before the first frame update
     void Start()
     {
         playerController = GetComponent<PlayerController>();
-        rating.Value = Rating.B;
-        ratingMeter = 0.5f;
-        score.Value = 0;
-        UpdateRatingText();
+        if (IsOwner)
+        {
+            
+            rating.Value = Rating.B;
+            ratingMeter = 0.5f;
+            score.Value = 0;
+            UpdateRatingText();
+        }
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (playerController.IsOwner&& playerController.controlledByClient)
+        if (IsOwner&& playerController.controlledByClient)
         {
             if(scoreTextTimer > 0)
             {
@@ -137,14 +144,18 @@ public class PlayerRating : NetworkBehaviour
     }
     public void AddScore(int score, string message)
     {
-        this.score.Value += score;
-        ratingMeter += (float)score/100;
-        if(ratingMeter >= 1 && rating.Value == Rating.SSS)
+        if (IsOwner&& playerController.controlledByClient)
         {
-            ratingMeter = 1;
+            this.score.Value += score;
+            ratingMeter += (float)score/100;
+            if(ratingMeter >= 1 && rating.Value == Rating.SSS)
+            {
+                ratingMeter = 1;
+            }
+            UIManager.instance.addScoreText.text = "+ " + score + " " + message;
+            scoreTextTimer = 1;
         }
-        UIManager.instance.addScoreText.text = "+ " + score + " " + message;
-        scoreTextTimer = 1;
+
     }
 
     
