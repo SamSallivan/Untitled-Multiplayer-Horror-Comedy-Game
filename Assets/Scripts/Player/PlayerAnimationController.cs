@@ -169,11 +169,12 @@ public class PlayerAnimationController : MonoBehaviour
         {
             Vector2 mouseInput = playerController.playerInputActions.FindAction("Look").ReadValue<Vector2>();
             float leanX = mouseInput.x * playerController.mouseLookX.sensitivityX;
-            bodyAnimator.SetFloat("LeanX", Mathf.Lerp(bodyAnimator.GetFloat("LeanX"), leanX, Time.deltaTime));
+            leanX *= playerController.transform.GetChild(0).InverseTransformDirection(playerController.velNetworkVariable.Value).z / 50;
+            bodyAnimator.SetFloat("LeanX", Mathf.Lerp(bodyAnimator.GetFloat("LeanX"), leanX, Time.deltaTime * 2f));
         }
         else
         {
-            bodyAnimator.SetFloat("LeanX", Mathf.Lerp(bodyAnimator.GetFloat("LeanX"), 0, Time.deltaTime));
+            bodyAnimator.SetFloat("LeanX", Mathf.Lerp(bodyAnimator.GetFloat("LeanX"), 0, Time.deltaTime * 2f));
         }
         //Get ground normal z, tilt waist X rotation
     }
