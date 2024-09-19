@@ -1018,9 +1018,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     private void Jump_performed(InputAction.CallbackContext context)
     {
-        if (base.IsOwner && controlledByClient & enableMovement)
+        if (base.IsOwner && controlledByClient)
         {
-            JumpOrClimb();
+            if (enableMovement)
+            {
+                JumpOrClimb();
+            }
+            else if (isPlayerDead.Value)
+            {
+                Respawn();
+            }
         }
     }
 

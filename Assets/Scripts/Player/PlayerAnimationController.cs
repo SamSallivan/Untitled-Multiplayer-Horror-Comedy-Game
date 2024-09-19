@@ -171,6 +171,10 @@ public class PlayerAnimationController : MonoBehaviour
             float leanX = mouseInput.x * playerController.mouseLookX.sensitivityX;
             bodyAnimator.SetFloat("LeanX", Mathf.Lerp(bodyAnimator.GetFloat("LeanX"), leanX, Time.deltaTime));
         }
+        else
+        {
+            bodyAnimator.SetFloat("LeanX", Mathf.Lerp(bodyAnimator.GetFloat("LeanX"), 0, Time.deltaTime));
+        }
         //Get ground normal z, tilt waist X rotation
     }
     
