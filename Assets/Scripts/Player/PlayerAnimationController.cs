@@ -41,8 +41,6 @@ public class PlayerAnimationController : MonoBehaviour
     public bool turnAnimation = true;
     public float bodyRotationInterpolationSpeed = 5f;
     public float turnBodyAngleThreshold = 45f;
-    
-    public float fallAirTimeThreshold = 0.65f;
     public float ArmIKWeightInterpolationSpeed = 15f;
     
     [Header("Values")]
@@ -77,7 +75,6 @@ public class PlayerAnimationController : MonoBehaviour
 
             UpdateWalkAnimation();
             UpdateBodyRotation();
-            UpdateFallAnimation();
             UpdateArmAnimation();
             UpdateCrouchAnimation();
             UpdateLookRotationConstraint();
@@ -86,13 +83,10 @@ public class PlayerAnimationController : MonoBehaviour
 
     void OnAnimatorIK()
     {
-        //if (playerController.NetworkObject.IsOwner)
-        //{
-            if (footStickToSurface)
-            {
-                UpdateFootPlacement();
-            }
-        //}
+        if (footStickToSurface)
+        {
+            UpdateFootPlacement();
+        }
     }
 
     void UpdateArmAnimation()
@@ -245,24 +239,27 @@ public class PlayerAnimationController : MonoBehaviour
             chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f,Time.deltaTime * 5f);
         }
     }
-    
-    void UpdateFallAnimation()
-    {
-        if (playerController.grounder.airTime > fallAirTimeThreshold && playerController.JumpCooldownNetworkVariable.Value <= 0)
-        {
-            bodyAnimator.SetBool("isFalling", true);
-        }
-    }
 
     void UpdateFootPlacement()
     {
-        bodyAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, bodyAnimator.GetFloat("LeftFoot"));
-        bodyAnimator.SetIKPositionWeight(AvatarIKGoal.RightFoot, bodyAnimator.GetFloat("RightFoot"));
-        
-        bodyAnimator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, bodyAnimator.GetFloat("LeftFoot"));
-        bodyAnimator.SetIKRotationWeight(AvatarIKGoal.RightFoot, bodyAnimator.GetFloat("RightFoot"));
+        if (playerController.grounder.grounded)
+        {
+            bodyAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, bodyAnimator.GetFloat("LeftFoot"));
+            bodyAnimator.SetIKPositionWeight(AvatarIKGoal.RightFoot, bodyAnimator.GetFloat("RightFoot"));
 
-        
+            bodyAnimator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, bodyAnimator.GetFloat("LeftFoot"));
+            bodyAnimator.SetIKRotationWeight(AvatarIKGoal.RightFoot, bodyAnimator.GetFloat("RightFoot"));
+        }
+        else
+        {
+            bodyAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0);
+            bodyAnimator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0);
+
+            bodyAnimator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 0);
+            bodyAnimator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0);
+        }
+
+
         FootToSurfaceRaycast(leftFootTransform, ref _leftFootIKTargetPos, ref _leftFootIKTargetRot);
         FootToSurfaceRaycast(rightFootTransform, ref _rightFootIKTargetPos, ref _rightFootIKTargetRot);
 

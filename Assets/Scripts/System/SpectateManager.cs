@@ -44,7 +44,7 @@ public class SpectateManager : MonoBehaviour
             return;
         }
 
-        if (onDeathZoomOutTime < onDeathZoomOutTimeSetting * 2f)
+        if (onDeathZoomOutTime < onDeathZoomOutTimeSetting * 4f)
         {
             onDeathZoomOutTime += Time.deltaTime;
         }
@@ -82,7 +82,7 @@ public class SpectateManager : MonoBehaviour
     
     public void SpectateNextPlayer()
     {
-        if (onDeathZoomOutTime < onDeathZoomOutTimeSetting * 2f)
+        if (onDeathZoomOutTime < onDeathZoomOutTimeSetting * 4f)
         {
             return;
         }

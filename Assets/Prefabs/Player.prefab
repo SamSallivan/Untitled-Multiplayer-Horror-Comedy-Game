@@ -4717,11 +4717,14 @@ MonoBehaviour:
   crouching: 0
   crouchingNetworkVariable:
     m_InternalValue: 0
-  dynamicSpeedSprint: 1
   vel: {x: 0, y: 0, z: 0}
   velNetworkVariable:
     m_InternalValue: {x: 0, y: 0, z: 0}
   gVel: {x: 0, y: 0, z: 0}
+  groundMovementControl: 1
+  groundMovementControlCoolDown: 0
+  airMovementControl: 0.75
+  airMovementControlTarget: 0.75
   waterObject: {fileID: 0}
   enableJump: 1
   jumpForce: {x: 0, y: 8, z: 0}
@@ -4755,15 +4758,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  acceleration: 30
-  deaccerlation: 10
-  distance: 0.5
-  radius: 0.1
-  collisionCoefficient: 5
-  nonPhysicsCollisions:
-    serializedVersion: 2
-    m_Bits: 0
-  damageTimer: 0
   enableInteraction: 1
   targetInteractable: {fileID: 0}
   exclusiveInteractable: {fileID: 0}
@@ -4777,6 +4771,7 @@ MonoBehaviour:
   currentHp:
     m_InternalValue: 0
   ragdollPrefab: {fileID: 8888912781250069987, guid: 9453f7970b319e24ea7331dbe6ed3bd0, type: 3}
+  damageTimer: 0
 --- !u!114 &8793975911923707449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5402,7 +5397,7 @@ MonoBehaviour:
   slideTimer: 0
   bounceTimer: 1
   targetPositionTransform: {fileID: 7461603081360502610}
-  targetPositionOffset: {x: 0, y: 0.1, z: 0}
+  targetPositionOffset: {x: 0, y: 0.075, z: 0}
 --- !u!114 &2627575135617473334
 MonoBehaviour:
   m_ObjectHideFlags: 0

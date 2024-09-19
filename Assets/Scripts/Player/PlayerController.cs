@@ -154,9 +154,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public NetworkVariable<bool> crouchingNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Physics Based Movements")]
-    public float dynamicSpeedSprint = 1f;
-
-    [FoldoutGroup("Physics Based Movements")]
     public Vector3 vel;
     
     [FoldoutGroup("Physics Based Movements")]
@@ -178,10 +175,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
     private RaycastHit hit;
 
     [FoldoutGroup("Physics Based Movements")]
-    private float airControl = 1f;
+    public float groundMovementControl = 1f;
 
     [FoldoutGroup("Physics Based Movements")]
-    private float airControlBlockTimer;
+    public float groundMovementControlCoolDown = 0f;
+
+    [FoldoutGroup("Physics Based Movements")]
+    public float airMovementControl = 0.5f;
+
+    [FoldoutGroup("Physics Based Movements")]
+    public float airMovementControlTarget = 0.5f;
 
     [FoldoutGroup("Physics Based Movements")]
     public WaterObject waterObject;
@@ -222,7 +225,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Physics Based Movements")]
     public AnimationCurve climbCurve;
 
-    [FoldoutGroup("Kinematic Movements")]
+    /*[FoldoutGroup("Kinematic Movements")]
     public float acceleration;
 
     [FoldoutGroup("Kinematic Movements")]
@@ -238,9 +241,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float collisionCoefficient;
 
     [FoldoutGroup("Kinematic Movements")]
-    public LayerMask nonPhysicsCollisions;
-
-    public float damageTimer;
+    public LayerMask nonPhysicsCollisions;*/
 
     [FoldoutGroup("Interaction")]
     public bool enableInteraction = true;
@@ -268,6 +269,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Health")] 
     public GameObject ragdollPrefab;
+
+    [FoldoutGroup("Health")] 
+    public float damageTimer;
 
 
     private void Awake()
@@ -616,19 +620,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
                 sprintingNetworkVariable.Value = false;
                 dynamicSpeed = 2.5f;
             }
-
-            //counts down the timer that restricts air control 
-            if (airControlBlockTimer > 0f)
+            
+            //sets ground control back to 1 over time
+            airMovementControl = Mathf.MoveTowards(airMovementControl, airMovementControlTarget, Time.fixedDeltaTime);
+            groundMovementControl = Mathf.MoveTowards(groundMovementControl, 1f, Time.fixedDeltaTime);
+            
+            if (groundMovementControlCoolDown > 0f)
             {
-                airControlBlockTimer -= Time.fixedDeltaTime;
-                airControl = 0f;
+                groundMovementControlCoolDown -= Time.fixedDeltaTime;
             }
-            //sets air control back to 1 over time
-            else if (airControl != 1f)
-            {
-                airControl = Mathf.MoveTowards(airControl, 1f, Time.fixedDeltaTime);
-            }
-
+            
             if (jumpCooldown > 0f)
             {
                 jumpCooldown -= Time.fixedDeltaTime;
@@ -638,26 +639,28 @@ public class PlayerController : NetworkBehaviour, IDamagable
             //if moving fast, apply the calculated movement.
             //based on new input subtracted by previous velocity
             //so that player accelerates faster when start moving.
-            if (inputDir.sqrMagnitude > 0.25f)
+            if (grounder.grounded)
             {
-                if (grounder.grounded)
+                if (inputDir.sqrMagnitude > 0.25f && groundMovementControlCoolDown <= 0f)
                 {
-                    rb.AddForce(gDir * 100f - gVel * 10f * dynamicSpeed);
+                    rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * groundMovementControl);
                 }
-                else if (airControl > 0f)
+                //if not fast, accelerates the slowing down process
+                else if (gVel.sqrMagnitude != 0f)
                 {
-                    rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * airControl);
+                    rb.AddForce(-gVel * 10f);
                 }
+                
             }
-            //if not fast, accelerates the slowing down process
-            else if (grounder.grounded && gVel.sqrMagnitude != 0f)
+            else
             {
-                rb.AddForce(-gVel * 10f);
+                rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * airMovementControl);
+                //rb.AddForce(-gVel * 5f);
             }
 
             //applies gravity in the direction of ground normal
             //so player does not slide off within the tolerable angle
-            if(grounder.grounded && grounder.regroundCooldown <= 0)
+            if(grounder.grounded)
             {
                 //lerp from current position to target ground position
                 Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
@@ -987,7 +990,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         if (base.IsOwner && controlledByClient & enableMovement)
         {
-            if (inputDir.z >= 0)
+            if (inputDir.z >= 0 && grounder.grounded)
             {
                 if (dynamicSpeed == 1.5f)
                 {

@@ -33,6 +33,12 @@ public class Grounder : MonoBehaviour
 
 	public Vector3 groundedPositionOffset;
 
+	public float fallDistanceThreshold = 1f;
+
+	public float lethalFallDistance = 10f;
+
+	public float movementCooldownOnLanding = 0.25f;
+
 
 	[Header("Values")]
 	
@@ -96,9 +102,11 @@ public class Grounder : MonoBehaviour
 
 		    //calculates how high the player has fell.
 		    fallDistance = highestPoint - transform.position.y;
+		    playerController.animator.SetFloat("FallDistance", fallDistance);
 		    
 		    //calculates the time player has been in air.
 			airTime += Time.fixedDeltaTime;
+			playerController.animator.SetFloat("AirTime", airTime);
 
 		}
 
@@ -146,9 +154,14 @@ public class Grounder : MonoBehaviour
 
 			groundNormal = tempGroundNormal;
 			groundPosition = tempGroundPosition;
+			
+			float groundDistance = transform.position.y - groundPosition.y;
 
-			Ground();
-        }
+			if (groundDistance >= detectionOffset.y && groundDistance <= groundedPositionOffset.y)
+			{
+				Ground();
+			}
+		}
 		//if player was ungrounded not long ago, and the normal of the ground below it still meets the minimal ground normal, ground the player.
 		//for smoother control on bumpy surfaces.
 		//if (pc.isNonPhysics || stepSinceUngrounded < 5 && CheckWithRaycast(minGroundNormal)) 
@@ -188,26 +201,31 @@ public class Grounder : MonoBehaviour
 	//executes when lands from air.
 	public void Ground()
 	{
-
 		if(!grounded)
 		{
 			grounded = true;
 			airTime = 0;
+			playerController.animator.SetFloat("AirTime", airTime);
+			
 			playerController.animator.SetTrigger("Land");
-			playerController.animator.SetBool("isFalling", false);
 
 			playerController.headPosition.Bounce((0f - fallDistance) / 12f);
+
+			if (fallDistance > fallDistanceThreshold)
+			{
+				playerController.groundMovementControlCoolDown = movementCooldownOnLanding; 
+			}
+		
+			if (fallDistance > lethalFallDistance)
+			{
+				//playerController.Die();
+			}
 
 			//if not climbing
 			if (!playerController.isNonPhysics && playerController.GetClimbState() == 0)
 			{
 				//recalculates velocity based on ground normal. 
 				playerController.rb.velocity = Vector3.ProjectOnPlane(playerController.vel, groundNormal);
-			}
-		
-			if (fallDistance > 10)
-			{
-				//SaveManager.instance.Die("You died to a long fall.");
 			}
 
 			if(OnGround != null)
@@ -254,8 +272,9 @@ public class Grounder : MonoBehaviour
 	//checks whether player is close enough to ground, if not grounded.
 	public bool CheckWithRaycast(float dot = 0f)
 	{
-		Physics.Raycast(playerController.transform.position + detectionOffset, Vector3.down, out hit, detectionDistance + 0.25f, groundMask);
-		return hit.normal.y > dot;
+		Physics.Raycast(playerController.transform.position + detectionOffset, Vector3.down, out hit, detectionDistance, groundMask);
+		return false;
+		return (hit.normal.y > dot) && (hit.distance >= detectionOffset.y || hit.distance <= groundedPositionOffset.y + 0.1f);
     }
 
     public bool CheckBoat()
