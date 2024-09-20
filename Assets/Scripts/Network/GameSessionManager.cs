@@ -298,6 +298,11 @@ public class GameSessionManager : NetworkBehaviour
 		            InventoryManager.instance.EquipItemRpc(
 			            localPlayerController.currentEquippedItem.NetworkObject, localPlayerController.NetworkObject);
 	            }
+	            
+	            if (localPlayerController.currentEmoteIndex.Value != -1)
+	            {
+		            localPlayerController.PlayEmoteRpc(localPlayerController.currentEmoteIndex.Value);
+	            }
             }
 
 		}

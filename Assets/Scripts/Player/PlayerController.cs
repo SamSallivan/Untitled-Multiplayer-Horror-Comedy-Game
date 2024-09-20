@@ -262,10 +262,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float damageTimer;
     
     [FoldoutGroup("Emote")] 
-    public NetworkVariable<bool> emoting = new(writePerm: NetworkVariableWritePermission.Owner);
-    
-    [FoldoutGroup("Emote")] 
     public NetworkVariable<int> currentEmoteIndex =  new(-1, writePerm: NetworkVariableWritePermission.Owner);
+    
+    /*[FoldoutGroup("Emote")] 
+    public NetworkVariable<bool> emoting = new(writePerm: NetworkVariableWritePermission.Owner);*/
 
     [FoldoutGroup("Emote")] 
     public List<EmoteData> emoteDataList = new List<EmoteData>();
@@ -298,8 +298,21 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        
         OnIsPlayerDeadChanged(false, isPlayerDead.Value);
+        isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
+        
+        //OnEmotingChanged(false, emoting.Value);
+        //emoting.OnValueChanged += OnEmotingChanged;
 
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        
+        isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
+        //emoting.OnValueChanged += OnEmotingChanged;
     }
 
     private void OnEnable() 
@@ -318,8 +331,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerInputActions.FindAction("Emote2").performed += Emote2_performed;
         //playerInputActions.FindAction("Emote3").performed += Emote3_performed;
         //playerInputActions.FindAction("Emote4").performed += Emote4_performed;
-        
-        isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
     }
 
     private void OnDisable() 
@@ -332,10 +343,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
         // playerInputActions.FindAction("ItemSecondaryUse").performed -= ItemSecondaryUse_performed;
         playerInputActions.FindAction("Interact").performed -= Interact_performed;
         playerInputActions.FindAction("Discard").performed -= Discard_performed;
-        //playerInputActions.FindAction("SwitchItem").performed -= SwitchItem_performed;
+        playerInputActions.FindAction("SwitchItem").performed -= SwitchItem_performed;
+        playerInputActions.FindAction("Emote1").performed -= Emote1_performed;
+        playerInputActions.FindAction("Emote2").performed -= Emote2_performed;
+        //playerInputActions.FindAction("Emote3").performed -= Emote3_performed;
+        //playerInputActions.FindAction("Emote4").performed -= Emote4_performed;
         //playerInputActions.Disable();
-        
-        isPlayerDead.OnValueChanged -= OnIsPlayerDeadChanged;
     }
 
     private void Update()
@@ -1109,17 +1122,25 @@ public class PlayerController : NetworkBehaviour, IDamagable
         }
     }
     
+    #endregion
+
+    #region Emote
+    
     public void PlayEmote(int index)
     {
-        if (emoting.Value && index == currentEmoteIndex.Value)
+        if (currentEmoteIndex.Value != -1 && index == currentEmoteIndex.Value)
         {
-            playerAnimationController.StopEmoteAnimation();
+            currentEmoteIndex.Value = -1;
+            //emoting.Value = false;
+            StopEmoteRpc();
             return;
         }
         
-        else if (emoting.Value && index != currentEmoteIndex.Value)
+        else if (currentEmoteIndex.Value != -1 && index != currentEmoteIndex.Value)
         {
-            playerAnimationController.StopEmoteAnimation();
+            currentEmoteIndex.Value = -1;
+            //emoting.Value = false;
+            StopEmoteRpc();
         }
             
         if (emoteDataList[index].fullBodyAnimation)
@@ -1128,19 +1149,43 @@ public class PlayerController : NetworkBehaviour, IDamagable
             crouchingNetworkVariable.Value = crouching;
         }
             
-        emoting.Value = true;
         currentEmoteIndex.Value = index;
-        playerAnimationController.StartEmoteAnimation();
+        //emoting.Value = true;
+        PlayEmoteRpc(index);
     }
     
     public void StopEmote()
     {
         if (IsOwner && controlledByClient)
         {
-            emoting.Value = false;
             currentEmoteIndex.Value = -1;
+            //emoting.Value = false;
         }
     }
+
+    [Rpc(SendTo.Everyone)]
+    public void PlayEmoteRpc(int index)
+    {
+        playerAnimationController.StartEmoteAnimation(index);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void StopEmoteRpc()
+    {
+        playerAnimationController.StopEmoteAnimation();
+    }
+
+    /*private void OnEmotingChanged(bool previousValue, bool newValue)
+    {
+        if (emoting.Value)
+        {
+            playerAnimationController.StartEmoteAnimation();
+        }
+        else
+        {
+            playerAnimationController.StopEmoteAnimation();
+        }
+    }*/
     
     #endregion
 }

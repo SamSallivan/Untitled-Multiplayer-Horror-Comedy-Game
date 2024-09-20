@@ -2682,10 +2682,11 @@ MonoBehaviour:
   bodyRotationInterpolationSpeed: 3
   turnBodyAngleThreshold: 90
   ArmIKWeightInterpolationSpeed: 10
+  emoteData: {fileID: 0}
   lockLookRotation: 0
   overrideArmAnimation: 0
-  overrideLeftArmAnimation: 0
-  overrideRightArmAnimation: 0
+  leftArmAnimation: 0
+  rightArmAnimation: 0
 --- !u!114 &1983091042915130528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4601,9 +4602,9 @@ MonoBehaviour:
     m_InternalValue: 0
   ragdollPrefab: {fileID: 8888912781250069987, guid: 9453f7970b319e24ea7331dbe6ed3bd0, type: 3}
   damageTimer: 0
-  emoting:
-    m_InternalValue: 0
   currentEmoteIndex:
+    m_InternalValue: 0
+  emoting:
     m_InternalValue: 0
   emoteDataList:
   - {fileID: 11400000, guid: d86b8c3853254124ba05ec81704ad8db, type: 2}
@@ -5401,7 +5402,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7504456460518960923}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
   m_Name: 

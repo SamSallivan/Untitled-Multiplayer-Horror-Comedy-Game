@@ -17,5 +17,5 @@ MonoBehaviour:
   fullBodyAnimation: 1
   lockLookRotation: 0
   overrideArmAnimation: 1
-  overrideLeftArmAnimation: 0
-  overrideRightArmAnimation: 0
+  leftArmAnimation: 0
+  rightArmAnimation: 0

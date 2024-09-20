@@ -62,6 +62,7 @@ public class PlayerAnimationController : MonoBehaviour
     private float turnBodyCooldown;
 
     [Header("Emotes")] 
+    public EmoteData emoteData;
     [SerializeField]
     private bool lockLookRotation;
     [SerializeField]
@@ -316,7 +317,7 @@ public class PlayerAnimationController : MonoBehaviour
 
     void UpdateFootPlacement()
     {
-        if (playerController.emoting.Value && playerController.emoteDataList[playerController.currentEmoteIndex.Value].fullBodyAnimation)
+        if (emoteData && emoteData.fullBodyAnimation)
         {
             return;
         }
@@ -383,9 +384,10 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    public void StartEmoteAnimation()
+    public void StartEmoteAnimation(int index)
     {
-        EmoteData emoteData = playerController.emoteDataList[playerController.currentEmoteIndex.Value];
+        Debug.Log(index);
+        emoteData = playerController.emoteDataList[index];
         if (emoteData.fullBodyAnimation)
         {
             bodyAnimator.SetTrigger(emoteData.animatorTrigger);
@@ -407,12 +409,15 @@ public class PlayerAnimationController : MonoBehaviour
     
     public void StopEmoteAnimation()
     {
-        if (!playerController.emoting.Value)
+        /*if (!playerController.emoting.Value)
+        {
+            return;
+        }*/
+        if (!emoteData)
         {
             return;
         }
         
-        EmoteData emoteData = playerController.emoteDataList[playerController.currentEmoteIndex.Value];
         if (emoteData.fullBodyAnimation)
         {
             bodyAnimator.ResetTrigger(emoteData.animatorTrigger);
@@ -430,14 +435,14 @@ public class PlayerAnimationController : MonoBehaviour
         overrideArmAnimation = false;
         leftArmAnimation = false;
         rightArmAnimation = false;
+        emoteData = null;
         playerController.StopEmote();
     }
 
     void UpdateEmoteAnimation()
     {
-        if (playerController.emoting.Value)
+        if (emoteData)
         {
-            EmoteData emoteData = playerController.emoteDataList[playerController.currentEmoteIndex.Value];
             if (emoteData.fullBodyAnimation)
             {
                 if (overrideArmAnimation)
@@ -461,12 +466,16 @@ public class PlayerAnimationController : MonoBehaviour
                 }
             }
         }
+        /*else if (emoteData)
+        {
+            StopEmoteAnimation();
+        }*/
     }
 }
 
 
 
-[CreateAssetMenu(menuName = "ScriptableObjects/EmoteData", order = 3)]
+/*[CreateAssetMenu(menuName = "ScriptableObjects/EmoteData", order = 3)]
 [System.Serializable]
 public class EmoteData : ScriptableObject
 {
@@ -477,4 +486,4 @@ public class EmoteData : ScriptableObject
     [ShowIf("fullBodyAnimation")] public bool overrideArmAnimation;
     [HideIf("fullBodyAnimation")] public bool leftArmAnimation;
     [HideIf("fullBodyAnimation")] public bool rightArmAnimation;
-}
+}*/
