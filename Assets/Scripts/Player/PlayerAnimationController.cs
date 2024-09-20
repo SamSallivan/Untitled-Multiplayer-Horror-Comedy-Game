@@ -4,14 +4,15 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Serialization;
+using Sirenix.OdinInspector;
 
 public class PlayerAnimationController : MonoBehaviour
 {
-    [Header("References")]
+    [Header("References")] 
     public Animator bodyAnimator;
     public Animator armAnimator;
     public PlayerController playerController;
-    
+
     public MultiRotationConstraint headHorizontalRotationalConstraint;
     public MultiRotationConstraint headVerticalRotationalConstraint;
     public MultiRotationConstraint headZRotationalConstraint;
@@ -19,34 +20,39 @@ public class PlayerAnimationController : MonoBehaviour
     public MultiRotationConstraint chestRotationalConstraint;
     public ChainIKConstraint leftFootIKConstraint;
     public ChainIKConstraint rightFootIKConstraint;
-    /*public ChainIKConstraint leftArmIKConstraint;
-    public ChainIKConstraint rightArmIKConstraint;*/
     public TwoBoneIKConstraint leftArmIKConstraint;
     public TwoBoneIKConstraint rightArmIKConstraint;
     public List<ChainIKConstraint> rightFingerIKConstraints = new List<ChainIKConstraint>();
-    public Transform leftFootIKTarget;
-    public Transform rightFootIKTarget;
-        
+
+    public Transform leftArmIKTarget;
+    public Transform rightArmIKTarget;
+
+    [SerializeField]
+    private Transform leftArmTransform;
+    [SerializeField]
+    private Transform rightArmTransform;
+    [SerializeField]
     private Transform leftFootTransform;
+    [SerializeField]
     private Transform rightFootTransform;
-    
-    [Header("Settings")]
+
+    [Header("Settings")] 
     public float walkAnimationInterpolationSpeed = 10f;
-    
+
     public bool footStickToSurface = true;
     public Vector3 footIKTargetPositionOffset;
     public Vector3 footIKTargetRotationOffset;
     public float surfaceDetectDistance = 1.0f;
-    
+
     public bool turnAnimation = true;
     public float bodyRotationInterpolationSpeed = 5f;
     public float turnBodyAngleThreshold = 45f;
     public float ArmIKWeightInterpolationSpeed = 15f;
-    
-    [Header("Values")]
+
+    [Header("Values")] 
     private float velocityX;
     private float velocityZ;
-    
+
     private Vector3 _leftFootIKTargetPos;
     private Quaternion _leftFootIKTargetRot;
     private Vector3 _rightFootIKTargetPos;
@@ -55,29 +61,38 @@ public class PlayerAnimationController : MonoBehaviour
     private Quaternion targetBodyRotation;
     private float turnBodyCooldown;
 
+    [Header("Emotes")] 
+    [SerializeField]
+    private bool lockLookRotation;
+    [SerializeField]
+    private bool overrideArmAnimation;
+    [SerializeField]
+    private bool leftArmAnimation;
+    [SerializeField]
+    private bool rightArmAnimation;
+
     void Awake()
     {
+        leftArmTransform = bodyAnimator.GetBoneTransform(HumanBodyBones.LeftHand);
+        rightArmTransform = bodyAnimator.GetBoneTransform(HumanBodyBones.RightHand);
         leftFootTransform = bodyAnimator.GetBoneTransform(HumanBodyBones.LeftFoot);
         rightFootTransform = bodyAnimator.GetBoneTransform(HumanBodyBones.RightFoot);
         targetBodyRotation = transform.rotation;
     }
-    
+
     void Update()
     {
         if (playerController.controlledByClient && !playerController.isPlayerDead.Value)
         {
-            if (playerController.NetworkObject.IsOwner)
-            {
-                //UpdateWalkAnimation();
-                //UpdateBodyRotation();
-                //UpdateFallAnimation();
-            }
 
             UpdateWalkAnimation();
-            UpdateBodyRotation();
-            UpdateArmAnimation();
             UpdateCrouchAnimation();
-            UpdateLookRotationConstraint();
+            UpdateBodyRotation();
+            
+            UpdateEmoteAnimation();
+
+            UpdateArmAnimationWeight();
+            UpdateLookAnimationWeight();
         }
     }
 
@@ -89,34 +104,71 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    void UpdateArmAnimation()
+    void UpdateArmAnimationWeight()
     {
+        if (overrideArmAnimation)
+        {
+            if (leftArmAnimation)
+            {
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            }
+            else
+            {
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            }
+
+            if (rightArmAnimation)
+            {
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+
+                foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
+                {
+                    constraint.weight =
+                        Mathf.Lerp(constraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                }
+            }
+            else
+            {
+                
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+
+                foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
+                {
+                    constraint.weight =
+                        Mathf.Lerp(constraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                }
+            }
+
+            return;
+        }
+        
         if (playerController.currentEquippedItem != null)
         {
             if (playerController.currentEquippedItem.itemData.twoHandAnimation)
             {
-                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
             else
             {
-                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
 
-            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
-            
+            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+
             foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
             {
-                constraint.weight = Mathf.Lerp(constraint.weight, 1f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                constraint.weight = Mathf.Lerp(constraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
         }
         else
         {
-            leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
-            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
             
+            //left fingers
             foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
             {
-                constraint.weight = Mathf.Lerp(constraint.weight, 0f,Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                constraint.weight = Mathf.Lerp(constraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
         }
     }
@@ -125,26 +177,29 @@ public class PlayerAnimationController : MonoBehaviour
     {
         if (playerController.crouchingNetworkVariable.Value)
         {
-            bodyAnimator.SetFloat("Crouch", Mathf.Lerp(bodyAnimator.GetFloat("Crouch"), 1f, Time.deltaTime * walkAnimationInterpolationSpeed)) ;
+            bodyAnimator.SetFloat("Crouch",
+                Mathf.Lerp(bodyAnimator.GetFloat("Crouch"), 1f, Time.deltaTime * walkAnimationInterpolationSpeed));
         }
         else
         {
-            bodyAnimator.SetFloat("Crouch", Mathf.Lerp(bodyAnimator.GetFloat("Crouch"), 0f, Time.deltaTime * walkAnimationInterpolationSpeed)) ;
+            bodyAnimator.SetFloat("Crouch",
+                Mathf.Lerp(bodyAnimator.GetFloat("Crouch"), 0f, Time.deltaTime * walkAnimationInterpolationSpeed));
         }
     }
-    
+
     void UpdateWalkAnimation()
     {
         float inputX = (playerController.inputDirNetworkVariable.Value.x == 0) ? 0 : 1;
         float inputZ = (playerController.inputDirNetworkVariable.Value.z == 0) ? 0 : 1;
         float sprint = playerController.sprintingNetworkVariable.Value ? 1 : 0.5f;
-        Vector3 velocity = playerController.transform.GetChild(0).InverseTransformDirection(playerController.velNetworkVariable.Value).normalized;
+        Vector3 velocity = playerController.transform.GetChild(0).InverseTransformDirection(playerController.velNetworkVariable.Value);
+        Vector3 velocityNormalized = velocity.normalized;
         //velocity = new Vector3(velocity.x, 0, velocity.z);
 
-        float tempX = velocity.x * inputX * sprint;
-        float tempZ = velocity.z * inputZ * sprint;
+        float tempX = velocityNormalized.x * inputX * sprint;
+        float tempZ = velocityNormalized.z * inputZ * sprint;
 
-        if(tempZ < 0)
+        if (tempZ < 0)
         {
             tempX *= 0.5f;
         }
@@ -162,7 +217,7 @@ public class PlayerAnimationController : MonoBehaviour
         velocityZ = Mathf.Lerp(velocityZ, tempZ, Time.deltaTime * walkAnimationInterpolationSpeed);
         bodyAnimator.SetFloat("VelocityX", velocityX);
         bodyAnimator.SetFloat("VelocityZ", velocityZ);
-            
+
         //Add body leaning using additive layer:
         //Get rigidbody velocity horizontal, tilt body Z rotation
         if (bodyAnimator.GetBool("isMoving") && playerController.grounder.grounded)
@@ -178,20 +233,20 @@ public class PlayerAnimationController : MonoBehaviour
         }
         //Get ground normal z, tilt waist X rotation
     }
-    
+
     void UpdateBodyRotation()
     {
         if (turnBodyCooldown > 0)
         {
             turnBodyCooldown -= Time.deltaTime;
         }
-        
+
         Vector3 headTransformForward = playerController.transform.GetChild(0).forward;
         Vector3 bodyTransformForward = transform.forward;
         float angle = Vector3.Angle(bodyTransformForward, headTransformForward);
         Vector3 cross = Vector3.Cross(bodyTransformForward, headTransformForward);
         angle *= Mathf.Sign(cross.y);
-        
+
         var turnSpeed = bodyRotationInterpolationSpeed;
 
         if (!bodyAnimator.GetBool("isMoving") && turnAnimation)
@@ -222,31 +277,50 @@ public class PlayerAnimationController : MonoBehaviour
                 turnSpeed *= 3.5f;
             }
         }
-        
+
         transform.rotation = Quaternion.Slerp(transform.rotation, targetBodyRotation, Time.deltaTime * turnSpeed);
     }
 
-    void UpdateLookRotationConstraint()
+    void UpdateLookAnimationWeight()
     {
-        //Upper Body Rotation Constraint Weight
-        if (playerController.grounder.groundTime > 0.5f)
+        if (!lockLookRotation)
         {
-            headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f,Time.deltaTime * 5f);
-            headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0.5f,Time.deltaTime * 5f);
-            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.25f,Time.deltaTime * 5f);
-            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.25f,Time.deltaTime * 5f);
+            //Upper Body Rotation Constraint Weight
+            if (playerController.grounder.groundTime > 0.5f)
+            {
+                headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
+                headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
+                shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.25f, Time.deltaTime * 5f);
+                chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.25f, Time.deltaTime * 5f);
+            }
+            else
+            {
+                headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+                headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+                shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+                chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            }
+
+            headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0.75f, Time.deltaTime * 5f);
         }
         else
         {
-            headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f,Time.deltaTime * 5f);
-            headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0f,Time.deltaTime * 5f);
-            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f,Time.deltaTime * 5f);
-            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f,Time.deltaTime * 5f);
+            headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
         }
+        
     }
 
     void UpdateFootPlacement()
     {
+        if (playerController.emoting.Value && playerController.emoteDataList[playerController.currentEmoteIndex.Value].fullBodyAnimation)
+        {
+            return;
+        }
+        
         if (playerController.grounder.grounded)
         {
             bodyAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, bodyAnimator.GetFloat("LeftFoot"));
@@ -274,33 +348,33 @@ public class PlayerAnimationController : MonoBehaviour
 
         bodyAnimator.SetIKPosition(AvatarIKGoal.LeftFoot, _leftFootIKTargetPos + footIKTargetPositionOffset);
         bodyAnimator.SetIKRotation(AvatarIKGoal.LeftFoot, _leftFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
-        
+
         bodyAnimator.SetIKPosition(AvatarIKGoal.RightFoot, _rightFootIKTargetPos + footIKTargetPositionOffset);
         bodyAnimator.SetIKRotation(AvatarIKGoal.RightFoot, _rightFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
 
         /*leftFootIKConstraint.weight = animator.GetFloat("LeftFoot");
         rightFootIKConstraint.weight = animator.GetFloat("RightFoot");
-        
+
         leftFootIKTarget.position = _leftFootIKTargetPos + footIKTargetPositionOffset;
         leftFootIKTarget.rotation = _leftFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset);
         rightFootIKTarget.position = _rightFootIKTargetPos + footIKTargetPositionOffset;
         rightFootIKTarget.rotation = _rightFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset);*/
     }
-    
+
     void FootToSurfaceRaycast(Transform footTransform, ref Vector3 targetPosition, ref Quaternion targetRotation)
     {
         // move the ray origin back a bit
         Vector3 origin = footTransform.position + Vector3.up * 0.3f;
         RaycastHit hit;
- 
+
         // raycast in the given direction
         if (Physics.Raycast(origin, -Vector3.up, out hit, surfaceDetectDistance))
         {
             // the hit point is the position of the hand/foot
-            targetPosition = hit.point;            
+            targetPosition = hit.point;
             // then rotate based on the hit normal
-            Quaternion rot = Quaternion.LookRotation(transform.forward);          
-            targetRotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * rot;   
+            Quaternion rot = Quaternion.LookRotation(transform.forward);
+            targetRotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * rot;
             Debug.DrawRay(origin, -Vector3.up, Color.green);
         }
         else
@@ -308,4 +382,99 @@ public class PlayerAnimationController : MonoBehaviour
             Debug.DrawRay(origin, -Vector3.up, Color.red);
         }
     }
+
+    public void StartEmoteAnimation()
+    {
+        EmoteData emoteData = playerController.emoteDataList[playerController.currentEmoteIndex.Value];
+        if (emoteData.fullBodyAnimation)
+        {
+            bodyAnimator.SetTrigger(emoteData.animatorTrigger);
+            bodyAnimator.applyRootMotion = true;
+            lockLookRotation = emoteData.lockLookRotation;
+            overrideArmAnimation = emoteData.overrideArmAnimation;
+            leftArmAnimation = !overrideArmAnimation;
+            rightArmAnimation = !overrideArmAnimation;
+        }
+        else
+        {
+            armAnimator.SetTrigger(emoteData.animatorTrigger);
+            lockLookRotation = false;
+            overrideArmAnimation = true;
+            leftArmAnimation = emoteData.leftArmAnimation;
+            rightArmAnimation = emoteData.rightArmAnimation;
+        }
+    }
+    
+    public void StopEmoteAnimation()
+    {
+        if (!playerController.emoting.Value)
+        {
+            return;
+        }
+        
+        EmoteData emoteData = playerController.emoteDataList[playerController.currentEmoteIndex.Value];
+        if (emoteData.fullBodyAnimation)
+        {
+            bodyAnimator.ResetTrigger(emoteData.animatorTrigger);
+            bodyAnimator.SetTrigger("StopEmote");
+        }
+        else
+        {
+            armAnimator.ResetTrigger(emoteData.animatorTrigger);
+            armAnimator.SetTrigger("StopEmote");
+        }
+        transform.localPosition = new Vector3(0, -1, 0);
+        bodyAnimator.applyRootMotion = false;
+        armAnimator.enabled = true;
+        lockLookRotation = false;
+        overrideArmAnimation = false;
+        leftArmAnimation = false;
+        rightArmAnimation = false;
+        playerController.StopEmote();
+    }
+
+    void UpdateEmoteAnimation()
+    {
+        if (playerController.emoting.Value)
+        {
+            EmoteData emoteData = playerController.emoteDataList[playerController.currentEmoteIndex.Value];
+            if (emoteData.fullBodyAnimation)
+            {
+                if (overrideArmAnimation)
+                {
+                    armAnimator.enabled = false;
+                    leftArmIKTarget.position = leftArmTransform.position;
+                    leftArmIKTarget.rotation = leftArmTransform.rotation;
+                    rightArmIKTarget.position = rightArmTransform.position;
+                    rightArmIKTarget.rotation = rightArmTransform.rotation;
+                }
+                if (bodyAnimator.GetBool("isMoving") || armAnimator.GetBool("Held") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
+                {
+                    StopEmoteAnimation();
+                }
+            }
+            else
+            {
+                if (armAnimator.GetBool("Held") || playerController.isPlayerDead.Value)
+                {
+                    StopEmoteAnimation(); 
+                }
+            }
+        }
+    }
+}
+
+
+
+[CreateAssetMenu(menuName = "ScriptableObjects/EmoteData", order = 3)]
+[System.Serializable]
+public class EmoteData : ScriptableObject
+{
+    public string name;
+    public string animatorTrigger;
+    public bool fullBodyAnimation;
+    [ShowIf("fullBodyAnimation")] public bool lockLookRotation;
+    [ShowIf("fullBodyAnimation")] public bool overrideArmAnimation;
+    [HideIf("fullBodyAnimation")] public bool leftArmAnimation;
+    [HideIf("fullBodyAnimation")] public bool rightArmAnimation;
 }

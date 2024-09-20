@@ -908,7 +908,7 @@ GameObject:
   - component: {fileID: 4064890738596069294}
   - component: {fileID: 1673715791583783970}
   m_Layer: 8
-  m_Name: Left Arm IK (1)
+  m_Name: Left Arm IK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1218,62 +1218,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4126379607031124335}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1996898931960505732
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6162400511227725275}
-  - component: {fileID: 7022016655043715404}
-  m_Layer: 8
-  m_Name: Right Arm IK
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &6162400511227725275
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996898931960505732}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 763723291907194629}
-  m_Father: {fileID: 4660465057680945577}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7022016655043715404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996898931960505732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 796b75e345bd64d47a31edd757bd2670, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Weight: 0
-  m_Data:
-    m_Root: {fileID: 7291153239858890047}
-    m_Tip: {fileID: 3449606922991330802}
-    m_Target: {fileID: 5056117056695494540}
-    m_ChainRotationWeight: 1
-    m_TipRotationWeight: 1
-    m_MaxIterations: 15
-    m_Tolerance: 0.0001
-    m_MaintainTargetPositionOffset: 0
-    m_MaintainTargetRotationOffset: 0
 --- !u!1 &2012652108219901401
 GameObject:
   m_ObjectHideFlags: 0
@@ -1433,37 +1377,6 @@ Transform:
   - {fileID: 6148672945331584231}
   m_Father: {fileID: 9056791918045338949}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2162551575441390532
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5431877184540389267}
-  m_Layer: 8
-  m_Name: Target
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5431877184540389267
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2162551575441390532}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.4999992, y: -0.49999985, z: -0.5000006, w: -0.5000004}
-  m_LocalPosition: {x: -0.7133321, y: 1.4405693, z: -0.055485927}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2738103288871617888}
-  m_LocalEulerAnglesHint: {x: 0, y: 900, z: 0}
 --- !u!1 &2185333628756914174
 GameObject:
   m_ObjectHideFlags: 0
@@ -2754,8 +2667,12 @@ MonoBehaviour:
   - {fileID: 3948483161696779563}
   - {fileID: 8951341521746107527}
   - {fileID: 6630348869661361946}
-  leftFootIKTarget: {fileID: 6335107920471640321}
-  rightFootIKTarget: {fileID: 6631760595682373157}
+  leftArmIKTarget: {fileID: 6846631672693702911}
+  rightArmIKTarget: {fileID: 5056117056695494540}
+  leftArmTransform: {fileID: 7806637173065191417}
+  rightArmTransform: {fileID: 3449606922991330802}
+  leftFootTransform: {fileID: 0}
+  rightFootTransform: {fileID: 0}
   walkAnimationInterpolationSpeed: 10
   footStickToSurface: 1
   footIKTargetPositionOffset: {x: 0, y: 0.075, z: 0}
@@ -2764,8 +2681,11 @@ MonoBehaviour:
   turnAnimation: 1
   bodyRotationInterpolationSpeed: 3
   turnBodyAngleThreshold: 90
-  fallAirTimeThreshold: 0.65
   ArmIKWeightInterpolationSpeed: 10
+  lockLookRotation: 0
+  overrideArmAnimation: 0
+  overrideLeftArmAnimation: 0
+  overrideRightArmAnimation: 0
 --- !u!114 &1983091042915130528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3025,7 +2945,7 @@ GameObject:
   - component: {fileID: 4996607649016531155}
   - component: {fileID: 4806934132993894683}
   m_Layer: 8
-  m_Name: Right Arm IK (1)
+  m_Name: Right Arm IK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3134,37 +3054,6 @@ Transform:
   - {fileID: 2167188326899551378}
   m_Father: {fileID: 8820300119089714400}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4939334400772240690
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 763723291907194629}
-  m_Layer: 8
-  m_Name: Target
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &763723291907194629
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4939334400772240690}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.4999983, y: 0.4999986, z: -0.5000015, w: 0.5000017}
-  m_LocalPosition: {x: 0.7133315, y: 1.440569, z: -0.05548477}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6162400511227725275}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4959813218147940367
 GameObject:
   m_ObjectHideFlags: 0
@@ -3245,62 +3134,6 @@ MonoBehaviour:
       y: 1
       z: 0
     m_MaintainOffset: 0
---- !u!1 &4983921430366922704
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2738103288871617888}
-  - component: {fileID: 533682570751514672}
-  m_Layer: 8
-  m_Name: Left Arm IK
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2738103288871617888
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4983921430366922704}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5431877184540389267}
-  m_Father: {fileID: 4660465057680945577}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &533682570751514672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4983921430366922704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 796b75e345bd64d47a31edd757bd2670, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Weight: 0
-  m_Data:
-    m_Root: {fileID: 7365482209759643906}
-    m_Tip: {fileID: 7806637173065191417}
-    m_Target: {fileID: 6846631672693702911}
-    m_ChainRotationWeight: 1
-    m_TipRotationWeight: 1
-    m_MaxIterations: 15
-    m_Tolerance: 0.0001
-    m_MaintainTargetPositionOffset: 0
-    m_MaintainTargetRotationOffset: 0
 --- !u!1 &5005341328866589625
 GameObject:
   m_ObjectHideFlags: 0
@@ -3336,8 +3169,6 @@ Transform:
   - {fileID: 6418921275769002883}
   - {fileID: 2815762831388891297}
   - {fileID: 852068329456218477}
-  - {fileID: 2738103288871617888}
-  - {fileID: 6162400511227725275}
   - {fileID: 4064890738596069294}
   - {fileID: 4996607649016531155}
   - {fileID: 2401798842653445942}
@@ -3387,7 +3218,7 @@ MonoBehaviour:
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0}
     m_Visible: 1
-  - m_Transform: {fileID: 5431877184540389267}
+  - m_Transform: {fileID: 0}
     m_Style:
       shape: {fileID: 4300000, guid: e050c2b16fe384bd994474655a4b4968, type: 2}
       color: {r: 1, g: 0, b: 0, a: 0.5}
@@ -3395,7 +3226,7 @@ MonoBehaviour:
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0}
     m_Visible: 1
-  - m_Transform: {fileID: 763723291907194629}
+  - m_Transform: {fileID: 0}
     m_Style:
       shape: {fileID: 4300000, guid: e050c2b16fe384bd994474655a4b4968, type: 2}
       color: {r: 1, g: 0, b: 0, a: 0.5}
@@ -4685,7 +4516,6 @@ MonoBehaviour:
     m_InternalValue: 0
   controlledByClient: 0
   awaitInitialization: 0
-  spectatedPlayerController: {fileID: 0}
   playerUsernameCanvasTransform: {fileID: 15498366079930494}
   playerUsernameText: {fileID: 234470645503231130}
   cameraList: []
@@ -4703,12 +4533,16 @@ MonoBehaviour:
   playerMeshRendererList:
   - {fileID: 221613541788831206}
   - {fileID: 7151276337529302977}
+  waterObject: {fileID: 0}
   playerInput: {fileID: 0}
   inputDir: {x: 0, y: 0, z: 0}
   inputDirNetworkVariable:
     m_InternalValue: {x: 0, y: 0, z: 0}
+  isPlayerDead:
+    m_InternalValue: 0
   enableMovement: 1
   enableLook: 1
+  enableJump: 1
   isNonPhysics: 0
   dynamicSpeed: 2.5
   sprinting: 0
@@ -4725,8 +4559,6 @@ MonoBehaviour:
   groundMovementControlCoolDown: 0
   airMovementControl: 0.75
   airMovementControlTarget: 0.75
-  waterObject: {fileID: 0}
-  enableJump: 1
   jumpForce: {x: 0, y: 8, z: 0}
   jumpCooldown: 0
   JumpCooldownNetworkVariable:
@@ -4758,20 +4590,24 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  enableInteraction: 1
   targetInteractable: {fileID: 0}
   exclusiveInteractable: {fileID: 0}
   interactDistance: 3.5
   interactableLayer:
     serializedVersion: 2
     m_Bits: 128
-  isPlayerDead:
-    m_InternalValue: 0
   maxHp: 100
   currentHp:
     m_InternalValue: 0
   ragdollPrefab: {fileID: 8888912781250069987, guid: 9453f7970b319e24ea7331dbe6ed3bd0, type: 3}
   damageTimer: 0
+  emoting:
+    m_InternalValue: 0
+  currentEmoteIndex:
+    m_InternalValue: 0
+  emoteDataList:
+  - {fileID: 11400000, guid: d86b8c3853254124ba05ec81704ad8db, type: 2}
+  - {fileID: 11400000, guid: 143c4203a6f1a7e46b6030ba56d1772a, type: 2}
 --- !u!114 &8793975911923707449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4797,6 +4633,9 @@ MonoBehaviour:
   detectionDistance: 0.9
   detectionOffset: {x: 0, y: -0.55, z: 0}
   groundedPositionOffset: {x: 0, y: 1, z: 0}
+  fallDistanceThreshold: 1
+  lethalFallDistance: 10
+  movementCooldownOnLanding: 0.25
   grounded: 0
   minGroundNormal: 0
   airTime: 0

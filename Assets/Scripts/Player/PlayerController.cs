@@ -42,9 +42,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Networks")]
     public ulong localClientId;
 
-    /*[FoldoutGroup("Networks")]
-	public ulong localSteamId;*/
-
     [FoldoutGroup("Networks")]
     public NetworkVariable<ulong> localSteamId = new (writePerm: NetworkVariableWritePermission.Owner);
 
@@ -53,12 +50,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Networks")]
     public bool awaitInitialization;
-
-    [FoldoutGroup("Networks")]
-    public PlayerController spectatedPlayerController;
-
-    // [FoldoutGroup("Networks")]
-    // public Vector3 playerServerPosition;
 
     [FoldoutGroup("References")]
     public Transform playerUsernameCanvasTransform;
@@ -105,6 +96,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("References")]
     public List<SkinnedMeshRenderer> playerMeshRendererList = new List<SkinnedMeshRenderer>();
 
+    [FoldoutGroup("References")]
+    public WaterObject waterObject;
+
     [FoldoutGroup("Inputs")]
     public PlayerInputActions playerInputActions;
 
@@ -130,10 +124,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public NetworkVariable<Vector3> inputDirNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
     [FoldoutGroup("Settings")]
+    public NetworkVariable<bool> isPlayerDead = new (writePerm: NetworkVariableWritePermission.Owner);
+
+    [FoldoutGroup("Settings")]
     public bool enableMovement = true;
 
     [FoldoutGroup("Settings")]
     public bool enableLook = true;
+
+    [FoldoutGroup("Settings")]
+    public bool enableJump = true;
 
     [FoldoutGroup("Settings")]
     public bool isNonPhysics;
@@ -187,12 +187,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float airMovementControlTarget = 0.5f;
 
     [FoldoutGroup("Physics Based Movements")]
-    public WaterObject waterObject;
-
-    [FoldoutGroup("Physics Based Movements")]
-    public bool enableJump = true;
-
-    [FoldoutGroup("Physics Based Movements")]
     public Vector3 jumpForce = new Vector3(0f, 15f, 0f);
 
     [FoldoutGroup("Physics Based Movements")]
@@ -242,9 +236,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Kinematic Movements")]
     public LayerMask nonPhysicsCollisions;*/
-
-    [FoldoutGroup("Interaction")]
-    public bool enableInteraction = true;
     
     [FoldoutGroup("Interaction")]
     public Interactable targetInteractable;
@@ -258,9 +249,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Interaction")]
     public LayerMask interactableLayer;
 
-    [FoldoutGroup("Health")]
-    public NetworkVariable<bool> isPlayerDead = new (writePerm: NetworkVariableWritePermission.Owner);
-
     [FoldoutGroup("Health")] 
     public float maxHp = 100f;
 
@@ -272,6 +260,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Health")] 
     public float damageTimer;
+    
+    [FoldoutGroup("Emote")] 
+    public NetworkVariable<bool> emoting = new(writePerm: NetworkVariableWritePermission.Owner);
+    
+    [FoldoutGroup("Emote")] 
+    public NetworkVariable<int> currentEmoteIndex =  new(-1, writePerm: NetworkVariableWritePermission.Owner);
+
+    [FoldoutGroup("Emote")] 
+    public List<EmoteData> emoteDataList = new List<EmoteData>();
 
 
     private void Awake()
@@ -317,6 +314,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
         playerInputActions.FindAction("Interact").performed += Interact_performed;
         playerInputActions.FindAction("Discard").performed += Discard_performed;
         playerInputActions.FindAction("SwitchItem").performed += SwitchItem_performed;
+        playerInputActions.FindAction("Emote1").performed += Emote1_performed;
+        playerInputActions.FindAction("Emote2").performed += Emote2_performed;
+        //playerInputActions.FindAction("Emote3").performed += Emote3_performed;
+        //playerInputActions.FindAction("Emote4").performed += Emote4_performed;
         
         isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
     }
@@ -331,8 +332,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         // playerInputActions.FindAction("ItemSecondaryUse").performed -= ItemSecondaryUse_performed;
         playerInputActions.FindAction("Interact").performed -= Interact_performed;
         playerInputActions.FindAction("Discard").performed -= Discard_performed;
-        playerInputActions.FindAction("SwitchItem").performed -= SwitchItem_performed;
-        playerInputActions.Disable();
+        //playerInputActions.FindAction("SwitchItem").performed -= SwitchItem_performed;
+        //playerInputActions.Disable();
         
         isPlayerDead.OnValueChanged -= OnIsPlayerDeadChanged;
     }
@@ -344,13 +345,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
             if (awaitInitialization)
             {
                 ConnectClientToPlayerObject();
-                awaitInitialization = false;
             }
 
             InputUpdate();
             LookUpdate();
             InteractionUpdate();
-            //WalkSoundUpdate();
+            
             cameraBob.BobUpdate();
             headPosition.PositionUpdate();
 
@@ -364,7 +364,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             if (!awaitInitialization)
             {
-                awaitInitialization = true;
                 DisconnectClientFromPlayerObject();
             }
         }
@@ -422,12 +421,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
         Cursor.visible = false;
         
         Respawn();
+        
+        awaitInitialization = false;
     }
 
     public void DisconnectClientFromPlayerObject()
     {
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
+        
+        awaitInitialization = true;
     }
     
     IEnumerator UpdatePlayerUsernameCoroutine()
@@ -708,45 +711,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         //     }
         // }
     }
-    
-    //Executes when taken damage from a source.
-    /*
-	public void Damage(Damage damage)
-	{
-		slamVFX.transform.position = transform.position;
-		slamVFX.transform.rotation = Quaternion.LookRotation(transform.forward);
-		slamVFX.GetComponent<ParticleSystem>().Play();
-
-		//When blocking, knocks off the current weapon.
-		if (weapons.IsBlocking())
-		{
-			weapons.weapons[weapons.currentWeapon].Block();
-			rb.AddForce(damage.dir * 20f, ForceMode.Impulse);
-			bob.Sway(new Vector4(-20f, 20f, 0f, 5f));
-		}
-		//if player hasnt taken damage in 3 seconds, knocks player back and upwwards.
-		//and next attck in 3 seconds will kill player.
-		else if (damageTimer <= 0f && damage.amount < 100f)
-		{
-			if (grounder.grounded)
-			{
-				grounder.Unground();
-				airControlBlockTimer = 0.2f;
-				rb.velocity = Vector3.zero;
-				rb.AddForce((Vector3.up + (Vector3)damage.dir).normalized * 10f, ForceMode.Impulse);
-			}
-			bob.Sway(new Vector4(5f, 0f, 30f, 3f));
-			damageTimer = 3f;
-			//QuickEffectsPool.Get("Damage", tHead.position, Quaternion.LookRotation(tHead.forward)).Play();
-		}
-		//else kill player.
-		else
-		{
-			Die(damage.dir);
-			TimeManager.instance.SlowMotion(0.1f, 1f, 0.2f);
-		}
-	}
-	*/
 
     #region Interaction
 
@@ -1097,6 +1061,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (base.IsOwner && controlledByClient & enableMovement)
         {
             InventoryManager.instance.SwitchEquipedItem(Math.Sign(context.ReadValue<float>()));
+            playerAnimationController.StopEmoteAnimation();
         }
     }
 
@@ -1107,9 +1072,76 @@ public class PlayerController : NetworkBehaviour, IDamagable
             if (enableMovement && targetInteractable != null)
             {
                 targetInteractable.Interact();
+                playerAnimationController.StopEmoteAnimation();
             }
         }
     }
+
+    private void Emote1_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            PlayEmote(0);
+        }
+    }
+    
+    private void Emote2_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            PlayEmote(1);
+        }
+    }
+    
+    private void Emote3_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            PlayEmote(2);
+        }
+    }
+    
+    private void Emote4_performed(InputAction.CallbackContext context)
+    {
+        if (base.IsOwner && controlledByClient & enableMovement)
+        {
+            PlayEmote(3);
+        }
+    }
+    
+    public void PlayEmote(int index)
+    {
+        if (emoting.Value && index == currentEmoteIndex.Value)
+        {
+            playerAnimationController.StopEmoteAnimation();
+            return;
+        }
+        
+        else if (emoting.Value && index != currentEmoteIndex.Value)
+        {
+            playerAnimationController.StopEmoteAnimation();
+        }
+            
+        if (emoteDataList[index].fullBodyAnimation)
+        {
+            crouching = false;
+            crouchingNetworkVariable.Value = crouching;
+        }
+            
+        emoting.Value = true;
+        currentEmoteIndex.Value = index;
+        playerAnimationController.StartEmoteAnimation();
+    }
+    
+    public void StopEmote()
+    {
+        if (IsOwner && controlledByClient)
+        {
+            emoting.Value = false;
+            currentEmoteIndex.Value = -1;
+        }
+    }
+    
     #endregion
 }
 

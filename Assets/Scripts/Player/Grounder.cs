@@ -283,40 +283,6 @@ public class Grounder : MonoBehaviour
         //return hitBoat.normal.y > minGroundNormal;
     }
 
-
-	// private void OnCollisionEnter(Collision c)
-	// {
-	// 		HandleCollision(c);
-	// }
-
-	// private void OnCollisionStay(Collision c)
-	// {
-	// 		HandleCollision(c);
-	// }
-    
-	// private void HandleCollision(Collision c)
-	// {
-	// 	//if player just left ground, or is climbing
-	// 	//do not check ground collision
-	// 	if (delay > 0f || rb.isKinematic)
-	// 	{
-	// 		return;
-	// 	}
-
-    //     //for each contact point, add to the temporary ground value.
-    //     //adds to ground contact count.
-    //     for (int i = 0; i < c.contactCount; i++)
-	// 	{
-	// 		contactPoint = c.GetContact(i);
-	// 		if ((groundMask.value & 1 << c.gameObject.layer) > 0  && contactPoint.normal.y > minGroundNormal)
-	// 		{
-	// 			groundCollider = c.collider;
-	// 			tempGroundNormal += contactPoint.normal;
-	// 			groundContactCount++;
-    //         }
-    //     }
-	// }
-
 	private void GroundContactDetection()
 	{
 		List<RaycastHit> hitList = new List<RaycastHit>();
