@@ -4486,7 +4486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 733293365
+  GlobalObjectIdHash: 88465425
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -4603,9 +4603,7 @@ MonoBehaviour:
   ragdollPrefab: {fileID: 8888912781250069987, guid: 9453f7970b319e24ea7331dbe6ed3bd0, type: 3}
   damageTimer: 0
   currentEmoteIndex:
-    m_InternalValue: 0
-  emoting:
-    m_InternalValue: 0
+    m_InternalValue: -1
   emoteDataList:
   - {fileID: 11400000, guid: d86b8c3853254124ba05ec81704ad8db, type: 2}
   - {fileID: 11400000, guid: 143c4203a6f1a7e46b6030ba56d1772a, type: 2}

@@ -11,8 +11,18 @@ public class EmoteData : ScriptableObject
     public string name;
     public string animatorTrigger;
     public bool fullBodyAnimation;
+    
+    [Header("Rotation")]
     [ShowIf("fullBodyAnimation")] public bool lockLookRotation;
+    [ShowIf("fullBodyAnimation")] public bool lockBodyRotation;
+    
+    [Header("Camera")]
+    [ShowIf("fullBodyAnimation")] public bool overrideCameraPosition;
+    [ShowIf("@fullBodyAnimation && overrideCameraPosition")] public Vector3 targetCameraPosition;
+    
+    [Header("Arms Animation")]
     [ShowIf("fullBodyAnimation")] public bool overrideArmAnimation;
-    [HideIf("fullBodyAnimation")] public bool leftArmAnimation;
-    [HideIf("fullBodyAnimation")] public bool rightArmAnimation;
+    [Header("Arms Animation")]
+    [ShowIf("@!fullBodyAnimation")] public bool leftArmAnimation;
+    [ShowIf("@!fullBodyAnimation")] public bool rightArmAnimation;
 }

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine.Serialization;
 
-public class Grounder : MonoBehaviour
+public class Grounder : NetworkBehaviour
 {	
 	public delegate void Action();
 
@@ -42,13 +43,13 @@ public class Grounder : MonoBehaviour
 
 	[Header("Values")]
 	
-    public bool grounded;
+    public NetworkVariable<bool> grounded = new (false, writePerm: NetworkVariableWritePermission.Owner);
 
 	public float minGroundNormal;
 
-	public float airTime;
+	public NetworkVariable<float> airTime = new (0, writePerm: NetworkVariableWritePermission.Owner);
 	
-	public float groundTime;
+	public NetworkVariable<float> groundTime = new (0, writePerm: NetworkVariableWritePermission.Owner);
 
     public float regroundCooldown;
 
@@ -56,7 +57,7 @@ public class Grounder : MonoBehaviour
 
 	public float highestPoint;
 
-	public float fallDistance;
+	public NetworkVariable<float>  fallDistance = new (0, writePerm: NetworkVariableWritePermission.Owner);
 
 	public int groundContactCount;
 
@@ -86,33 +87,38 @@ public class Grounder : MonoBehaviour
         playerController = GetComponent<PlayerController>();
 		groundNormal = Vector3.up;
 		highestPoint = transform.position.y;
-		fallDistance = 0f;
+		fallDistance.Value = 0f;
 		minGroundNormal = Mathf.Cos(maxGroundAngle * ((float)Mathf.PI / 180f)); //translates a 0-90 angle to a 1-0 normal value.
     }	
 
     void Update()
     {
-		if (!grounded)
+		if (!grounded.Value)
 		{
-            //updates the highestpoint during an unground.
-		    if (transform.position.y > highestPoint)// || pc.waterObject.IsTouchingWater())
-		    {
-			    highestPoint = transform.position.y;
+			if (IsOwner)
+			{
+	            //updates the highestpoint during an unground.
+			    if (transform.position.y > highestPoint)// || pc.waterObject.IsTouchingWater())
+			    {
+				    highestPoint = transform.position.y;
+			    }
+			    //calculates how high the player has fell.
+			    fallDistance.Value = highestPoint - transform.position.y;
+			    //calculates the time player has been in air.
+			    airTime.Value += Time.fixedDeltaTime;
 		    }
 
-		    //calculates how high the player has fell.
-		    fallDistance = highestPoint - transform.position.y;
-		    playerController.animator.SetFloat("FallDistance", fallDistance);
-		    
-		    //calculates the time player has been in air.
-			airTime += Time.fixedDeltaTime;
-			playerController.animator.SetFloat("AirTime", airTime);
+		    playerController.animator.SetFloat("FallDistance", fallDistance.Value);
+			playerController.animator.SetFloat("AirTime", airTime.Value);
 
 		}
 
-		if (grounded)
+		if (grounded.Value)
 		{
-			groundTime += Time.fixedDeltaTime;
+			if (IsOwner)
+			{
+				groundTime.Value += Time.fixedDeltaTime;
+			}
 		}
     }
 
@@ -124,9 +130,12 @@ public class Grounder : MonoBehaviour
 			return;
 		}
 
-		GroundContactDetection();
+		if (IsOwner)
+		{
+			GroundContactDetection();
 
-		UpdateState();
+			UpdateState();
+		}
 	}
 
 
@@ -157,7 +166,7 @@ public class Grounder : MonoBehaviour
 			
 			float groundDistance = transform.position.y - groundPosition.y;
 
-			if (groundDistance >= detectionOffset.y && groundDistance <= groundedPositionOffset.y)
+			if (groundDistance >= -detectionOffset.y && groundDistance <= groundedPositionOffset.y)
 			{
 				Ground();
 			}
@@ -165,7 +174,7 @@ public class Grounder : MonoBehaviour
 		//if player was ungrounded not long ago, and the normal of the ground below it still meets the minimal ground normal, ground the player.
 		//for smoother control on bumpy surfaces.
 		//if (pc.isNonPhysics || stepSinceUngrounded < 5 && CheckWithRaycast(minGroundNormal)) 
-		else if (playerController.isNonPhysics || (airTime < 0.2f && CheckWithRaycast(minGroundNormal)))
+		else if (playerController.isNonPhysics || (airTime.Value < 0.2f && CheckWithRaycast(minGroundNormal)))
 		{
 			Ground();
 
@@ -201,22 +210,19 @@ public class Grounder : MonoBehaviour
 	//executes when lands from air.
 	public void Ground()
 	{
-		if(!grounded)
+		if(!grounded.Value)
 		{
-			grounded = true;
-			airTime = 0;
-			playerController.animator.SetFloat("AirTime", airTime);
+			grounded.Value = true;
+			airTime.Value = 0;
 			
-			playerController.animator.SetTrigger("Land");
-
-			playerController.headPosition.Bounce((0f - fallDistance) / 12f);
-
-			if (fallDistance > fallDistanceThreshold)
+			GroundRpc();
+			
+			playerController.headPosition.Bounce((0f - fallDistance.Value) / 12f);
+			if (fallDistance.Value > fallDistanceThreshold)
 			{
 				playerController.groundMovementControlCoolDown = movementCooldownOnLanding; 
 			}
-		
-			if (fallDistance > lethalFallDistance)
+			if (fallDistance.Value > lethalFallDistance)
 			{
 				//playerController.Die();
 			}
@@ -234,15 +240,22 @@ public class Grounder : MonoBehaviour
 
 	}
 
-    public void Unground()
+	[Rpc(SendTo.Everyone)]
+	public void GroundRpc()
+	{
+		playerController.animator.SetFloat("AirTime", airTime.Value);
+		playerController.animator.SetTrigger("Land");
+	}
+
+	public void Unground()
 	{
 		//sets a delay that pauses ground checking in a short while
 		//prevent player from jump again before leaving the grounded raycast distance.
 
-		if (grounded)
+		if (grounded.Value)
 		{
-			grounded = false;
-			groundTime = 0;
+			grounded.Value = false;
+			groundTime.Value = 0;
 			groundContactCount = 0;
 			highestPoint = transform.position.y;
 			tempGroundNormal = Vector3.zero;
@@ -253,7 +266,7 @@ public class Grounder : MonoBehaviour
 
 			if (playerController.JumpCooldownNetworkVariable.Value >= playerController.jumpCooldownSetting - 0.5f)
 			{
-				playerController.animator.SetTrigger("Jump");
+				JumpRpc();
 			}
 			
 			//sets a timeframe that allows player to jump after ungrounding
@@ -268,6 +281,13 @@ public class Grounder : MonoBehaviour
         }
 		
 	}
+
+	[Rpc(SendTo.Everyone)]
+	public void JumpRpc()
+	{
+		playerController.animator.SetTrigger("Jump");
+	}
+
 
 	//checks whether player is close enough to ground, if not grounded.
 	public bool CheckWithRaycast(float dot = 0f)

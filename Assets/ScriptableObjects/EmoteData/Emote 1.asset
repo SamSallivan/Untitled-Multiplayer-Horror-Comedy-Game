@@ -15,7 +15,10 @@ MonoBehaviour:
   name: Emote 1
   animatorTrigger: Emote 1
   fullBodyAnimation: 1
-  lockLookRotation: 0
+  lockLookRotation: 1
+  lockBodyRotation: 1
+  overrideCameraPosition: 1
+  targetCameraPosition: {x: 0.5, y: -0.15, z: -1.25}
   overrideArmAnimation: 1
   leftArmAnimation: 0
   rightArmAnimation: 0

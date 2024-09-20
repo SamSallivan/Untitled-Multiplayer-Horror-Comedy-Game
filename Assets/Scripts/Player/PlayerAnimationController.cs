@@ -66,6 +66,8 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField]
     private bool lockLookRotation;
     [SerializeField]
+    private bool lockBodyRotation;
+    [SerializeField]
     private bool overrideArmAnimation;
     [SerializeField]
     private bool leftArmAnimation;
@@ -88,10 +90,10 @@ public class PlayerAnimationController : MonoBehaviour
 
             UpdateWalkAnimation();
             UpdateCrouchAnimation();
-            UpdateBodyRotation();
             
             UpdateEmoteAnimation();
-
+            
+            UpdateBodyRotation();
             UpdateArmAnimationWeight();
             UpdateLookAnimationWeight();
         }
@@ -221,7 +223,7 @@ public class PlayerAnimationController : MonoBehaviour
 
         //Add body leaning using additive layer:
         //Get rigidbody velocity horizontal, tilt body Z rotation
-        if (bodyAnimator.GetBool("isMoving") && playerController.grounder.grounded)
+        if (bodyAnimator.GetBool("isMoving") && playerController.grounder.grounded.Value)
         {
             Vector2 mouseInput = playerController.playerInputActions.FindAction("Look").ReadValue<Vector2>();
             float leanX = mouseInput.x * playerController.mouseLookX.sensitivityX;
@@ -240,6 +242,11 @@ public class PlayerAnimationController : MonoBehaviour
         if (turnBodyCooldown > 0)
         {
             turnBodyCooldown -= Time.deltaTime;
+        }
+
+        if (lockBodyRotation)
+        {
+            return;
         }
 
         Vector3 headTransformForward = playerController.transform.GetChild(0).forward;
@@ -287,7 +294,7 @@ public class PlayerAnimationController : MonoBehaviour
         if (!lockLookRotation)
         {
             //Upper Body Rotation Constraint Weight
-            if (playerController.grounder.groundTime > 0.5f)
+            if (playerController.grounder.groundTime.Value > 0.5f)
             {
                 headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
                 headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
@@ -322,7 +329,7 @@ public class PlayerAnimationController : MonoBehaviour
             return;
         }
         
-        if (playerController.grounder.grounded)
+        if (playerController.grounder.grounded.Value)
         {
             bodyAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, bodyAnimator.GetFloat("LeftFoot"));
             bodyAnimator.SetIKPositionWeight(AvatarIKGoal.RightFoot, bodyAnimator.GetFloat("RightFoot"));
@@ -393,6 +400,7 @@ public class PlayerAnimationController : MonoBehaviour
             bodyAnimator.SetTrigger(emoteData.animatorTrigger);
             bodyAnimator.applyRootMotion = true;
             lockLookRotation = emoteData.lockLookRotation;
+            lockBodyRotation = lockLookRotation ? emoteData.lockBodyRotation : false;
             overrideArmAnimation = emoteData.overrideArmAnimation;
             leftArmAnimation = !overrideArmAnimation;
             rightArmAnimation = !overrideArmAnimation;
@@ -401,6 +409,7 @@ public class PlayerAnimationController : MonoBehaviour
         {
             armAnimator.SetTrigger(emoteData.animatorTrigger);
             lockLookRotation = false;
+            lockBodyRotation = false;
             overrideArmAnimation = true;
             leftArmAnimation = emoteData.leftArmAnimation;
             rightArmAnimation = emoteData.rightArmAnimation;
@@ -409,10 +418,6 @@ public class PlayerAnimationController : MonoBehaviour
     
     public void StopEmoteAnimation()
     {
-        /*if (!playerController.emoting.Value)
-        {
-            return;
-        }*/
         if (!emoteData)
         {
             return;
@@ -432,6 +437,7 @@ public class PlayerAnimationController : MonoBehaviour
         bodyAnimator.applyRootMotion = false;
         armAnimator.enabled = true;
         lockLookRotation = false;
+        lockBodyRotation = false;
         overrideArmAnimation = false;
         leftArmAnimation = false;
         rightArmAnimation = false;
@@ -453,6 +459,7 @@ public class PlayerAnimationController : MonoBehaviour
                     rightArmIKTarget.position = rightArmTransform.position;
                     rightArmIKTarget.rotation = rightArmTransform.rotation;
                 }
+                
                 if (bodyAnimator.GetBool("isMoving") || armAnimator.GetBool("Held") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
                 {
                     StopEmoteAnimation();
@@ -466,24 +473,17 @@ public class PlayerAnimationController : MonoBehaviour
                 }
             }
         }
-        /*else if (emoteData)
+
+        if (GameSessionManager.Instance.localPlayerController == playerController)
         {
-            StopEmoteAnimation();
-        }*/
+            if (emoteData && emoteData.overrideCameraPosition)
+            {
+                Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, emoteData.targetCameraPosition, Time.deltaTime * 10f);
+            }
+            else
+            {
+                Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, new Vector3(0, 0, 0), Time.deltaTime * 10f);
+            }
+        }
     }
 }
-
-
-
-/*[CreateAssetMenu(menuName = "ScriptableObjects/EmoteData", order = 3)]
-[System.Serializable]
-public class EmoteData : ScriptableObject
-{
-    public string name;
-    public string animatorTrigger;
-    public bool fullBodyAnimation;
-    [ShowIf("fullBodyAnimation")] public bool lockLookRotation;
-    [ShowIf("fullBodyAnimation")] public bool overrideArmAnimation;
-    [HideIf("fullBodyAnimation")] public bool leftArmAnimation;
-    [HideIf("fullBodyAnimation")] public bool rightArmAnimation;
-}*/

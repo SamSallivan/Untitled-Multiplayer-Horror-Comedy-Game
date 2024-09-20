@@ -153,7 +153,7 @@ public class CameraBob : MonoBehaviour
 
         //applies camera bob when grounded, walking, and not sliding
         //or sets camera position back to 0
-        if (GameSessionManager.Instance.localPlayerController.grounder.grounded && GameSessionManager.Instance.localPlayerController.inputDir.sqrMagnitude > 0.25f)
+        if (GameSessionManager.Instance.localPlayerController.grounder.grounded.Value && GameSessionManager.Instance.localPlayerController.inputDir.sqrMagnitude > 0.25f)
         {
             if (GameSessionManager.Instance.localPlayerController.gVel.sqrMagnitude > 1f)
             {

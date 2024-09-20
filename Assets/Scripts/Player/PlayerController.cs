@@ -489,8 +489,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         //if grounded, or just ungrouned, or just finished climbing
         //jump
-        if (grounder.grounded
-            || grounder.airTime < 0.2f
+        if (grounder.grounded.Value
+            || grounder.airTime.Value < 0.2f
             || (climbState == 2 && climbTimer > 0.8f)
             || waterObject.IsTouchingWater())
         {
@@ -655,7 +655,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             //if moving fast, apply the calculated movement.
             //based on new input subtracted by previous velocity
             //so that player accelerates faster when start moving.
-            if (grounder.grounded)
+            if (grounder.grounded.Value)
             {
                 if (inputDir.sqrMagnitude > 0.25f && groundMovementControlCoolDown <= 0f)
                 {
@@ -676,7 +676,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
             //applies gravity in the direction of ground normal
             //so player does not slide off within the tolerable angle
-            if(grounder.grounded)
+            if(grounder.grounded.Value)
             {
                 //lerp from current position to target ground position
                 Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
@@ -967,7 +967,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         if (base.IsOwner && controlledByClient & enableMovement)
         {
-            if (inputDir.z >= 0 && grounder.grounded)
+            if (inputDir.z >= 0 && grounder.grounded.Value)
             {
                 if (dynamicSpeed == 1.5f)
                 {

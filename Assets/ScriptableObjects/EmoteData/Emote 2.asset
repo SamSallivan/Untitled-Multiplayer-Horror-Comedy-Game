@@ -16,6 +16,9 @@ MonoBehaviour:
   animatorTrigger: Emote 2
   fullBodyAnimation: 0
   lockLookRotation: 0
+  lockBodyRotation: 0
+  overrideCameraPosition: 0
+  targetCameraPosition: {x: 0, y: 0, z: 0}
   overrideArmAnimation: 0
   leftArmAnimation: 0
   rightArmAnimation: 1
