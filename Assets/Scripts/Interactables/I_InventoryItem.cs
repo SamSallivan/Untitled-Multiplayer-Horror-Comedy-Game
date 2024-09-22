@@ -10,6 +10,8 @@ public class I_InventoryItem : Interactable
 {
     public event Action OnPickUp = delegate { };
 
+    public NetworkVariable<int> ownerPlayerId = new(-1, writePerm: NetworkVariableWritePermission.Owner);
+
     public PlayerController owner;
 
     private InventorySlot _inventorySlot;
@@ -49,45 +51,99 @@ public class I_InventoryItem : Interactable
 
         if(IsServer)
         {
-            int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
-            SyncItemStateClientRpc(ownerPlayerId, itemStatus.amount);
+            SyncItemStateClientRpc(itemStatus.amount, itemStatus.durability);
         }
         else
         {
             SyncItemStateServerRpc();
         }
+
+        OnEnableItemMeshesChanged(false, enableItemMeshes.Value);
+        OnEnableItemPhysicsChanged(false, enableItemPhysics.Value);
+        OnOwnerPlayerIdChanged(-1, ownerPlayerId.Value);
+        
+        enableItemMeshes.OnValueChanged += OnEnableItemMeshesChanged;
+        enableItemPhysics.OnValueChanged += OnEnableItemPhysicsChanged;
+        ownerPlayerId.OnValueChanged += OnOwnerPlayerIdChanged;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        
+        enableItemMeshes.OnValueChanged -= OnEnableItemMeshesChanged;
+        enableItemPhysics.OnValueChanged -= OnEnableItemPhysicsChanged;
+        ownerPlayerId.OnValueChanged -= OnOwnerPlayerIdChanged;
+    }
+
+    public void OnEnableItemMeshesChanged(bool prevValue, bool newValue)
+    {
+        MeshRenderer[] meshRenderers = base.gameObject.GetComponentsInChildren<MeshRenderer>();
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            meshRenderers[i].enabled = enableItemMeshes.Value;
+        }
+
+        SkinnedMeshRenderer[] skinnedMeshRenderers = base.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+        for (int j = 0; j < skinnedMeshRenderers.Length; j++)
+        {
+            skinnedMeshRenderers[j].enabled = enableItemMeshes.Value;
+            Debug.Log("DISABLING/ENABLING SKINNEDMESH: " + skinnedMeshRenderers[j].gameObject.name);
+        }
+    }
+
+    public void OnEnableItemPhysicsChanged(bool prevValue, bool newValue)
+    {
+        base.gameObject.GetComponent<Rigidbody>().isKinematic = !enableItemPhysics.Value;
+        Collider[] colliders = base.gameObject.GetComponentsInChildren<Collider>();
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = enableItemPhysics.Value;
+        }
+    }
+
+    public void OnOwnerPlayerIdChanged(int prevValue, int newValue)
+    {
+        if (newValue != -1)
+        {
+            owner = GameSessionManager.Instance.playerControllerList[ownerPlayerId.Value];
+        }
+        else
+        {
+            owner = null;
+        }
     }
 
     public void OnEquip()
     {
-        EnableItemMeshes(true);
         if (IsServer)
         {
             isCurrentlyEquipped.Value = true;
+            enableItemMeshes.Value = true;
         }
 
-        if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
+        /*if (ownerPlayerId.Value != -1 && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
         {
             owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
-        }
+        }*/
     }
     
     public void OnUnequip()
     {
-        EnableItemMeshes(false);
         if (IsServer)
         {
             isCurrentlyEquipped.Value = false;
+            enableItemMeshes.Value = false;
         }
 
-        if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
+        /*if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
         {
             owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
-        }
+        }*/
 
-        if (TryGetComponent<ItemController>(out var itemController))
+        if (TryGetComponent<ItemController>(out var itemController) && itemController.buttonHeld)
         {
-            itemController.HoldItemClientRpc(false);
+            itemController.Cancel();
         }
     }
 
@@ -135,7 +191,7 @@ public class I_InventoryItem : Interactable
     }
 
 
-	public void EnableItemMeshes(bool enable)
+	/*public void EnableItemMeshes(bool enable)
 	{
         if (IsServer)
         {
@@ -169,7 +225,7 @@ public class I_InventoryItem : Interactable
 		{
             colliders[i].enabled = enable;
 		}
-    }
+    }*/
 
     public override void Target()
     {
@@ -195,24 +251,14 @@ public class I_InventoryItem : Interactable
     [Rpc(SendTo.Server)]
     public void SyncItemStateServerRpc()
     {
-        int ownerPlayerId = owner == null ? -1 : (int)owner.localPlayerId;
-        SyncItemStateClientRpc(ownerPlayerId,itemStatus.amount);
+        SyncItemStateClientRpc(itemStatus.amount, itemStatus.durability);
     }
 
     [Rpc(SendTo.Everyone)]
-    public void SyncItemStateClientRpc(int ownerPlayerId, int amount)
+    public void SyncItemStateClientRpc(int amount, float durability)
     {
-        if(ownerPlayerId != -1)
-        {
-            this.owner = GameSessionManager.Instance.playerControllerList[ownerPlayerId];
-        }
-        else
-        {
-            this.owner = null;
-        }
-        EnableItemMeshes(enableItemMeshes.Value);
-        EnableItemPhysics(enableItemPhysics.Value);
         itemStatus.amount = amount;
+        itemStatus.durability = durability;
     }
 
     public void OnSetInventorySlot()

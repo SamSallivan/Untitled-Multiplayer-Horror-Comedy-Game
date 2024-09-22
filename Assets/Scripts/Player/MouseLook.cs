@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using Unity.Netcode;
 using System;
+using Sirenix.OdinInspector;
 
 public class MouseLook : NetworkBehaviour
 {
@@ -28,8 +29,8 @@ public class MouseLook : NetworkBehaviour
 	public float minimumY = -85F;
 	public float maximumY = 85F;
  
-	float rotationX = 0F;
-	float rotationY = 0F;
+	public float rotationX = 0F;
+	public float rotationY = 0F;
 
 	public List<float> rotArrayX = new List<float>();
     public float rotAverageX = 0F;	
@@ -174,6 +175,23 @@ public class MouseLook : NetworkBehaviour
         rotAverageY = 0f;
         /*originalRotation = transform.rotation;
         originalLocalRotation = transform.localRotation;*/
+    }
+
+    [Button]
+    public void SetRotation(float rotation)
+    {
+	    switch (axes)
+	    {
+		    case RotationAxes.MouseX:
+			    rotationX = rotation;
+			    break;
+		    
+		    case RotationAxes.MouseY:
+			    rotationY = rotation;
+			    break;
+	    }
+	    /*originalRotation = transform.rotation;
+	    originalLocalRotation = transform.localRotation;*/
     }
 
     public void SetClamp(float x1, float x2, float y1, float y2)

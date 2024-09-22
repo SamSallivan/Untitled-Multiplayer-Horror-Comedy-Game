@@ -148,7 +148,10 @@ public class CameraBob : MonoBehaviour
         //tilts camera based on horizontal input
         if (GameSessionManager.Instance.localPlayerController.climbState == 0)
         {
-            Angle(GameSessionManager.Instance.localPlayerController.inputDir.x * -1f - GameSessionManager.Instance.localPlayerController.damageTimer * 3f);
+	        float targetAngle = GameSessionManager.Instance.localPlayerController.inputDir.x * -1f;
+	        targetAngle -= GameSessionManager.Instance.localPlayerController.damageTimer * 5f;
+	        targetAngle += Mathf.Sin(GameSessionManager.Instance.localPlayerController.drunkTimer * 2f) * 2.5f;
+            Angle(targetAngle);
         }
 
         //applies camera bob when grounded, walking, and not sliding

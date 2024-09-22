@@ -220,11 +220,17 @@ MonoBehaviour:
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
+  ownerPlayerId:
+    m_InternalValue: -1
   owner: {fileID: 0}
-  isCurrentlyEquipped: 0
-  enableItemMeshes: 1
-  enableItemPhysics: 1
-  inStorageBox: 0
+  isCurrentlyEquipped:
+    m_InternalValue: 0
+  enableItemMeshes:
+    m_InternalValue: 1
+  enableItemPhysics:
+    m_InternalValue: 1
+  inStorageBox:
+    m_InternalValue: 0
 --- !u!114 &6796858063129461121
 MonoBehaviour:
   m_ObjectHideFlags: 0

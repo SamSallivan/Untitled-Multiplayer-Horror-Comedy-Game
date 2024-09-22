@@ -11,6 +11,7 @@ using Dissonance;
 using Sirenix.OdinInspector;
 using Enviro;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.Serialization;
 
 public class PlayerController : NetworkBehaviour, IDamagable
@@ -257,18 +258,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Health")] 
     public GameObject ragdollPrefab;
-
-    [FoldoutGroup("Health")] 
-    public float damageTimer;
     
     [FoldoutGroup("Emote")] 
     public NetworkVariable<int> currentEmoteIndex =  new(-1, writePerm: NetworkVariableWritePermission.Owner);
-    
-    /*[FoldoutGroup("Emote")] 
-    public NetworkVariable<bool> emoting = new(writePerm: NetworkVariableWritePermission.Owner);*/
 
     [FoldoutGroup("Emote")] 
     public List<EmoteData> emoteDataList = new List<EmoteData>();
+
+    [FoldoutGroup("Effects")] 
+    public float damageTimer;
+    
+    [FoldoutGroup("Effects")] 
+    public float drunkTimer;
 
 
     private void Awake()
@@ -301,9 +302,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         
         OnIsPlayerDeadChanged(false, isPlayerDead.Value);
         isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
-        
-        //OnEmotingChanged(false, emoting.Value);
-        //emoting.OnValueChanged += OnEmotingChanged;
 
     }
 
@@ -312,7 +310,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         base.OnNetworkDespawn();
         
         isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
-        //emoting.OnValueChanged += OnEmotingChanged;
     }
 
     private void OnEnable() 
@@ -371,6 +368,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
             {
                 ClimbingUpdate();
             }
+
+            EffectUpdate();
 
         }
         else
@@ -774,6 +773,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public void LockMovement(bool state)
     {
         enableMovement = !state;
+
+        if (!enableMovement)
+        {
+            if (currentEquippedItem != null &&
+                currentEquippedItem.TryGetComponent<ItemController>(out var itemController))
+            {
+                if (itemController.buttonHeld)
+                {
+                    itemController.Cancel();
+                }
+            }
+        }
     }
 
     public void LockCamera(bool state)
@@ -858,6 +869,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (base.IsOwner)
         {
             currentHp.Value -= damage;
+
+            damageTimer = 0.5f;
 
             rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
 
@@ -1188,5 +1201,21 @@ public class PlayerController : NetworkBehaviour, IDamagable
     }*/
     
     #endregion
+
+    public void EffectUpdate()
+    {
+        if (damageTimer > 0)
+        {
+            damageTimer -= Time.deltaTime;
+        }
+        
+        if (drunkTimer > 0)
+        {
+            drunkTimer -= Time.deltaTime;
+            Volume volume = FindObjectOfType<Volume>();
+            volume.profile.TryGet(out UnityEngine.Rendering.Universal.ChromaticAberration chromaticAberration);
+            chromaticAberration.intensity.value = Mathf.Clamp(drunkTimer, 0, 1);
+        }
+    }
 }
 

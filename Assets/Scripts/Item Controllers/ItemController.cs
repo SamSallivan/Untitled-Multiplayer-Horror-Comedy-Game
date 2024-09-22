@@ -3,13 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Sirenix.OdinInspector;
 
 public class ItemController : NetworkBehaviour
 {
+    [ReadOnly]
     public I_InventoryItem inventoryItem;
+    [ReadOnly]
     public  bool buttonHeld;
+    [ReadOnly]
     public float heldTime;
     public float minHeldTime;
+    [ReadOnly]
     public float cooldown;
     public float cooldownSetting;
 
@@ -46,14 +51,14 @@ public class ItemController : NetworkBehaviour
         if(buttonDown)
         {
             buttonHeld = true;
-            OnButtonHeld();
             HoldItemClientRpc(true);
+            OnButtonHeld();
         }
         else if (!buttonDown)
         {
             buttonHeld = false;
-            OnButtonReleased();
             HoldItemClientRpc(false);
+            OnButtonReleased();
         }
     }
 
@@ -63,16 +68,11 @@ public class ItemController : NetworkBehaviour
     
     public virtual void OnButtonReleased()
     {
-        if (heldTime > minHeldTime && cooldown <= 0)
-        {
-            cooldown = cooldownSetting;
-            ActivateItemClientRpc();
-            Activate();
-        }
     }
 
     public virtual void Activate()
     {
+        ActivateItemClientRpc();
     }
     
     [Rpc(SendTo.Everyone)]
@@ -93,5 +93,11 @@ public class ItemController : NetworkBehaviour
 
             inventoryItem.owner.playerAnimationController.armAnimator.SetBool("Held", buttonDown);
         }
+    }
+
+    public virtual void Cancel()
+    {
+        buttonHeld = false;
+        HoldItemClientRpc(false);
     }
 }

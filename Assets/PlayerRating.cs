@@ -46,9 +46,11 @@ public class PlayerRating : NetworkBehaviour
     {
         if (IsOwner&& playerController.controlledByClient)
         {
+            UIManager.instance.scoreText.text = "Total Score: " + score.Value;
             if(scoreTextTimer > 0)
             {
                 scoreTextTimer -= Time.deltaTime;
+                UIManager.instance.addScoreText.alpha = scoreTextTimer;
             }
             else
             {

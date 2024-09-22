@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3681927650
+  GlobalObjectIdHash: 1146128826
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -252,8 +252,14 @@ MonoBehaviour:
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
+  ownerPlayerId:
+    m_InternalValue: -1
   owner: {fileID: 0}
-  isCurrentlyEquipped: 0
-  enableItemMeshes: 1
-  enableItemPhysics: 1
-  inStorageBox: 0
+  isCurrentlyEquipped:
+    m_InternalValue: 0
+  enableItemMeshes:
+    m_InternalValue: 1
+  enableItemPhysics:
+    m_InternalValue: 1
+  inStorageBox:
+    m_InternalValue: 0

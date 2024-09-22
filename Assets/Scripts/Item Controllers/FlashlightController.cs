@@ -25,9 +25,19 @@ public class FlashlightController : ItemController
             }
         }
     }
+    
+    public override void OnButtonHeld()
+    {
+        if (cooldown <= 0)
+        {
+            cooldown = cooldownSetting;
+            Activate();
+        }
+    }
 
     public override void Activate()
     {
+        base.Activate();
         ToggleLightServerRpc();
     }
 

@@ -16,14 +16,20 @@ public class BatController : ItemController
     
     /*public override void OnButtonHeld()
     {
-    }
+    }*/
     
     public override void OnButtonReleased()
     {
-    }*/
+        if (heldTime > minHeldTime && cooldown <= 0)
+        {
+            cooldown = cooldownSetting;
+            Activate();
+        }
+    }
 
     public override void Activate()
     {
+        base.Activate();
         BatSwingClientRpc();
     }
 

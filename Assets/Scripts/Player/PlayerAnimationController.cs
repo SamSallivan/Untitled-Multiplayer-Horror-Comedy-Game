@@ -400,7 +400,7 @@ public class PlayerAnimationController : MonoBehaviour
             bodyAnimator.SetTrigger(emoteData.animatorTrigger);
             bodyAnimator.applyRootMotion = true;
             lockLookRotation = emoteData.lockLookRotation;
-            lockBodyRotation = lockLookRotation ? emoteData.lockBodyRotation : false;
+            lockBodyRotation = emoteData.lockBodyRotation;
             overrideArmAnimation = emoteData.overrideArmAnimation;
             leftArmAnimation = !overrideArmAnimation;
             rightArmAnimation = !overrideArmAnimation;
@@ -426,12 +426,12 @@ public class PlayerAnimationController : MonoBehaviour
         if (emoteData.fullBodyAnimation)
         {
             bodyAnimator.ResetTrigger(emoteData.animatorTrigger);
-            bodyAnimator.SetTrigger("StopEmote");
+            bodyAnimator.SetTrigger("Stop Emote");
         }
         else
         {
             armAnimator.ResetTrigger(emoteData.animatorTrigger);
-            armAnimator.SetTrigger("StopEmote");
+            armAnimator.SetTrigger("Stop Emote");
         }
         transform.localPosition = new Vector3(0, -1, 0);
         bodyAnimator.applyRootMotion = false;

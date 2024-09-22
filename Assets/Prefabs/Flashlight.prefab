@@ -435,7 +435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3359926264
+  GlobalObjectIdHash: 3934716119
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -544,7 +544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3359926264
+  GlobalObjectIdHash: 1020851209
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -582,11 +582,17 @@ MonoBehaviour:
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
+  ownerPlayerId:
+    m_InternalValue: -1
   owner: {fileID: 0}
-  isCurrentlyEquipped: 0
-  enableItemMeshes: 1
-  enableItemPhysics: 1
-  inStorageBox: 0
+  isCurrentlyEquipped:
+    m_InternalValue: 0
+  enableItemMeshes:
+    m_InternalValue: 1
+  enableItemPhysics:
+    m_InternalValue: 1
+  inStorageBox:
+    m_InternalValue: 0
 --- !u!114 &1414142076186821944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,8 +605,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb7f9556496f95408341cbf6fb57e1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryItem: {fileID: 0}
+  buttonHeld: 0
+  heldTime: 0
+  minHeldTime: 0
+  cooldown: 0
+  cooldownSetting: 0
   light: {fileID: 7046685739311265399}
-  activated: 0
+  activated:
+    m_InternalValue: 0
 --- !u!114 &6796858063129461121
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -88,9 +88,9 @@ public class ItemData : ScriptableObject
 public struct ItemStatus
 {
     public int amount;
-    public int durability;
+    public float durability;
 
-    public ItemStatus(int amount, int durability){
+    public ItemStatus(int amount, float durability){
         this.amount = amount;
         this.durability = durability;
     }
