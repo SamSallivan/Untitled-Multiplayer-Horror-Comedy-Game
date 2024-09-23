@@ -1213,7 +1213,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             drunkTimer -= Time.deltaTime;
             Volume volume = PostProcessEffects.Instance.gameVolume.GetComponent<Volume>();
-            Debug.Log(volume);
             volume.profile.TryGet(out UnityEngine.Rendering.Universal.ChromaticAberration chromaticAberration);
             chromaticAberration.intensity.value = Mathf.Clamp(drunkTimer, 0, 1);
         }
