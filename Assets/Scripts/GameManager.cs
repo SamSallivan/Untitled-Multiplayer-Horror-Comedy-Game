@@ -30,8 +30,9 @@ public class GameManager : NetworkBehaviour
     [FoldoutGroup("Match Time")]
     public NetworkVariable<float> matchTimer = new NetworkVariable<float>(0);
 
-    public List<GameObject> ExtractionLocations; 
-    
+    public List<GameObject> ExtractionLocations;
+
+    public bool gameOver = false;
     
 
     public enum GameState
@@ -50,6 +51,10 @@ public class GameManager : NetworkBehaviour
         {
             currentGameState.Value = GameState.NotStarted;
             matchTimer.Value = preExtractionTime;
+        }
+        else
+        {
+            currentGameState.OnValueChanged += OnStateChanged;
         }
     }
 
@@ -98,9 +103,24 @@ public class GameManager : NetworkBehaviour
         {
             
         }
-        
-        
-            
-        
+    }
+
+    public void OnStateChanged(GameState previous, GameState current)
+    {
+        if (current == GameState.Finished)
+        {
+            EndGame();
+        }
+    }
+
+    public void EndGame()
+    {
+        foreach (var p in GameSessionManager.Instance.playerControllerList)
+        {
+            if (p.controlledByClient && !p.isPlayerDead.Value)
+            {
+                p.Die();
+            }
+        }
     }
 }

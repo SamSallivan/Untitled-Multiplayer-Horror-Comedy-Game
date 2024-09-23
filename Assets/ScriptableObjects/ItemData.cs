@@ -38,6 +38,9 @@ public class ItemData : ScriptableObject
     [FoldoutGroup("Settings")]
     [ShowIf(nameof(isStackable))]
     public int maxStackAmount = 1;
+    
+    [FoldoutGroup("Settings")]
+    public int discoverScore= 5;
 
     //public bool isEquippable;
 

@@ -436,7 +436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1447889094
+  GlobalObjectIdHash: 2211336202
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -566,7 +566,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 644438374
+  GlobalObjectIdHash: 2211336202
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -597,7 +597,7 @@ MonoBehaviour:
   examineImage: {fileID: 0}
   hasText: 0
   examineText: 
-  itemData: {fileID: 11400000, guid: 7c5dfc97a14ddcf40add340b680bbaa3, type: 2}
+  itemData: {fileID: 11400000, guid: eeb7a71e0ec02f5459172501493efe8b, type: 2}
   itemStatus:
     amount: 1
     durability: 1
@@ -615,6 +615,8 @@ MonoBehaviour:
     m_InternalValue: 1
   inStorageBox:
     m_InternalValue: 0
+  firstPickup:
+    m_InternalValue: 1
 --- !u!114 &6796858063129461121
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -37,6 +37,8 @@ public class I_InventoryItem : Interactable
 
     public NetworkVariable<bool> inStorageBox = new(writePerm: NetworkVariableWritePermission.Owner);
     
+    public NetworkVariable<bool> firstPickup = new(true, writePerm: NetworkVariableWritePermission.Owner);
+    
     void Start()
     {
         if (!IsHost)
@@ -176,6 +178,11 @@ public class I_InventoryItem : Interactable
     {
         if(itemData != null)
         {
+            if (firstPickup.Value)
+            {
+                firstPickup.Value = false;
+                RatingManager.instance.AddScore( itemData.discoverScore,"Found a " + textName + "!");
+            }
             I_InventoryItem item = InventoryManager.instance.AddItemToInventory(this);
             OnPickUp?.Invoke();
             if (item != null)

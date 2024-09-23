@@ -17,6 +17,8 @@ public class ItemController : NetworkBehaviour
     [ReadOnly]
     public float cooldown;
     public float cooldownSetting;
+    
+    
 
     public void Awake()
     {
