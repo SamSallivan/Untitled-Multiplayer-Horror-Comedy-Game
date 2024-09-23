@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Beer Bottle
   m_EditorClassIdentifier: 
   title: Beer Bottle
-  sprite: {fileID: 21300000, guid: 07fb2f869ae006041a95ecc9cb2d7548, type: 3}
+  sprite: {fileID: 21300000, guid: a9b55dddad2212342968aa1f0e28cf85, type: 3}
   description: Tsingtao beer bottle.
   isStackable: 0
   maxStackAmount: 1
+  discoverScore: 5
   equipPosition: {x: 0, y: 0, z: 0}
   equipRotation: {x: 0, y: 0, z: 0}
   dropObject: {fileID: 7074802747145682746, guid: bfbfa091281804c429aaaf095c8936e2, type: 3}

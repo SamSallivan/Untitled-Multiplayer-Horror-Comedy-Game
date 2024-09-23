@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Bat
   m_EditorClassIdentifier: 
   title: Bat
-  sprite: {fileID: 21300000, guid: 72fb39aab6c7e1f488388094153c10a8, type: 3}
+  sprite: {fileID: 21300000, guid: 7281463a5b604ab4eaaaa44dea114295, type: 3}
   description: Bat.
   isStackable: 0
   maxStackAmount: 1
+  discoverScore: 5
   equipPosition: {x: 0, y: 0, z: 0}
   equipRotation: {x: 0, y: 0, z: 0}
   dropObject: {fileID: 7596440031121015847, guid: 3e64d7c08f9bac849820cdd80b4674c3, type: 3}
