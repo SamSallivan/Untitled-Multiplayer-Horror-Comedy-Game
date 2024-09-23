@@ -217,8 +217,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 10000
-  m_Range: 10
+  m_Intensity: 7000
+  m_Range: 3
   m_SpotAngle: 129.82211
   m_InnerSpotAngle: 69.82205
   m_CookieSize: 10
@@ -315,8 +315,8 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   intensityFromLight: 1
   intensityModeAdvanced: 0
-  intensityInside: 30
-  intensityOutside: 30
+  intensityInside: 21
+  intensityOutside: 21
   intensityMultiplier: 0.003
   hdrpExposureWeight: 0
   blendingMode: 0
@@ -334,7 +334,7 @@ MonoBehaviour:
   attenuationEquation: 1
   attenuationCustomBlending: 0.5
   fallOffStart: 0
-  fallOffEnd: 10
+  fallOffEnd: 3
   fallOffEndFromLight: 1
   fallOffEndMultiplier: 1
   depthBlendDistance: 2
