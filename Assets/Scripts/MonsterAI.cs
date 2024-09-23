@@ -96,27 +96,27 @@ public class MonsterAI : NetworkBehaviour, IDamagable
                             UpdateTarget();
                             Chase();
                             JumpAttack();
-                            if (monState.Value == MonsterState.Attached)
-                            {
-                                AttachedUpdate();
-                            }
+
                         }
+
                     }
+                    else
+                    {
+                        AttachedUpdate();
+                    }                   
                 }
             }
 
-
         }
-        
+    }
+
+    public void LateUpdate()
+    {
         if (monState.Value == MonsterState.Attached)
         {
             AttachedPositionUpdate();
         }
-        
-        
-        
     }
-
 
     public void AttachedPositionUpdate()
     {
@@ -124,10 +124,11 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         {
             if (attatchedPlayer.isPlayerDead.Value)
             {
-                
+                attatchedPlayer = null;
             }
             else
             {
+                GetComponent<Collider>().isTrigger = true;
                 transform.position = attatchedPlayer.headTransform.position + attatchedPlayer.headTransform.forward * 0.3f + attatchedPlayer.headTransform.up*-0.2f;
                 transform.forward = -attatchedPlayer.headTransform.forward;
             }
@@ -344,11 +345,12 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     {
         if(playerController.TryGet(out NetworkObject playerControllerObject))
         attatchedPlayer = playerControllerObject.GetComponent<PlayerController>();
-        ;
+        GetComponent<Collider>().isTrigger = true;
     }
     [Rpc(SendTo.Everyone)]
     public void UnattachPlayerClientRpc()
     {
         attatchedPlayer = null;
+        GetComponent<Collider>().isTrigger = false;
     }
 }
