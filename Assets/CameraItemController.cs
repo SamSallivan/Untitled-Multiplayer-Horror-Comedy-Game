@@ -43,11 +43,12 @@ public class CameraItemController : ItemController
     {
         ToggleLightServerRpc();
         
-        if (CheckVisibility())
+        yield return new WaitForSeconds(0.1f);
+        if (!inventoryItem.owner==GameSessionManager.Instance.localPlayerController&& CheckVisibility())
         {
             PostProcessEffects.Instance.FlashBlind();
         }
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
         ToggleLightServerRpc();
     }
 
@@ -81,7 +82,6 @@ public class CameraItemController : ItemController
                     return hit.transform.gameObject == this.gameObject;
                 }
                 else return false;
-                return true;
             }
             else return false;
 
