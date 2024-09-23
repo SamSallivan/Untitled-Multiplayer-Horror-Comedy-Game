@@ -3484,7 +3484,7 @@ MonoBehaviour:
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  AutoObjectParentSync: 0
 --- !u!65 &1314981948755790208
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7335,7 +7335,7 @@ MonoBehaviour:
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  AutoObjectParentSync: 0
 --- !u!114 &6278913296530005098
 MonoBehaviour:
   m_ObjectHideFlags: 0
