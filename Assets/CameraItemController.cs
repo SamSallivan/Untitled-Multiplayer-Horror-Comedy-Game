@@ -44,12 +44,17 @@ public class CameraItemController : ItemController
         ToggleLightServerRpc();
         
         yield return new WaitForSeconds(0.1f);
+        CheckBlindClientRpc();
+        yield return new WaitForSeconds(0.2f);
+        ToggleLightServerRpc();
+    }
+    
+    [Rpc(SendTo.Everyone)]
+    public void CheckBlindClientRpc(){
         if (inventoryItem.owner!=GameSessionManager.Instance.localPlayerController&& CheckVisibility())
         {
             PostProcessEffects.Instance.FlashBlind();
         }
-        yield return new WaitForSeconds(0.2f);
-        ToggleLightServerRpc();
     }
 
 
