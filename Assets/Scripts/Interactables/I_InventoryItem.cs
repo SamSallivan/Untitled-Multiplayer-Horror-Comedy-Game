@@ -178,10 +178,10 @@ public class I_InventoryItem : Interactable
     {
         if(itemData != null)
         {
-            if (firstPickup.Value)
+            if ( firstPickup.Value)
             {
-                firstPickup.Value = false;
-                RatingManager.instance.AddScore( itemData.discoverScore,"Found a " + textName + "!");
+                ChangeFirstPickupServerRpc();
+                RatingManager.instance.AddScore(itemData.discoverScore,"Found a " + textName + "!");
             }
             I_InventoryItem item = InventoryManager.instance.AddItemToInventory(this);
             OnPickUp?.Invoke();
@@ -197,6 +197,12 @@ public class I_InventoryItem : Interactable
         yield return null; 
     }
 
+    
+    [Rpc(SendTo.Server)]
+    public void ChangeFirstPickupServerRpc()
+    {
+        firstPickup.Value = false;
+    }
 
 	/*public void EnableItemMeshes(bool enable)
 	{
