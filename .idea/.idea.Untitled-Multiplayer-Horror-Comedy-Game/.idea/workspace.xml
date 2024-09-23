@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="ae88ff3d-798b-444a-9315-8e5f906c02c9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BatController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BatController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Enviro 3 - Sky and Weather/Profiles/Configurations/Default Enviro Configuration 3_1_4.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Enviro 3 - Sky and Weather/Profiles/Configurations/Default Enviro Configuration 3_1_4.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/BaseCameraProfile.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/BaseCameraProfile.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +20,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/PostProcessEffects.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/IDamagable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Assets/PlayerRating.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Assets/Scripts/Player/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
@@ -120,7 +124,9 @@
       <workItem from="1726504193611" duration="4087000" />
       <workItem from="1726641382051" duration="8048000" />
       <workItem from="1726675218033" duration="2372000" />
-      <workItem from="1726680081520" duration="39000" />
+      <workItem from="1726680081520" duration="293000" />
+      <workItem from="1726861033955" duration="1876000" />
+      <workItem from="1727048853208" duration="19283000" />
     </task>
     <servers />
   </component>

@@ -130,9 +130,9 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 0fcdd472bd6a8ec429fc1e9bc978c4fa, type: 2}
   showCirrusCloudsControls: 0
   show2DCloudsControls: 0
-  cloudFlatBaseAnim: {x: 0.6584591, y: 0.02691471}
-  cloudFlatDetailAnim: {x: 0.79266775, y: 0.79084325}
-  cirrusAnim: {x: 0.33290136, y: 0.0047036693}
+  cloudFlatBaseAnim: {x: 0.89799345, y: -0.2125878}
+  cloudFlatDetailAnim: {x: -0.011265127, y: -0.4031551}
+  cirrusAnim: {x: -0.5472912, y: 0.88513464}
 --- !u!114 &-5447272849285213076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2098,7 +2098,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    temperature: 19.067158
+    temperature: 19.06955
     temperatureWeatherMod: 1.7
     temperatureCustomMod: 0
     temperatureChangingSpeed: 0.1
@@ -2320,7 +2320,7 @@ MonoBehaviour:
   showDensityControls: 0
   showTextureControls: 0
   showWindControls: 0
-  cloudAnimLayer1: {x: 0.8275048, y: -0.7262449, z: 0.14916833}
+  cloudAnimLayer1: {x: 0.18657525, y: -0.08473183, z: 0.25227278}
   cloudAnimLayer2: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer1: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer2: {x: 0, y: 0, z: 0}
@@ -2360,7 +2360,7 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: da668770e38694d49af97ecfd05fd7eb, type: 2}
   showReflectionControls: 0
   lastReflectionUpdate: 3.7583349
-  lastReflectionUpdatePos: {x: 0, y: -9.25, z: 0.1}
+  lastReflectionUpdatePos: {x: 0, y: -8.413, z: 0.1}
 --- !u!114 &4011421771873438716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2581,6 +2581,37 @@ MonoBehaviour:
   showVolumetricsControls: 0
   showUnityFogControls: 1
   fogLights:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
