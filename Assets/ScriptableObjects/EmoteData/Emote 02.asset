@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Emote 2
-  m_EditorClassIdentifier: Assembly-CSharp::EmoteData
+  m_Script: {fileID: 11500000, guid: efd0a181e40c22d4fa0218d4650aaba3, type: 3}
+  m_Name: Emote 02
+  m_EditorClassIdentifier: 
   name: Emote 2
   animatorTrigger: Emote 2
   fullBodyAnimation: 0
   lockLookRotation: 0
   lockBodyRotation: 0
   overrideCameraPosition: 0
-  targetCameraPosition: {x: 0, y: 0, z: 0}
-  overrideArmAnimation: 0
+  targetCameraPosition: {x: 0.5, y: -0.15, z: -1.25}
+  overrideArmAnimation: 1
   leftArmAnimation: 0
   rightArmAnimation: 1
