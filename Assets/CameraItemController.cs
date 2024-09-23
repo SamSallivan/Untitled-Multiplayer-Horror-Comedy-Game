@@ -44,7 +44,7 @@ public class CameraItemController : ItemController
         ToggleLightServerRpc();
         
         yield return new WaitForSeconds(0.1f);
-        if (!inventoryItem.owner==GameSessionManager.Instance.localPlayerController&& CheckVisibility())
+        if (inventoryItem.owner!=GameSessionManager.Instance.localPlayerController&& CheckVisibility())
         {
             PostProcessEffects.Instance.FlashBlind();
         }

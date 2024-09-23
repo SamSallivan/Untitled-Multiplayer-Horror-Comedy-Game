@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ae88ff3d-798b-444a-9315-8e5f906c02c9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animations/Flash/FlashBlind.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animations/Flash/FlashBlind.anim" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/CameraItemController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/CameraItemController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/FlashBlind.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/FlashBlind.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lobby 1.unity.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lobby 1.unity.meta" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +19,8 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/PostProcessEffects.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/yilai/OneDrive/Desktop/Capstone2024/HorrorGameNew/Untitled-Multiplayer-Horror-Comedy-Game/Assets/Scenes/Lobby 1.unity.meta" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/yilai/OneDrive/Desktop/Capstone2024/HorrorGameNew/Untitled-Multiplayer-Horror-Comedy-Game/Assets/Scenes/Lobby 1.unity.meta" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/IDamagable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Assets/PlayerRating.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Untitled-Multiplayer-Horror-Comedy-Game_clone_0/Assets/Scripts/Player/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
@@ -126,7 +127,7 @@
       <workItem from="1726680081520" duration="293000" />
       <workItem from="1726861033955" duration="1876000" />
       <workItem from="1727048853208" duration="19389000" />
-      <workItem from="1727104920661" duration="705000" />
+      <workItem from="1727104920661" duration="2437000" />
     </task>
     <servers />
   </component>
