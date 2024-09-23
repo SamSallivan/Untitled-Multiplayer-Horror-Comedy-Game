@@ -1151,6 +1151,8 @@ MonoBehaviour:
   maximumX: 360
   minimumY: -75
   maximumY: 55
+  rotationX: 0
+  rotationY: 0
   rotArrayX: []
   rotAverageX: 0
   rotArrayY: []
@@ -2675,6 +2677,9 @@ MonoBehaviour:
   rightFootTransform: {fileID: 0}
   walkAnimationInterpolationSpeed: 10
   footStickToSurface: 1
+  footSurfaceLayerMask:
+    serializedVersion: 2
+    m_Bits: 385
   footIKTargetPositionOffset: {x: 0, y: 0.075, z: 0}
   footIKTargetRotationOffset: {x: 0, y: 0, z: 0}
   surfaceDetectDistance: 2
@@ -2684,6 +2689,7 @@ MonoBehaviour:
   ArmIKWeightInterpolationSpeed: 10
   emoteData: {fileID: 0}
   lockLookRotation: 0
+  lockBodyRotation: 0
   overrideArmAnimation: 0
   leftArmAnimation: 0
   rightArmAnimation: 0
@@ -3717,8 +3723,8 @@ Transform:
   m_GameObject: {fileID: 6142512451821148495}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1596918906161557288}
@@ -3803,7 +3809,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6142512451821148495}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9118365f988afd4419c64e108a8bbc64, type: 3}
   m_Name: 
@@ -4486,7 +4492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 88465425
+  GlobalObjectIdHash: 733293365
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -4601,12 +4607,13 @@ MonoBehaviour:
   currentHp:
     m_InternalValue: 0
   ragdollPrefab: {fileID: 8888912781250069987, guid: 9453f7970b319e24ea7331dbe6ed3bd0, type: 3}
-  damageTimer: 0
   currentEmoteIndex:
     m_InternalValue: -1
   emoteDataList:
   - {fileID: 11400000, guid: d86b8c3853254124ba05ec81704ad8db, type: 2}
   - {fileID: 11400000, guid: 143c4203a6f1a7e46b6030ba56d1772a, type: 2}
+  damageTimer: 0
+  drunkTimer: 0
 --- !u!114 &8793975911923707449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4635,14 +4642,18 @@ MonoBehaviour:
   fallDistanceThreshold: 1
   lethalFallDistance: 10
   movementCooldownOnLanding: 0.25
-  grounded: 0
+  grounded:
+    m_InternalValue: 0
   minGroundNormal: 0
-  airTime: 0
-  groundTime: 0
+  airTime:
+    m_InternalValue: 0
+  groundTime:
+    m_InternalValue: 0
   regroundCooldown: 0
   regroundCooldownSetting: 0.2
   highestPoint: 0
-  fallDistance: 0
+  fallDistance:
+    m_InternalValue: 0
   groundContactCount: 0
   groundCollider: {fileID: 0}
   tempGroundNormal: {x: 0, y: 0, z: 0}
@@ -5144,6 +5155,8 @@ MonoBehaviour:
   maximumX: 360
   minimumY: -75
   maximumY: 55
+  rotationX: 0
+  rotationY: 0
   rotArrayX: []
   rotAverageX: 0
   rotArrayY: []

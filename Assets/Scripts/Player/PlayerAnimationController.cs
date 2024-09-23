@@ -40,6 +40,7 @@ public class PlayerAnimationController : MonoBehaviour
     public float walkAnimationInterpolationSpeed = 10f;
 
     public bool footStickToSurface = true;
+    public LayerMask footSurfaceLayerMask;
     public Vector3 footIKTargetPositionOffset;
     public Vector3 footIKTargetRotationOffset;
     public float surfaceDetectDistance = 1.0f;
@@ -376,7 +377,7 @@ public class PlayerAnimationController : MonoBehaviour
         RaycastHit hit;
 
         // raycast in the given direction
-        if (Physics.Raycast(origin, -Vector3.up, out hit, surfaceDetectDistance))
+        if (Physics.Raycast(origin, -Vector3.up, out hit, surfaceDetectDistance, footSurfaceLayerMask))
         {
             // the hit point is the position of the hand/foot
             targetPosition = hit.point;

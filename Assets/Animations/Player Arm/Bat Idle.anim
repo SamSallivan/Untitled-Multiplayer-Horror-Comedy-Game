@@ -936,7 +936,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Right Arm IK Target/Right Finger IK Targets
+    path: Right Arm IK Target
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -948,7 +948,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Right Arm IK Target/Right Finger IK Targets
+    path: Right Arm IK Target
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -960,7 +960,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Right Arm IK Target/Right Finger IK Targets
+    path: Right Arm IK Target
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -972,7 +972,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Right Arm IK Target/Equip Target Transform
+    path: Right Arm IK Target/Right Finger IK Targets
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -984,7 +984,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Right Arm IK Target/Equip Target Transform
+    path: Right Arm IK Target/Right Finger IK Targets
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -996,7 +996,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Right Arm IK Target/Equip Target Transform
+    path: Right Arm IK Target/Right Finger IK Targets
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1044,7 +1044,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Right Arm IK Target
+    path: Right Arm IK Target/Equip Target Transform
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1056,7 +1056,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Right Arm IK Target
+    path: Right Arm IK Target/Equip Target Transform
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1068,7 +1068,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Right Arm IK Target
+    path: Right Arm IK Target/Equip Target Transform
     classID: 4
     script: {fileID: 0}
     flags: 0
