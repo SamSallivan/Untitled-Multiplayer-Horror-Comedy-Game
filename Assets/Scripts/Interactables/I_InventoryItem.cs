@@ -52,7 +52,8 @@ public class I_InventoryItem : Interactable
         base.OnNetworkSpawn();
 
         if(IsServer)
-        {
+        { 
+            NetworkObject.DestroyWithScene = false;
             SyncItemStateClientRpc(itemStatus.amount, itemStatus.durability);
         }
         else

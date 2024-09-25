@@ -493,21 +493,24 @@ public class GameSessionManager : NetworkBehaviour
 			gameStarted.Value = true;
 		}
 		//ClearLoadedClientIdsRpc();
+		
+		loaded = false;
 		TeleportPlayerToLevelSpawnRpc();
-		SceneEventProgressStatus status = NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
 	}
 
 	[Rpc(SendTo.Everyone)]
 	public void TeleportPlayerToLevelSpawnRpc()
 	{
-		loaded = false;
 		StartCoroutine(TeleportToLevelSpawnCoroutine());
 	}
 
 	IEnumerator TeleportToLevelSpawnCoroutine()
 	{
+		NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
+		
 		yield return new WaitUntil(() => loaded == true && LevelManager.Instance != null);
-		yield return new WaitForSeconds(2f);
+		yield return new WaitForSeconds(1f);
+		
 		localPlayerController.TeleportPlayer(LevelManager.Instance.playerSpawnTransform.position);
 	}
 
@@ -523,30 +526,39 @@ public class GameSessionManager : NetworkBehaviour
 		{
 			gameStarted.Value = false;
 		}
-		
-        TeleportPlayerToLobbySpawnRpc();
-		
 		//ClearLoadedClientIdsRpc();
+		
 		loaded = false;
-		SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
-		base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));;
+        TeleportPlayerToLobbySpawnRpc();
 	}
 
 	[Rpc(SendTo.Everyone)]
 	public void TeleportPlayerToLobbySpawnRpc()
 	{
-		//if not extracted
 		if (!localPlayerController.isPlayerExtracted.Value)
 		{
-			//kill
 			if (localPlayerController.controlledByClient && !localPlayerController.isPlayerDead.Value)
 			{
 				localPlayerController.Die();
 			}
 		}
+		StartCoroutine(TeleportToLobbySpawnCoroutine());
+	}
+
+	IEnumerator TeleportToLobbySpawnCoroutine()
+	{
+		yield return new WaitForSeconds(2f);
 		
-		//localPlayerController.TeleportPlayer(GameSessionManager.Instance.playerSpawnTransform.position);
-		//revive
-		localPlayerController.Respawn();
+		if (localPlayerController.isPlayerDead.Value)
+		{
+			localPlayerController.Respawn();
+		}
+
+		if (IsServer)
+		{
+			base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));
+		}
+
+		yield return new WaitUntil(() => loaded == true);
 	}
 }
