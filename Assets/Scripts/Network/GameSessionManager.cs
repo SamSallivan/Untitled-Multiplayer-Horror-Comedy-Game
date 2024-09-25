@@ -510,8 +510,11 @@ public class GameSessionManager : NetworkBehaviour
 		
 		yield return new WaitUntil(() => loaded == true && LevelManager.Instance != null);
 		yield return new WaitForSeconds(1f);
-		
-		localPlayerController.TeleportPlayer(LevelManager.Instance.playerSpawnTransform.position);
+
+		if (IsServer)
+		{
+			localPlayerController.TeleportPlayer(LevelManager.Instance.playerSpawnTransform.position);
+		}
 	}
 
 	[Button]
