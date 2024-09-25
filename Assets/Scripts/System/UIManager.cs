@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using Steamworks;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
@@ -262,7 +264,7 @@ public class UIManager : MonoBehaviour
         examineImage.enabled = false;
     }*/
 
-    public void ShowScoreBoard()
+    public async void ShowScoreBoard()
     {
         scoreBoardUI.SetActive(true);
         
@@ -274,10 +276,24 @@ public class UIManager : MonoBehaviour
             {
                 
                 currentLine.gameObject.SetActive(true);
+                
                 currentLine.GetChild(0).GetComponent<TMP_Text>().text =
                     GameSessionManager.Instance.playerControllerList[i].playerUsername;
+                
                 currentLine.GetChild(1).GetComponent<TMP_Text>().text =
                     GameSessionManager.Instance.playerControllerList[i].GetComponent<PlayerRating>().score.Value+"";
+                
+                if (!GameNetworkManager.Instance.steamDisabled)
+                {
+                    currentLine.GetChild(2).GetComponent<RawImage>().color = Color.white;
+                    currentLine.GetChild(2).GetComponent<RawImage>().texture =
+                        GetTextureFromImage(await SteamFriends.GetSmallAvatarAsync(GameSessionManager.Instance
+                            .playerControllerList[i].localSteamId.Value));
+                }
+                else
+                {
+                    currentLine.GetChild(2).GetComponent<RawImage>().color = Color.clear;
+                }
             }
             else
             {
@@ -286,6 +302,22 @@ public class UIManager : MonoBehaviour
             
         }
         
+    }
+
+    public static Texture2D GetTextureFromImage(Steamworks.Data.Image? image)
+    {
+        Texture2D texture2D = new Texture2D((int)image.Value.Width, (int)image.Value.Height);
+        for (int i = 0; i < image.Value.Width; i++)
+        {
+            for (int j = 0; j < image.Value.Height; j++)
+            {
+                Steamworks.Data.Color pixel = image.Value.GetPixel(i, j);
+                texture2D.SetPixel(i, (int)image.Value.Height - j, new UnityEngine.Color((float)(int)pixel.r / 255f, (float)(int)pixel.g / 255f, (float)(int)pixel.b / 255f, (float)(int)pixel.a / 255f));
+            }
+        }
+        Debug.Log("Slot L");
+        texture2D.Apply();
+        return texture2D;
     }
     // public enum SubtitleType
     // {

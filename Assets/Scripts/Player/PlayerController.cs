@@ -475,7 +475,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
         {
             string playerName = new Friend(playerController.localSteamId.Value).Name;
-            playerController.playerUsername = playerName;
             playerController.playerUsernameText.text = playerName;
 
             if (playerController == GameSessionManager.Instance.localPlayerController)
@@ -754,6 +753,34 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         //     }
         // }
+    }
+
+    public void EffectUpdate()
+    {
+        if (damageTimer > 0)
+        {
+            damageTimer -= Time.deltaTime;
+        }
+        
+        if (drunkTimer > 0)
+        {
+            drunkTimer -= Time.deltaTime;
+            Volume volume = PostProcessEffects.Instance.gameVolume.GetComponent<Volume>();
+            volume.profile.TryGet(out UnityEngine.Rendering.Universal.ChromaticAberration chromaticAberration);
+            chromaticAberration.intensity.value = Mathf.Clamp(drunkTimer, 0, 1);
+        }
+    }
+
+    public void StaminaUpdate()
+    {
+        if (staminaReplenishCooldown > 0)
+        {
+            staminaReplenishCooldown -= Time.deltaTime;
+        }
+        else if (stamina.Value < 100)
+        {
+            stamina.Value += staminaReplenishPerSecond * Time.deltaTime;
+        }
     }
 
     #region Interaction
@@ -1233,34 +1260,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     }
     
     #endregion
-
-    public void EffectUpdate()
-    {
-        if (damageTimer > 0)
-        {
-            damageTimer -= Time.deltaTime;
-        }
-        
-        if (drunkTimer > 0)
-        {
-            drunkTimer -= Time.deltaTime;
-            Volume volume = PostProcessEffects.Instance.gameVolume.GetComponent<Volume>();
-            volume.profile.TryGet(out UnityEngine.Rendering.Universal.ChromaticAberration chromaticAberration);
-            chromaticAberration.intensity.value = Mathf.Clamp(drunkTimer, 0, 1);
-        }
-    }
-
-    public void StaminaUpdate()
-    {
-        if (staminaReplenishCooldown > 0)
-        {
-            staminaReplenishCooldown -= Time.deltaTime;
-        }
-        else if (stamina.Value < 100)
-        {
-            stamina.Value += staminaReplenishPerSecond * Time.deltaTime;
-        }
-    }
 
     public void Extract()
     {
