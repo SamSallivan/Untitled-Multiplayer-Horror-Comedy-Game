@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 039ea2c8d80d11f4aa1926e992d660b4, type: 3}
   m_Name: '[SCPE] ColorSplitRenderer'
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8173f089832511149b44a215bb4a2f39, type: 3}
   m_Name: DitheringRenderer
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0
@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 400dc2baa0a22054cb259512e4ce8907, type: 3}
   m_Name: KuwaharaRenderer
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0

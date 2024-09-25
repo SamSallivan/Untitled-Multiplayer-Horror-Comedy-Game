@@ -145,27 +145,30 @@ public class UIManager : MonoBehaviour
             gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera = GameSessionManager.Instance.localPlayerController.cameraList[1];
         }
 
-        if (GameManager.Instance.currentGameState.Value != GameManager.GameState.NotStarted)
+        if (LevelManager.Instance)
         {
-            float timeLeft = GameManager.Instance.matchTimer.Value;
-            string textfieldMinutes = TimeSpan.FromSeconds(timeLeft).Minutes.ToString();
-            string textfieldSeconds = TimeSpan.FromSeconds(timeLeft).Seconds.ToString();
-            string timeDisplay = "";
-            if (textfieldMinutes.Length == 2 && textfieldSeconds.Length == 2)
-                timeDisplay =   textfieldMinutes + ":" + textfieldSeconds;
-            else if (textfieldMinutes.Length == 2 && textfieldSeconds.Length == 1)
-                timeDisplay= textfieldMinutes + ":0" + textfieldSeconds;
-            else if (textfieldMinutes.Length == 1 && textfieldSeconds.Length == 1)
-                timeDisplay= "0" + textfieldMinutes + ":0" + textfieldSeconds;
-            else if (textfieldMinutes.Length == 1 && textfieldSeconds.Length == 2)
-                timeDisplay= "0" + textfieldMinutes + ":" + textfieldSeconds;
-            else
-                timeDisplay= textfieldMinutes + ":" + textfieldSeconds;
+            if (LevelManager.Instance.currentGameState.Value != LevelManager.GameState.NotStarted)
+            {
+                float timeLeft = LevelManager.Instance.matchTimer.Value;
+                string textfieldMinutes = TimeSpan.FromSeconds(timeLeft).Minutes.ToString();
+                string textfieldSeconds = TimeSpan.FromSeconds(timeLeft).Seconds.ToString();
+                string timeDisplay = "";
+                if (textfieldMinutes.Length == 2 && textfieldSeconds.Length == 2)
+                    timeDisplay = textfieldMinutes + ":" + textfieldSeconds;
+                else if (textfieldMinutes.Length == 2 && textfieldSeconds.Length == 1)
+                    timeDisplay = textfieldMinutes + ":0" + textfieldSeconds;
+                else if (textfieldMinutes.Length == 1 && textfieldSeconds.Length == 1)
+                    timeDisplay = "0" + textfieldMinutes + ":0" + textfieldSeconds;
+                else if (textfieldMinutes.Length == 1 && textfieldSeconds.Length == 2)
+                    timeDisplay = "0" + textfieldMinutes + ":" + textfieldSeconds;
+                else
+                    timeDisplay = textfieldMinutes + ":" + textfieldSeconds;
 
-            if (GameManager.Instance.currentGameState.Value==GameManager.GameState.PreExtraction)
-                timerText.text = "Time until extraction: "+ timeDisplay;
-            else if (GameManager.Instance.currentGameState.Value==GameManager.GameState.Extraction)
-                timerText.text = "Time left: "+ timeDisplay;
+                if (LevelManager.Instance.currentGameState.Value == LevelManager.GameState.PreExtraction)
+                    timerText.text = "Time until extraction: " + timeDisplay;
+                else if (LevelManager.Instance.currentGameState.Value == LevelManager.GameState.Extraction)
+                    timerText.text = "Time left: " + timeDisplay;
+            }
         }
 
     }

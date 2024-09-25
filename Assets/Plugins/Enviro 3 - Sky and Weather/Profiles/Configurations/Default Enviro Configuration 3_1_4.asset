@@ -130,9 +130,9 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 0fcdd472bd6a8ec429fc1e9bc978c4fa, type: 2}
   showCirrusCloudsControls: 0
   show2DCloudsControls: 0
-  cloudFlatBaseAnim: {x: 0.89799345, y: -0.2125878}
-  cloudFlatDetailAnim: {x: -0.011265127, y: -0.4031551}
-  cirrusAnim: {x: -0.5472912, y: 0.88513464}
+  cloudFlatBaseAnim: {x: 0.485841, y: 0.19962867}
+  cloudFlatDetailAnim: {x: -0.07355305, y: -0.3412965}
+  cirrusAnim: {x: -0.7533658, y: -0.9087985}
 --- !u!114 &-5447272849285213076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0081d4f9e5d6e0a4d9fe8e7a8d7256b6, type: 3}
   m_Name: Time Module
   m_EditorClassIdentifier: 
-  showModuleInspector: 1
+  showModuleInspector: 0
   showSaveLoad: 0
   active: 1
   Settings:
@@ -1920,7 +1920,7 @@ MonoBehaviour:
         outSlope: 0
         tangentMode: 34
         weightedMode: 0
-        inWeight: 0.33333334
+        inWeight: 0
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
@@ -1930,15 +1930,15 @@ MonoBehaviour:
         tangentMode: 34
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     ambientIntensityModifier: 1
     ambientSkyboxUpdateIntervall: 0.25
   preset: {fileID: 11400000, guid: 81d8b109102443243bcb0894975c0718, type: 2}
-  showDirectLightingControls: 1
-  showAmbientLightingControls: 0
+  showDirectLightingControls: 0
+  showAmbientLightingControls: 1
   showReflectionControls: 0
 --- !u!114 &1310742743334959994
 MonoBehaviour:
@@ -2320,7 +2320,7 @@ MonoBehaviour:
   showDensityControls: 0
   showTextureControls: 0
   showWindControls: 0
-  cloudAnimLayer1: {x: 0.18657525, y: -0.08473183, z: 0.25227278}
+  cloudAnimLayer1: {x: -0.43169147, y: 0.5335289, z: -0.43995807}
   cloudAnimLayer2: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer1: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer2: {x: 0, y: 0, z: 0}
@@ -2344,17 +2344,17 @@ MonoBehaviour:
     globalReflections: 1
     customRendering: 1
     customRenderingTimeSlicing: 1
-    globalReflectionTimeSlicingMode: 1
+    globalReflectionTimeSlicingMode: 0
     globalReflectionsUpdateOnGameTime: 1
     globalReflectionsUpdateOnPosition: 1
-    globalReflectionsIntensity: 1
+    globalReflectionsIntensity: 0.25
     globalReflectionsTimeTreshold: 0.025
     globalReflectionsPositionTreshold: 0.5
     globalReflectionsScale: 10000
     globalReflectionResolution: 3
     globalReflectionLayers:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 4294967295
     updateDefaultEnvironmentReflections: 1
     defaultSkyReflectionTex: {fileID: 0}
   preset: {fileID: 11400000, guid: da668770e38694d49af97ecfd05fd7eb, type: 2}
@@ -2581,6 +2581,38 @@ MonoBehaviour:
   showVolumetricsControls: 0
   showUnityFogControls: 1
   fogLights:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

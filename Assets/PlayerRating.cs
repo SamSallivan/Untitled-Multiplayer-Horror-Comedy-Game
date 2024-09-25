@@ -18,7 +18,7 @@ public class PlayerRating : NetworkBehaviour
     }
 
     private NetworkVariable<float> score = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
-    private NetworkVariable<Rating> rating = new NetworkVariable<Rating>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<Rating> rating = new NetworkVariable<Rating>(writePerm: NetworkVariableWritePermission.Owner);
     public float ratingMeter;
     public float scoreTextTimer;
 

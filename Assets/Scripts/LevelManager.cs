@@ -4,9 +4,9 @@ using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : NetworkBehaviour
+public class LevelManager : NetworkBehaviour
 {
-    public static GameManager Instance { get; private set; } = null;
+    public static LevelManager Instance { get; private set; } = null;
     
     private void Awake()
     {
@@ -19,7 +19,6 @@ public class GameManager : NetworkBehaviour
             return;
         }
     }
-
     
     [FoldoutGroup("Match Time")]
     [SerializeField] 
@@ -33,6 +32,8 @@ public class GameManager : NetworkBehaviour
     public List<GameObject> ExtractionLocations;
 
     public bool gameOver = false;
+    
+    public Transform playerSpawnTransform;
     
 
     public enum GameState

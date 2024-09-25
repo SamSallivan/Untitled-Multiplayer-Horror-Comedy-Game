@@ -8,6 +8,7 @@ using UnityEngine;
 using Dissonance.Integrations.Unity_NFGO;
 using Sirenix.OdinInspector;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameSessionManager : NetworkBehaviour
 {
@@ -24,7 +25,7 @@ public class GameSessionManager : NetworkBehaviour
 	public ItemList itemList;
 	
     [FoldoutGroup("References")]
-    public Transform spawnTransform;
+    public Transform playerSpawnTransform;
 	
     [FoldoutGroup("References")]
     public Transform despawnTransform;
@@ -47,6 +48,9 @@ public class GameSessionManager : NetworkBehaviour
 	
 	[FoldoutGroup("Values")]
 	public NetworkList<ulong> loadedClientIdList;
+	
+	[FoldoutGroup("Values")]
+	public bool loaded;
 	
     [FoldoutGroup("Values")]
 	[ReadOnly]
@@ -81,14 +85,14 @@ public class GameSessionManager : NetworkBehaviour
 		}
 	}
 
-	/*public void OnEnable()
+	public void OnEnable()
 	{
 		NetworkManager.Singleton.SceneManager.OnLoadComplete += SceneManager_OnLoadComplete;
-		NetworkManager.Singleton.SceneManager.OnLoad += SceneManager_OnLoad;
+		//NetworkManager.Singleton.SceneManager.OnLoad += SceneManager_OnLoad;
 		NetworkManager.Singleton.SceneManager.OnUnloadComplete += SceneManager_OnUnloadComplete;
 	}
 	
-	private void SceneManager_OnLoad(ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation)
+	/*private void SceneManager_OnLoad(ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation)
 	{
 		if (sceneName == "MainMenu" || sceneName == "Lobby")
 		{
@@ -96,19 +100,19 @@ public class GameSessionManager : NetworkBehaviour
 		}
 		
 		//else update current level variable
-	}
+	}*/
 	
 	private void SceneManager_OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
 	{
-		StartCoroutine(AddLoadedClientIdsCoroutine());
+		loaded = true;
 	}
 
 	private void SceneManager_OnUnloadComplete(ulong clientId, string sceneNam)
 	{
-		StartCoroutine(AddLoadedClientIdsCoroutine());
+		loaded = true;
 	}
 
-	[Rpc(SendTo.Server)]
+	/*[Rpc(SendTo.Server)]
 	private void AddLoadedClientIdsRpc(ulong clientId)
 	{
 		loadedClientIdList.Add(clientId);
@@ -230,7 +234,7 @@ public class GameSessionManager : NetworkBehaviour
 			StartCoroutine(LoadCoroutine());
 
 			//Teleport player controller to its spawn position.
-			playerControllerList[0].TeleportPlayer(spawnTransform.position);
+			playerControllerList[0].TeleportPlayer(playerSpawnTransform.position);
 
 			if (!GameNetworkManager.Instance.steamDisabled)
 			{
@@ -350,7 +354,7 @@ public class GameSessionManager : NetworkBehaviour
             {
 				StartCoroutine(LoadCoroutine());
 				//Teleport player controller to its spawn position.
-				playerController.TeleportPlayer(spawnTransform.position);
+				playerController.TeleportPlayer(playerSpawnTransform.position);
 				//playerController.Respawn();
             }
             else
@@ -478,29 +482,60 @@ public class GameSessionManager : NetworkBehaviour
 	[Button]
 	public void StartGame()
 	{
-		Debug.Log(loadedClientIdList.Count);
-		//if (loadedClientIdList.Count >= connectedPlayerCount)
-		//{
-			if (!gameStarted)
-			{
-				gameStarted = true;
-			}
-			//ClearLoadedClientIdsRpc();
-			base.NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
-		//}
+		/*if (loadedClientIdList.Count < connectedPlayerCount)
+		{
+			return;
+		}*/
+		
+		if (!gameStarted)
+		{
+			gameStarted = true;
+		}
+		//ClearLoadedClientIdsRpc();
+		TeleportPlayerToLevelSpawnRpc();
+		SceneEventProgressStatus status = NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	public void TeleportPlayerToLevelSpawnRpc()
+	{
+		loaded = false;
+		StartCoroutine(TeleportToLevelSpawnCoroutine());
+	}
+
+	IEnumerator TeleportToLevelSpawnCoroutine()
+	{
+		yield return new WaitUntil(() => loaded == true && LevelManager.Instance != null);
+		yield return new WaitForSeconds(2f);
+		localPlayerController.TeleportPlayer(LevelManager.Instance.playerSpawnTransform.position);
 	}
 
 	[Button]
 	public void EndGame()
 	{
-		//if (loadedClientIdList.Count >= connectedPlayerCount)
+		//if (loadedClientIdList.Count < connectedPlayerCount)
 		//{
-			if (gameStarted)
-			{
-				gameStarted = false;
-			}
-			//ClearLoadedClientIdsRpc();
-			base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));
+		// return;
 		//}
+		
+		//TeleportPlayerToLobbySpawnRpc();
+		
+		if (gameStarted)
+		{
+			gameStarted = false;
+		}
+		
+		//ClearLoadedClientIdsRpc();
+		loaded = false;
+		base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));
+	}
+
+	[Rpc(SendTo.Everyone)]
+	public void TeleportPlayerToLobbySpawnRpc()
+	{
+		//if not extracted
+		//kill
+		localPlayerController.TeleportPlayer(GameSessionManager.Instance.playerSpawnTransform.position);
+		//revive
 	}
 }

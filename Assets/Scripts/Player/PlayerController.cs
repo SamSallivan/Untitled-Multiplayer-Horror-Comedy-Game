@@ -431,9 +431,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        
+
         Respawn();
-        
+
         awaitInitialization = false;
     }
 
@@ -471,6 +471,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public void TeleportPlayer(Vector3 targetPosition)
     {
         rb.position = targetPosition;
+        transform.position = targetPosition;
     }
 
     public int GetClimbState()
@@ -919,8 +920,22 @@ public class PlayerController : NetworkBehaviour, IDamagable
             LockMovement(false);
             ResetCamera();
             animator.enabled = true;
-            TeleportPlayer(GameSessionManager.Instance.spawnTransform.position);
+
+            Vector3 spawnPosition;
+            if (!GameSessionManager.Instance.gameStarted)
+            {
+                spawnPosition = GameSessionManager.Instance.playerSpawnTransform.position;
+            }
+            else
+            {
+                spawnPosition = LevelManager.Instance.playerSpawnTransform.position;
+            }
+            TeleportPlayer(spawnPosition);
             SpectateManager.Instance.StopSpectating();
+            GetComponent<PlayerRating>().rating.Value = PlayerRating.Rating.B;
+            GetComponent<PlayerRating>().ratingMeter = 0.5f;
+            GetComponent<PlayerRating>().UpdateRatingText();
+            
         }
     }
 
