@@ -253,6 +253,7 @@ public class I_InventoryItem : Interactable
         }
         UIManager.instance.interactionName.text = textName;
         UIManager.instance.interactionName.text += !itemData.isStackable ? "" : " x " + itemStatus.amount;
+        UIManager.instance.interactionName.text += itemData.hasDurability ? " " + itemStatus.durability * 100 + "%" : "";
 
         if (textPrompt != "" && interactionType != InteractionType.None)
         {

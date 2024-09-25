@@ -17,6 +17,7 @@ MonoBehaviour:
   description: Bat.
   isStackable: 0
   maxStackAmount: 1
+  hasDurability: 1
   discoverScore: 5
   equipPosition: {x: 0, y: 0, z: 0}
   equipRotation: {x: 0, y: 0, z: 0}

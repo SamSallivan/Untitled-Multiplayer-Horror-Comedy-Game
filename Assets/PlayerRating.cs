@@ -31,7 +31,6 @@ public class PlayerRating : NetworkBehaviour
         playerController = GetComponent<PlayerController>();
         if (IsOwner)
         {
-            
             rating.Value = Rating.B;
             ratingMeter = 0.5f;
             score.Value = 0;
@@ -44,9 +43,11 @@ public class PlayerRating : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsOwner&& playerController.controlledByClient)
+        if (IsOwner && playerController.controlledByClient)
         {
+            UIManager.instance.ratingBar.fillAmount = ratingMeter;
             UIManager.instance.scoreText.text = "Total Score: " + score.Value;
+            
             if(scoreTextTimer > 0)
             {
                 scoreTextTimer -= Time.deltaTime;
@@ -57,20 +58,32 @@ public class PlayerRating : NetworkBehaviour
                 UIManager.instance.addScoreText.text = "";
             }
 
-            ratingMeter -= Time.deltaTime * GetMeterDropRatePerSecond();
-            UIManager.instance.ratingBar.fillAmount = ratingMeter;
+            if (GameSessionManager.Instance.gameStarted)
+            {
+                if (ratingMeter <= 0 && rating.Value == Rating.D)
+                {
+                    if (!playerController.isPlayerDead.Value)
+                    {
+                        playerController.Die();
+                    }
+                    return;
+                }
+                
+                ratingMeter -= Time.deltaTime * GetMeterDropRatePerSecond();
 
-            if(ratingMeter <= 0 && rating.Value != Rating.D)
-            {
-                rating.Value--;
-                ratingMeter += 1;
-                UpdateRatingText();
-            }
-            else if(ratingMeter >= 1 && rating.Value != Rating.SSS)
-            {
-                rating.Value++;
-                ratingMeter -= 1;
-                UpdateRatingText();
+                if(ratingMeter <= 0 && rating.Value != Rating.D)
+                {
+                    rating.Value--;
+                    ratingMeter += 1;
+                    UpdateRatingText();
+                }
+                else if(ratingMeter >= 1 && rating.Value != Rating.SSS)
+                {
+                    rating.Value++;
+                    ratingMeter -= 1;
+                    UpdateRatingText();
+                }
+            
             }
         }
         
@@ -143,7 +156,9 @@ public class PlayerRating : NetworkBehaviour
     public void AddScore(int score)
     {
         AddScore(score,"");
+        
     }
+    
     public void AddScore(int score, string message)
     {
         if (IsOwner&& playerController.controlledByClient)
@@ -159,8 +174,6 @@ public class PlayerRating : NetworkBehaviour
         }
 
     }
-
-    
     
 }
 

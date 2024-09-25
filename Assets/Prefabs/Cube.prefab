@@ -263,3 +263,5 @@ MonoBehaviour:
     m_InternalValue: 1
   inStorageBox:
     m_InternalValue: 0
+  firstPickup:
+    m_InternalValue: 1

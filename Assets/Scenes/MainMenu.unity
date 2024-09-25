@@ -1279,7 +1279,6 @@ MonoBehaviour:
   gameVersionNumber: 0
   maxPlayerNumber: 4
   steamDisabled: 0
-  gameStarted: 0
   disconnecting: 0
   localClientJoinRequestPending: 0
   waitingForLobbyDataRefresh: 0

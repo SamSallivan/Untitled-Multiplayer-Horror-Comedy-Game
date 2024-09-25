@@ -12,17 +12,20 @@ InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPoint
 {
     public event Action<I_InventoryItem> OnReturnRequiredType = delegate { };
 
-    public TMP_Text name;
     public TMP_Text amount;
     public Image image;
-    public Image rightHandIcon;
+    public Image durabilityFill;
 
     public I_InventoryItem inventoryItem;
 
-    public TMP_Text durability;
     public Image background;
     public GameObject outline;
-
+    
+    public void Update()
+    {
+        UpdateInventorySlotDisplay();
+    }
+    
     public int GetIndex()
     {
         return transform.GetSiblingIndex(); ;
@@ -34,25 +37,23 @@ InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPoint
         {
             image.sprite = inventoryItem.itemData.sprite;
             image.color = new UnityEngine.Color(1, 1, 1, 1);
-            name.text = inventoryItem.itemData.name;
-            amount.text = $"{inventoryItem.itemStatus.amount}";
+            amount.text = inventoryItem.itemData.isStackable ? $"{inventoryItem.itemStatus.amount}" : "";
 
-            if (inventoryItem == InventoryManager.instance.equippedItem)
+            if (inventoryItem.itemData.hasDurability)
             {
-                rightHandIcon.enabled = true;
+                durabilityFill.fillAmount = inventoryItem.itemStatus.durability;
             }
             else
             {
-                rightHandIcon.enabled = false;
+                durabilityFill.fillAmount = 0;
             }
         }
         else
         {
             image.sprite = null;
             image.color = new UnityEngine.Color(1, 1, 1, 0);
-            name.text = "";
             amount.text = "";
-            rightHandIcon.enabled = false;
+            durabilityFill.fillAmount = 0;
         }
     }
 

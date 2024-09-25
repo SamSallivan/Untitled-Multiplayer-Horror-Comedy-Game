@@ -7,6 +7,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Dissonance.Integrations.Unity_NFGO;
 using Sirenix.OdinInspector;
+using UnityEngine.SceneManagement;
 
 public class GameSessionManager : NetworkBehaviour
 {
@@ -44,9 +45,16 @@ public class GameSessionManager : NetworkBehaviour
 	// [ReadOnly]
 	//public int alivePlayerNumber;
 	
+	[FoldoutGroup("Values")]
+	public NetworkList<ulong> loadedClientIdList;
+	
     [FoldoutGroup("Values")]
 	[ReadOnly]
     public Dictionary<ulong, int> ClientIdToPlayerIdDictionary = new Dictionary<ulong, int>();
+    
+    [FoldoutGroup("Values")]
+    [ReadOnly]
+    public bool gameStarted;
 
 
     private void Awake()
@@ -60,6 +68,8 @@ public class GameSessionManager : NetworkBehaviour
 			UnityEngine.Object.Destroy(Instance.gameObject);
 			Instance = this;
 		}
+		
+		loadedClientIdList = new NetworkList<ulong>();
 	}
 
 	private void Start()
@@ -71,7 +81,59 @@ public class GameSessionManager : NetworkBehaviour
 		}
 	}
 
-    private void Update() 
+	/*public void OnEnable()
+	{
+		NetworkManager.Singleton.SceneManager.OnLoadComplete += SceneManager_OnLoadComplete;
+		NetworkManager.Singleton.SceneManager.OnLoad += SceneManager_OnLoad;
+		NetworkManager.Singleton.SceneManager.OnUnloadComplete += SceneManager_OnUnloadComplete;
+	}
+	
+	private void SceneManager_OnLoad(ulong clientId, string sceneName, LoadSceneMode loadSceneMode, AsyncOperation asyncOperation)
+	{
+		if (sceneName == "MainMenu" || sceneName == "Lobby")
+		{
+			return;
+		}
+		
+		//else update current level variable
+	}
+	
+	private void SceneManager_OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
+	{
+		StartCoroutine(AddLoadedClientIdsCoroutine());
+	}
+
+	private void SceneManager_OnUnloadComplete(ulong clientId, string sceneNam)
+	{
+		StartCoroutine(AddLoadedClientIdsCoroutine());
+	}
+
+	[Rpc(SendTo.Server)]
+	private void AddLoadedClientIdsRpc(ulong clientId)
+	{
+		loadedClientIdList.Add(clientId);
+	}
+
+	[Rpc(SendTo.Server)]
+	private void RemoveLoadedClientIdsRpc(ulong clientId)
+	{
+		loadedClientIdList.Remove(clientId);
+	}
+
+	[Rpc(SendTo.Server)]
+	private void ClearLoadedClientIdsRpc()
+	{
+		loadedClientIdList.Clear();
+	}
+
+	private IEnumerator AddLoadedClientIdsCoroutine()
+	{
+		yield return new WaitUntil(() => localPlayerController != null);
+		Debug.Log("wait over!");
+		AddLoadedClientIdsRpc(NetworkManager.Singleton.LocalClientId);
+	}*/
+
+	private void Update() 
     {
 		if (base.IsServer && !hasHostSpawned)
 		{
@@ -357,6 +419,11 @@ public class GameSessionManager : NetworkBehaviour
 		if (IsServer)
         {
             OnClientDisconnectedGameSessionClientRpc(clientId, disconnectingPlayerId);
+            
+            if (loadedClientIdList.Contains(clientId))
+            {
+	            //RemoveLoadedClientIdsRpc(clientId);
+            }
 		}
     }
 
@@ -408,4 +475,32 @@ public class GameSessionManager : NetworkBehaviour
 
 	#endregion
 
+	[Button]
+	public void StartGame()
+	{
+		Debug.Log(loadedClientIdList.Count);
+		if (loadedClientIdList.Count >= connectedPlayerCount)
+		{
+			if (!gameStarted)
+			{
+				gameStarted = true;
+			}
+			//ClearLoadedClientIdsRpc();
+			base.NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
+		}
+	}
+
+	[Button]
+	public void EndGame()
+	{
+		if (loadedClientIdList.Count >= connectedPlayerCount)
+		{
+			if (gameStarted)
+			{
+				gameStarted = false;
+			}
+			//ClearLoadedClientIdsRpc();
+			base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));
+		}
+	}
 }

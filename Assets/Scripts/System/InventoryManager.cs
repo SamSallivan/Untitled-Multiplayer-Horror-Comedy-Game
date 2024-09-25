@@ -591,8 +591,8 @@ public class InventoryManager : NetworkBehaviour
         slot.inventoryItem = null;
         slot.image.sprite = null;
         slot.image.color = new UnityEngine.Color(1, 1, 1, 0);
-        slot.name.text = "";
         slot.amount.text = "";
+        slot.durabilityFill.fillAmount = 0;
     }
 
     public void EquipItem(I_InventoryItem inventoryItem)

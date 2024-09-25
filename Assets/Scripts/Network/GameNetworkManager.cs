@@ -24,8 +24,8 @@ public class GameNetworkManager : MonoBehaviour
     [Header("Switches")]
 	[Sirenix.OdinInspector.ReadOnly]
 	public bool steamDisabled;
-	[Sirenix.OdinInspector.ReadOnly]
-    public bool gameStarted;
+	//[Sirenix.OdinInspector.ReadOnly]
+    //public bool gameStarted;
 	[Sirenix.OdinInspector.ReadOnly]
     public bool disconnecting;
 	[Sirenix.OdinInspector.ReadOnly]
@@ -666,7 +666,7 @@ public class GameNetworkManager : MonoBehaviour
 			response.Reason = "Lobby is full!";
 			flag = false;
 		}
-		else if (gameStarted)
+		else if (GameSessionManager.Instance && GameSessionManager.Instance.gameStarted)
 		{
 			response.Reason = "Game has already started!";
 			flag = false;
@@ -752,7 +752,7 @@ public class GameNetworkManager : MonoBehaviour
 	{
 		disconnecting = false;
 		connectedClientCount = 0;
-		gameStarted = false;
+		//gameStarted = false;
         UnsubscribeToNetworkManagerCallbacks();
 	}
 

@@ -167,7 +167,7 @@ MonoBehaviour:
   itemData: {fileID: 11400000, guid: aeb6ac198ae4b0847b6e25ec1032e834, type: 2}
   itemStatus:
     amount: 1
-    durability: 1
+    durability: 0
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
@@ -182,6 +182,8 @@ MonoBehaviour:
     m_InternalValue: 1
   inStorageBox:
     m_InternalValue: 0
+  firstPickup:
+    m_InternalValue: 1
 --- !u!65 &-6232999888522255441
 BoxCollider:
   m_ObjectHideFlags: 0

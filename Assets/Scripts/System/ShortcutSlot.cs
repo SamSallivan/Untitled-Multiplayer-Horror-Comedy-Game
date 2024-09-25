@@ -15,7 +15,7 @@ public class ShortcutSlot : MonoBehaviour
     public TMP_Text name;
     public TMP_Text amount;
     public Image image;
-    public TMP_Text durability;
+    public Image durabilityFill;
 
     public GameObject outline;
 
@@ -41,20 +41,28 @@ public class ShortcutSlot : MonoBehaviour
             outline.SetActive(false);
         }
 
-        if (sourceInventorySlot != null)
+        if (sourceInventorySlot != null && sourceInventorySlot.inventoryItem != null)
         {
-            image.sprite = sourceInventorySlot.image.sprite;
-            image.color = sourceInventorySlot.image.color;
-            name.text = sourceInventorySlot.name.text;
-            amount.text = sourceInventorySlot.amount.text;
+            I_InventoryItem inventoryItem = sourceInventorySlot.inventoryItem;
+            image.sprite = inventoryItem.itemData.sprite;
+            image.color = new UnityEngine.Color(1, 1, 1, 1);
+            amount.text = inventoryItem.itemData.isStackable ? $"{inventoryItem.itemStatus.amount}" : "";
 
+            if (inventoryItem.itemData.hasDurability)
+            {
+                durabilityFill.fillAmount = inventoryItem.itemStatus.durability;
+            }
+            else
+            {
+                durabilityFill.fillAmount = 0;
+            }
         }
         else
         {
             image.sprite = null;
             image.color = new UnityEngine.Color(1, 1, 1, 0);
-            name.text = "";
             amount.text = "";
+            durabilityFill.fillAmount = 0;
         }
     }
 }

@@ -178,14 +178,14 @@ public class MainMenuManager : MonoBehaviour
 			return;
 		}
 
-		// if (!string.IsNullOrEmpty(GameNetworkManager.Instance.disconnectionReasonText))
-		// {
-		// 	DisplayNotification(GameNetworkManager.Instance.disconnectionReasonText ?? "", "BACK");
-		// 	GameNetworkManager.Instance.disconnectionReasonText = "";
-		// 	return;
-		// }
+		if (!string.IsNullOrEmpty(GameNetworkManager.Instance.disconnectionReasonText))
+		{
+		DisplayNotification(GameNetworkManager.Instance.disconnectionReasonText ?? "", "BACK");
+		GameNetworkManager.Instance.disconnectionReasonText = "";
+		return;
+		}
 
-		switch (result)
+		/*switch (result)
 		{
 			case RoomEnter.Full:
 				DisplayNotification("The lobby is full!", "BACK");
@@ -214,7 +214,7 @@ public class MainMenuManager : MonoBehaviour
 			default:
 				DisplayNotification("Something went wrong!", "BACK");
 				break;
-		}
+		}*/
 		
     }
 

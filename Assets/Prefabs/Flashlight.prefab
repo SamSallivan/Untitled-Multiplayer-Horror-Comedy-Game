@@ -593,6 +593,8 @@ MonoBehaviour:
     m_InternalValue: 1
   inStorageBox:
     m_InternalValue: 0
+  firstPickup:
+    m_InternalValue: 1
 --- !u!114 &1414142076186821944
 MonoBehaviour:
   m_ObjectHideFlags: 0
