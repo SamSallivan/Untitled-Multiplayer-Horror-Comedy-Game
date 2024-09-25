@@ -126,6 +126,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     [FoldoutGroup("Settings")]
     public NetworkVariable<bool> isPlayerDead = new (writePerm: NetworkVariableWritePermission.Owner);
+    
+    [FoldoutGroup("Settings")]
+    public NetworkVariable<bool> isPlayerExtracted = new (writePerm: NetworkVariableWritePermission.Owner);
+
 
     [FoldoutGroup("Settings")]
     public bool enableMovement = true;
@@ -302,6 +306,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         
         OnIsPlayerDeadChanged(false, isPlayerDead.Value);
         isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
+        isPlayerExtracted.Value = false;
+
 
     }
 
@@ -889,7 +895,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (IsOwner && !isPlayerDead.Value)
         {
             isPlayerDead.Value = true;
-            
+            LevelManager.Instance.CheckGameOver();
             InventoryManager.instance.DropAllItemsFromInventory();
             InventoryManager.instance.CloseInventory();
             
@@ -950,6 +956,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         playerCollider.enabled = !isPlayerDead.Value;
     }
+    
+
     
     #endregion
 
@@ -1231,6 +1239,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
             volume.profile.TryGet(out UnityEngine.Rendering.Universal.ChromaticAberration chromaticAberration);
             chromaticAberration.intensity.value = Mathf.Clamp(drunkTimer, 0, 1);
         }
+    }
+
+    public void Extract()
+    {
+        isPlayerExtracted.Value = true;
     }
 }
 

@@ -6,6 +6,7 @@ using Steamworks;
 using Unity.Netcode;
 using UnityEngine;
 using Dissonance.Integrations.Unity_NFGO;
+using Mono.CSharp;
 using Sirenix.OdinInspector;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -513,13 +514,12 @@ public class GameSessionManager : NetworkBehaviour
 	[Button]
 	public void EndGame()
 	{
-		//if (loadedClientIdList.Count < connectedPlayerCount)
-		//{
-		// return;
-		//}
+		if (loadedClientIdList.Count < connectedPlayerCount)
+		{
+			return;
+		}
 		
-		//TeleportPlayerToLobbySpawnRpc();
-		
+        TeleportPlayerToLobbySpawnRpc();
 		if (gameStarted)
 		{
 			gameStarted = false;
@@ -534,8 +534,17 @@ public class GameSessionManager : NetworkBehaviour
 	public void TeleportPlayerToLobbySpawnRpc()
 	{
 		//if not extracted
-		//kill
+		if (!localPlayerController.isPlayerExtracted.Value)
+		{
+			//kill
+			if (localPlayerController.controlledByClient && !localPlayerController.isPlayerDead.Value)
+			{
+				localPlayerController.Die();
+			}
+		}
+		
 		localPlayerController.TeleportPlayer(GameSessionManager.Instance.playerSpawnTransform.position);
 		//revive
+		localPlayerController.Respawn();
 	}
 }

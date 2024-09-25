@@ -8,7 +8,9 @@ public class I_ExtractionPoint : Interactable
 {
     public override IEnumerator InteractionEvent()
     {
+        GameSessionManager.Instance.localPlayerController.Extract();
         GameSessionManager.Instance.localPlayerController.TeleportPlayer(GameSessionManager.Instance.playerSpawnTransform.position);
+        LevelManager.Instance.CheckGameOver();
         yield return null; 
     }
 }

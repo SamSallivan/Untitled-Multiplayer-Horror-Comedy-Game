@@ -79,14 +79,14 @@ public class InventoryManager : NetworkBehaviour
         
         if (!inventoryOpened && GameSessionManager.Instance.localPlayerController)
         {
-            if (GameSessionManager.Instance.localPlayerController.enableMovement && Input.GetKeyDown(KeyCode.Tab))
+            if (GameSessionManager.Instance.localPlayerController.enableMovement && Input.GetKeyDown(KeyCode.B))
             {
                 OpenInventory();
             }
         }
         else if (inventoryOpened)
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Tab))
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.B))
             {
                 CloseInventory();
             }

@@ -117,6 +117,10 @@ public class UIManager : MonoBehaviour
 
     [FoldoutGroup("Pause Menu")]
     public GameObject pauseUI;
+    
+    [FoldoutGroup("Scoreboard")]
+    public GameObject scoreBoardUI;
+
 
     private void Awake()
     {
@@ -145,6 +149,15 @@ public class UIManager : MonoBehaviour
             gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera = GameSessionManager.Instance.localPlayerController.cameraList[1];
         }
 
+        if (Input.GetKey(KeyCode.Tab))
+        {
+            ShowScoreBoard();
+        }
+
+        if (Input.GetKeyUp(KeyCode.Tab))
+        {
+            scoreBoardUI.SetActive(false);
+        }
         if (LevelManager.Instance)
         {
             if (LevelManager.Instance.currentGameState.Value != LevelManager.GameState.NotStarted)
@@ -236,6 +249,31 @@ public class UIManager : MonoBehaviour
         examineImage.enabled = false;
     }
 
+    public void ShowScoreBoard()
+    {
+        scoreBoardUI.SetActive(true);
+        
+        for (int i = 0; i < 4; i++)
+        {
+            Transform currentLine = scoreBoardUI.transform.GetChild(1).GetChild(i);
+            
+            if (i < GameSessionManager.Instance.connectedPlayerCount)
+            {
+                
+                currentLine.gameObject.SetActive(true);
+                currentLine.GetChild(0).GetComponent<TMP_Text>().text =
+                    GameSessionManager.Instance.playerControllerList[i].playerUsername;
+                currentLine.GetChild(1).GetComponent<TMP_Text>().text =
+                    GameSessionManager.Instance.playerControllerList[i].GetComponent<PlayerRating>().score.Value+"";
+            }
+            else
+            {
+                currentLine.gameObject.SetActive(false);
+            }
+            
+        }
+        
+    }
     // public enum SubtitleType
     // {
     //     Radio,

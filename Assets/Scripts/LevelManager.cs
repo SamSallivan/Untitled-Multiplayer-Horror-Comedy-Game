@@ -116,6 +116,10 @@ public class LevelManager : NetworkBehaviour
 
     public void EndGame()
     {
+        GameSessionManager.Instance.EndGame();
+    }
+    public void KillAllPLayers()
+    {
         foreach (var p in GameSessionManager.Instance.playerControllerList)
         {
             if (p.controlledByClient && !p.isPlayerDead.Value)
@@ -124,4 +128,19 @@ public class LevelManager : NetworkBehaviour
             }
         }
     }
+
+    public void CheckGameOver()
+    {
+        foreach (PlayerController pc in GameSessionManager.Instance.playerControllerList)
+        {
+            if (!pc.isPlayerDead.Value || !pc.isPlayerExtracted.Value)
+            {
+                return;
+            }
+            
+        }
+
+        currentGameState.Value = GameState.Finished;
+    }
+    
 }
