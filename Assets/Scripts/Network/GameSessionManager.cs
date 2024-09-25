@@ -154,6 +154,7 @@ public class GameSessionManager : NetworkBehaviour
 	{
 		public int index = -1;
 		public int amount;
+		public float durability;
 	}
 
 	[Button("Save")]
@@ -172,6 +173,7 @@ public class GameSessionManager : NetworkBehaviour
 					{
 						list[i].index = j;
 						list[i].amount = InventoryManager.instance.storageSlotList[i].inventoryItem.itemStatus.amount;
+						list[i].durability = InventoryManager.instance.storageSlotList[i].inventoryItem.itemStatus.durability;
 						break;
 					}
 				}
@@ -195,7 +197,7 @@ public class GameSessionManager : NetworkBehaviour
 		{
 			if(list[i].index != -1)
 			{
-				InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, i, localPlayerController.NetworkObject);
+				InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, list[i].durability, i, localPlayerController.NetworkObject);
 			}
 		}
 	}
@@ -508,7 +510,7 @@ public class GameSessionManager : NetworkBehaviour
 	{
 		if (IsServer)
 		{
-		NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
+			NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
 		}
 		
 		yield return new WaitUntil(() => loaded == true && LevelManager.Instance != null);

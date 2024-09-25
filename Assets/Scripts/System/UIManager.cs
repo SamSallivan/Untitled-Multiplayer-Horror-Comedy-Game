@@ -31,23 +31,29 @@ public class UIManager : MonoBehaviour
 
     [FoldoutGroup("Gameplay")]
     public Animation interactionPromptAnimation;
-
+    
     [FoldoutGroup("Gameplay")]
+    public Image healthBar;
+    
+    [FoldoutGroup("Gameplay")]
+    public Image staminaBar;
+
+    [FoldoutGroup("Score & Rating")]
     public GameObject ratingUI;
 
-    [FoldoutGroup("Gameplay")]
+    [FoldoutGroup("Score & Rating")]
     public TMP_Text ratingText;
     
-    [FoldoutGroup("Gameplay")]
+    [FoldoutGroup("Score & Rating")]
     public Image ratingBar;
 
-    [FoldoutGroup("Gameplay")]
+    [FoldoutGroup("Score & Rating")]
     public TMP_Text scoreText;
 
-    [FoldoutGroup("Gameplay")]
+    [FoldoutGroup("Score & Rating")]
     public TMP_Text addScoreText;
     
-    [FoldoutGroup("Gameplay")]
+    [FoldoutGroup("Extraction")]
     public TMP_Text timerText;
 
     // [Header("Subtitle")]
@@ -100,7 +106,7 @@ public class UIManager : MonoBehaviour
     // public TMP_Text upgradeTitle;
     // public GameObject UpgradeOptionList;
 
-    [FoldoutGroup("Examine")]
+    /*[FoldoutGroup("Examine")]
     public GameObject examineUI;
 
     [FoldoutGroup("Examine")]
@@ -113,7 +119,7 @@ public class UIManager : MonoBehaviour
     public GameObject gameOverUI;
 
     [FoldoutGroup("Game Over")]
-    public TMP_Text deathText;
+    public TMP_Text deathText;*/
 
     [FoldoutGroup("Pause Menu")]
     public GameObject pauseUI;
@@ -137,17 +143,24 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (examineUI.activeInHierarchy)
+        /*if (examineUI.activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Q))
             {
                 Unexamine();
             }
-        }
+        }*/
         if (!gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera && GameSessionManager.Instance.localPlayerController)
         {
             gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera = GameSessionManager.Instance.localPlayerController.cameraList[1];
         }
+        
+        if (GameSessionManager.Instance.localPlayerController)
+        {
+            healthBar.fillAmount = GameSessionManager.Instance.localPlayerController.health.Value / 100f;
+            staminaBar.fillAmount = GameSessionManager.Instance.localPlayerController.stamina.Value / 100f;
+        }
+
 
         if (Input.GetKey(KeyCode.Tab))
         {
@@ -224,7 +237,7 @@ public class UIManager : MonoBehaviour
         //UI.SetActive(false);
     }
 
-    public void Examine(string text, Sprite image)
+    /*public void Examine(string text, Sprite image)
     {
         GameSessionManager.Instance.localPlayerController.LockMovement(true);
         GameSessionManager.Instance.localPlayerController.LockCamera(true);
@@ -247,7 +260,7 @@ public class UIManager : MonoBehaviour
         gameplayUI.SetActive(true);
         examineText.text = "";
         examineImage.enabled = false;
-    }
+    }*/
 
     public void ShowScoreBoard()
     {

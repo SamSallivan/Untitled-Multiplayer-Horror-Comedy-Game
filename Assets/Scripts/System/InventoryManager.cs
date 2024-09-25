@@ -488,12 +488,13 @@ public class InventoryManager : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, int storageSlotIndex, NetworkObjectReference playerController)
+    public void InstantiatePocketedItemServerRpc(int itemIndex, int amount, float durability, int storageSlotIndex, NetworkObjectReference playerController)
     {
         if (playerController.TryGet(out NetworkObject playerControllerObject))
         {
             var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
             gameObject.GetComponent<I_InventoryItem>().itemStatus.amount = amount;
+            gameObject.GetComponent<I_InventoryItem>().itemStatus.durability = durability;
             gameObject.GetComponent<NetworkObject>().Spawn();
             PocketItemRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
             InstantiatePocketedItemClientRpc(storageSlotIndex, gameObject.GetComponent<NetworkObject>(), playerControllerObject);

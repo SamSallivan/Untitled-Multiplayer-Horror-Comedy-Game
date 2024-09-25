@@ -4492,7 +4492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 733293365
+  GlobalObjectIdHash: 88465425
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -4546,6 +4546,8 @@ MonoBehaviour:
   inputDirNetworkVariable:
     m_InternalValue: {x: 0, y: 0, z: 0}
   isPlayerDead:
+    m_InternalValue: 0
+  isPlayerExtracted:
     m_InternalValue: 0
   enableMovement: 1
   enableLook: 1
@@ -4604,8 +4606,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   maxHp: 100
-  currentHp:
-    m_InternalValue: 0
+  health:
+    m_InternalValue: 100
+  stamina:
+    m_InternalValue: 100
+  staminaReplenishPerSecond: 25
+  staminaReplenishCooldown: 0
+  staminaCostPerJump: 50
+  staminaCostSprintPerSecond: 20
   ragdollPrefab: {fileID: 8888912781250069987, guid: 9453f7970b319e24ea7331dbe6ed3bd0, type: 3}
   currentEmoteIndex:
     m_InternalValue: -1
@@ -4728,6 +4736,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d864bb10410bf142862122a64351057, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score:
+    m_InternalValue: 0
+  rating:
+    m_InternalValue: 0
   ratingMeter: 0
   scoreTextTimer: 0
 --- !u!1 &6788842259213357691

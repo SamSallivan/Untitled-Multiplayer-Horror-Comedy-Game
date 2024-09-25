@@ -46,9 +46,9 @@ public class BeerController : ItemController
         inventoryItem.itemStatus.durability -= 1 / totalDrinkCount;
         InventoryManager.instance.SetItemDurarbilityRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.durability);
 
-        if (inventoryItem.owner.currentHp.Value < inventoryItem.owner.maxHp)
+        if (inventoryItem.owner.health.Value < inventoryItem.owner.maxHp)
         {
-            inventoryItem.owner.currentHp.Value += totalHealAmount / totalDrinkCount;
+            inventoryItem.owner.health.Value += totalHealAmount / totalDrinkCount;
         }
         inventoryItem.owner.drunkTimer +=  totalDrunkTime / totalDrinkCount;
 

@@ -215,12 +215,15 @@ public class Grounder : NetworkBehaviour
 			grounded.Value = true;
 			airTime.Value = 0;
 			
-			GroundRpc();
-			
 			playerController.headPosition.Bounce((0f - fallDistance.Value) / 12f);
 			if (fallDistance.Value > fallDistanceThreshold)
 			{
 				playerController.groundMovementControlCoolDown = movementCooldownOnLanding; 
+				HardLandRpc();
+			}
+			else
+			{
+				SoftLandRpc();
 			}
 			if (fallDistance.Value > lethalFallDistance)
 			{
@@ -241,10 +244,15 @@ public class Grounder : NetworkBehaviour
 	}
 
 	[Rpc(SendTo.Everyone)]
-	public void GroundRpc()
+	public void SoftLandRpc()
 	{
-		playerController.animator.SetFloat("AirTime", airTime.Value);
-		playerController.animator.SetTrigger("Land");
+		playerController.animator.SetTrigger("Soft Land");
+	}
+
+	[Rpc(SendTo.Everyone)]
+	public void HardLandRpc()
+	{
+		playerController.animator.SetTrigger("Hard Land");
 	}
 
 	public void Unground()

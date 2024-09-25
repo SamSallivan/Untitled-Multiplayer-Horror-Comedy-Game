@@ -130,7 +130,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     [FoldoutGroup("Settings")]
     public NetworkVariable<bool> isPlayerExtracted = new (writePerm: NetworkVariableWritePermission.Owner);
 
-
     [FoldoutGroup("Settings")]
     public bool enableMovement = true;
 
@@ -258,7 +257,22 @@ public class PlayerController : NetworkBehaviour, IDamagable
     public float maxHp = 100f;
 
     [FoldoutGroup("Health")] 
-    public NetworkVariable<float> currentHp = new (100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<float> health = new (100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    [FoldoutGroup("Health")] 
+    public NetworkVariable<float> stamina = new (100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    [FoldoutGroup("Health")] 
+    public float staminaReplenishPerSecond = 25f;
+
+    [FoldoutGroup("Health")] 
+    public float staminaReplenishCooldown;
+
+    [FoldoutGroup("Health")]
+    public float staminaCostPerJump;
+
+    [FoldoutGroup("Health")]
+    public float staminaCostSprintPerSecond;
 
     [FoldoutGroup("Health")] 
     public GameObject ragdollPrefab;
@@ -369,11 +383,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
             
             cameraBob.BobUpdate();
             headPosition.PositionUpdate();
-
-            if (climbState > 0)
-            {
-                ClimbingUpdate();
-            }
+            
+            ClimbingUpdate();
+            StaminaUpdate();
 
             EffectUpdate();
 
@@ -535,7 +547,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         {
             //return;
         }
-        if (!enableJump || jumpCooldown > 0)
+        if (!enableJump || jumpCooldown > 0 || stamina.Value < staminaCostPerJump)
         {
             return;
         }
@@ -565,6 +577,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
         crouching = false;
         crouchingNetworkVariable.Value = crouching;
         
+        stamina.Value -= staminaCostPerJump;
+        staminaReplenishCooldown = 0.5f;
         //playerAudio.PlayJumpSound();
     }
 
@@ -577,6 +591,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
     private void ClimbingUpdate()
     {
+        if (climbState < 1)
+        {
+            return;
+        }
+        
         switch (climbState)
         {
             //sets player rb to kinematic to directly modify position
@@ -635,14 +654,20 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
         if (!isNonPhysics)
         {
-            //Stops sprinting if not inputing forward
-            if (inputDir == Vector3.zero || inputDir.z < 0)
+            if (sprinting)
             {
-                sprinting = false;
-                sprintingNetworkVariable.Value = false;
-                dynamicSpeed = 2.5f;
+                stamina.Value -= staminaCostSprintPerSecond * Time.fixedDeltaTime;
+                staminaReplenishCooldown = 0.5f;
+                
+                //Stops sprinting if not inputing forward
+                if (stamina.Value <= 0f || inputDir == Vector3.zero || inputDir.z < 0)
+                {
+                    sprinting = false;
+                    sprintingNetworkVariable.Value = false;
+                    dynamicSpeed = 2.5f;
+                }
             }
-            
+
             //sets ground control back to 1 over time
             airMovementControl = Mathf.MoveTowards(airMovementControl, airMovementControlTarget, Time.fixedDeltaTime);
             groundMovementControl = Mathf.MoveTowards(groundMovementControl, 1f, Time.fixedDeltaTime);
@@ -875,13 +900,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         if (base.IsOwner)
         {
-            currentHp.Value -= damage;
+            health.Value -= damage;
 
             damageTimer = 0.5f;
 
             rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
 
-            if (currentHp.Value <= 0 && !isPlayerDead.Value)
+            if (health.Value <= 0 && !isPlayerDead.Value)
             {
                 Die();
             }
@@ -921,7 +946,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (IsOwner)
         {
             isPlayerDead.Value = false;
-            currentHp.Value = maxHp;
+            health.Value = maxHp;
             
             LockMovement(false);
             ResetCamera();
@@ -1167,7 +1192,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (currentEmoteIndex.Value != -1 && index == currentEmoteIndex.Value)
         {
             currentEmoteIndex.Value = -1;
-            //emoting.Value = false;
             StopEmoteRpc();
             return;
         }
@@ -1175,7 +1199,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         else if (currentEmoteIndex.Value != -1 && index != currentEmoteIndex.Value)
         {
             currentEmoteIndex.Value = -1;
-            //emoting.Value = false;
             StopEmoteRpc();
         }
             
@@ -1186,7 +1209,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         }
             
         currentEmoteIndex.Value = index;
-        //emoting.Value = true;
         PlayEmoteRpc(index);
     }
     
@@ -1195,7 +1217,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (IsOwner && controlledByClient)
         {
             currentEmoteIndex.Value = -1;
-            //emoting.Value = false;
         }
     }
 
@@ -1210,18 +1231,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
     {
         playerAnimationController.StopEmoteAnimation();
     }
-
-    /*private void OnEmotingChanged(bool previousValue, bool newValue)
-    {
-        if (emoting.Value)
-        {
-            playerAnimationController.StartEmoteAnimation();
-        }
-        else
-        {
-            playerAnimationController.StopEmoteAnimation();
-        }
-    }*/
     
     #endregion
 
@@ -1238,6 +1247,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
             Volume volume = PostProcessEffects.Instance.gameVolume.GetComponent<Volume>();
             volume.profile.TryGet(out UnityEngine.Rendering.Universal.ChromaticAberration chromaticAberration);
             chromaticAberration.intensity.value = Mathf.Clamp(drunkTimer, 0, 1);
+        }
+    }
+
+    public void StaminaUpdate()
+    {
+        if (staminaReplenishCooldown > 0)
+        {
+            staminaReplenishCooldown -= Time.deltaTime;
+        }
+        else if (stamina.Value < 100)
+        {
+            stamina.Value += staminaReplenishPerSecond * Time.deltaTime;
         }
     }
 

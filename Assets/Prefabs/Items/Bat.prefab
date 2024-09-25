@@ -291,7 +291,7 @@ MonoBehaviour:
   inventoryItem: {fileID: 0}
   buttonHeld: 0
   heldTime: 0
-  minHeldTime: 0
+  minHeldTime: 0.25
   cooldown: 0
   cooldownSetting: 1
   damage: 20

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -7,19 +8,18 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class T_LaunchPod : NetworkBehaviour
 {
-    public List<PlayerController> readyPlayerCount = new List<PlayerController>();
+    public LaunchPod launchPod;
+    public List<PlayerController> readyPlayerList = new List<PlayerController>();
 
-    void Update()
+    public void Update()
     {
-        if (IsServer)
+        if (readyPlayerList.Count == 0)
         {
-            if (!GameSessionManager.Instance.gameStarted.Value)
-            {
-                if (readyPlayerCount.Count == GameSessionManager.Instance.connectedPlayerCount)
-                {
-                    GameSessionManager.Instance.StartGame();
-                }
-            }
+            GetComponent<Renderer>().material.color = new Color(1, 0, 0, 0.25f);
+        }
+        else
+        {
+            GetComponent<Renderer>().material.color = new Color(0, 1, 0, 0.25f);
         }
     }
 
@@ -27,8 +27,8 @@ public class T_LaunchPod : NetworkBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log(other.name);
-            readyPlayerCount.Add(other.gameObject.GetComponent<PlayerController>());
+            readyPlayerList.Add(other.gameObject.GetComponent<PlayerController>());
+            launchPod.readyPlayerList.Add(other.gameObject.GetComponent<PlayerController>());
         }
     }
 
@@ -36,7 +36,8 @@ public class T_LaunchPod : NetworkBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            readyPlayerCount.Remove(other.gameObject.GetComponent<PlayerController>());
+            readyPlayerList.Remove(other.gameObject.GetComponent<PlayerController>());
+            launchPod.readyPlayerList.Remove(other.gameObject.GetComponent<PlayerController>());
         }
     }
 }
