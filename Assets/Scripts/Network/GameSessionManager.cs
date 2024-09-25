@@ -479,28 +479,28 @@ public class GameSessionManager : NetworkBehaviour
 	public void StartGame()
 	{
 		Debug.Log(loadedClientIdList.Count);
-		if (loadedClientIdList.Count >= connectedPlayerCount)
-		{
+		//if (loadedClientIdList.Count >= connectedPlayerCount)
+		//{
 			if (!gameStarted)
 			{
 				gameStarted = true;
 			}
 			//ClearLoadedClientIdsRpc();
 			base.NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
-		}
+		//}
 	}
 
 	[Button]
 	public void EndGame()
 	{
-		if (loadedClientIdList.Count >= connectedPlayerCount)
-		{
+		//if (loadedClientIdList.Count >= connectedPlayerCount)
+		//{
 			if (gameStarted)
 			{
 				gameStarted = false;
 			}
 			//ClearLoadedClientIdsRpc();
 			base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));
-		}
+		//}
 	}
 }

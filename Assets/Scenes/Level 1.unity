@@ -271,6 +271,7 @@ MonoBehaviour:
     m_InternalValue: 0
   ExtractionLocations:
   - {fileID: 1654755398}
+  gameOver: 0
   currentGameState:
     m_InternalValue: 0
 --- !u!4 &434554628
@@ -339,7 +340,7 @@ RenderTexture:
   m_TextureSettings:
     serializedVersion: 2
     m_FilterMode: 2
-    m_Aniso: 1
+    m_Aniso: 0
     m_MipBias: 0
     m_WrapU: 1
     m_WrapV: 1
