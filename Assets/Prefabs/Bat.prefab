@@ -293,7 +293,7 @@ MonoBehaviour:
   heldTime: 0
   minHeldTime: 0
   cooldown: 0
-  cooldownSetting: 0
+  cooldownSetting: 1
   damage: 20
   attackMask:
     serializedVersion: 2
