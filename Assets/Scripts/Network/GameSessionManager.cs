@@ -506,15 +506,15 @@ public class GameSessionManager : NetworkBehaviour
 
 	IEnumerator TeleportToLevelSpawnCoroutine()
 	{
+		if (IsServer)
+		{
 		NetworkManager.SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
+		}
 		
 		yield return new WaitUntil(() => loaded == true && LevelManager.Instance != null);
 		yield return new WaitForSeconds(1f);
 
-		if (IsServer)
-		{
-			localPlayerController.TeleportPlayer(LevelManager.Instance.playerSpawnTransform.position);
-		}
+		localPlayerController.TeleportPlayer(LevelManager.Instance.playerSpawnTransform.position);
 	}
 
 	[Button]

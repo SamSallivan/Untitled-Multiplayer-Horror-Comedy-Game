@@ -8,6 +8,7 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using Steamworks.Ugc;
 using UnityEngine.Serialization;
+using UnityEngine.SceneManagement;
 
 public class InventoryManager : NetworkBehaviour
 {
@@ -552,6 +553,11 @@ public class InventoryManager : NetworkBehaviour
                 inventoryItemObject.GetComponent<I_InventoryItem>().ownerPlayerId.Value = playerControllerObject.GetComponent<PlayerController>().localPlayerId;
                 inventoryItemObject.GetComponent<I_InventoryItem>().enableItemMeshes.Value = false;
                 inventoryItemObject.GetComponent<I_InventoryItem>().enableItemPhysics.Value = false;
+
+                if (GameSessionManager.Instance.gameStarted.Value)
+                {
+                    SceneManager.MoveGameObjectToScene(inventoryItemObject.gameObject,SceneManager.GetSceneAt(0));
+                }
             }
         }
     }
@@ -566,6 +572,11 @@ public class InventoryManager : NetworkBehaviour
                 inventoryItemObject.GetComponent<I_InventoryItem>().ownerPlayerId.Value = -1;
                 inventoryItemObject.GetComponent<I_InventoryItem>().enableItemMeshes.Value = true;
                 inventoryItemObject.GetComponent<I_InventoryItem>().enableItemPhysics.Value = true;
+
+                if (GameSessionManager.Instance.gameStarted.Value)
+                {
+                    SceneManager.MoveGameObjectToScene(inventoryItemObject.gameObject,SceneManager.GetSceneAt(1));
+                }
             }
         }
     }
@@ -582,6 +593,11 @@ public class InventoryManager : NetworkBehaviour
                 inventoryItemObject.GetComponent<I_InventoryItem>().enableItemPhysics.Value = true;
                 inventoryItemObject.transform.position = playerControllerObject.GetComponent<PlayerController>().headTransform.transform.position + playerControllerObject.GetComponent<PlayerController>().headTransform.transform.forward * 0.5f;
                 inventoryItemObject.transform.rotation = playerControllerObject.GetComponent<PlayerController>().headTransform.transform.rotation;
+
+                if (GameSessionManager.Instance.gameStarted.Value)
+                {
+                    SceneManager.MoveGameObjectToScene(inventoryItemObject.gameObject,SceneManager.GetSceneAt(1));
+                }
             }
         }
     }
