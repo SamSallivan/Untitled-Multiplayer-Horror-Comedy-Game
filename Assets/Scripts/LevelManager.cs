@@ -53,10 +53,7 @@ public class LevelManager : NetworkBehaviour
             currentGameState.Value = GameState.NotStarted;
             matchTimer.Value = preExtractionTime;
         }
-        else
-        {
-            currentGameState.OnValueChanged += OnStateChanged;
-        }
+        currentGameState.OnValueChanged += OnStateChanged;
     }
 
     // Start is called before the first frame update
@@ -73,6 +70,8 @@ public class LevelManager : NetworkBehaviour
             return;
         }
 
+        CheckGameOver();
+        
         if (currentGameState.Value == GameState.NotStarted)
         {
             //temp just start game
@@ -110,7 +109,10 @@ public class LevelManager : NetworkBehaviour
     {
         if (current == GameState.Finished)
         {
-            EndGame();
+            if (IsServer)
+            {
+                EndGame();
+            }
         }
     }
 
@@ -128,14 +130,17 @@ public class LevelManager : NetworkBehaviour
             }
         }
     }
-
+    
     public void CheckGameOver()
     {
         foreach (PlayerController pc in GameSessionManager.Instance.playerControllerList)
         {
-            if (!pc.isPlayerDead.Value || !pc.isPlayerExtracted.Value)
+            if (pc.controlledByClient)
             {
-                return;
+                if (!pc.isPlayerDead.Value && !pc.isPlayerExtracted.Value)
+                {
+                    return;
+                }
             }
             
         }

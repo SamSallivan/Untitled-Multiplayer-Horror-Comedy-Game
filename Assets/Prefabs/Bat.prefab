@@ -186,7 +186,7 @@ MonoBehaviour:
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
+  ActiveSceneSynchronization: 1
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
@@ -231,6 +231,8 @@ MonoBehaviour:
     m_InternalValue: 1
   inStorageBox:
     m_InternalValue: 0
+  firstPickup:
+    m_InternalValue: 1
 --- !u!114 &6796858063129461121
 MonoBehaviour:
   m_ObjectHideFlags: 0

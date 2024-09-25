@@ -13,7 +13,7 @@ public class T_LaunchPod : NetworkBehaviour
     {
         if (IsServer)
         {
-            if (!GameSessionManager.Instance.gameStarted)
+            if (!GameSessionManager.Instance.gameStarted.Value)
             {
                 if (readyPlayerCount.Count == GameSessionManager.Instance.connectedPlayerCount)
                 {

@@ -895,7 +895,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
         if (IsOwner && !isPlayerDead.Value)
         {
             isPlayerDead.Value = true;
-            LevelManager.Instance.CheckGameOver();
+            //LevelManager.Instance.CheckGameOverServerRpc();
             InventoryManager.instance.DropAllItemsFromInventory();
             InventoryManager.instance.CloseInventory();
             
@@ -928,7 +928,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
             animator.enabled = true;
 
             Vector3 spawnPosition;
-            if (!GameSessionManager.Instance.gameStarted)
+            if (!GameSessionManager.Instance.gameStarted.Value)
             {
                 spawnPosition = GameSessionManager.Instance.playerSpawnTransform.position;
             }

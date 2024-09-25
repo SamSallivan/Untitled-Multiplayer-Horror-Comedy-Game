@@ -59,7 +59,7 @@ public class GameSessionManager : NetworkBehaviour
     
     [FoldoutGroup("Values")]
     [ReadOnly]
-    public bool gameStarted;
+    public NetworkVariable<bool> gameStarted = new NetworkVariable<bool>(writePerm: NetworkVariableWritePermission.Owner);
 
 
     private void Awake()
@@ -488,9 +488,9 @@ public class GameSessionManager : NetworkBehaviour
 			return;
 		}*/
 		
-		if (!gameStarted)
+		if (!gameStarted.Value)
 		{
-			gameStarted = true;
+			gameStarted.Value = true;
 		}
 		//ClearLoadedClientIdsRpc();
 		TeleportPlayerToLevelSpawnRpc();
@@ -514,20 +514,22 @@ public class GameSessionManager : NetworkBehaviour
 	[Button]
 	public void EndGame()
 	{
-		if (loadedClientIdList.Count < connectedPlayerCount)
+		/*if (loadedClientIdList.Count < connectedPlayerCount)
 		{
 			return;
+		}*/
+		
+		if (gameStarted.Value)
+		{
+			gameStarted.Value = false;
 		}
 		
         TeleportPlayerToLobbySpawnRpc();
-		if (gameStarted)
-		{
-			gameStarted = false;
-		}
 		
 		//ClearLoadedClientIdsRpc();
 		loaded = false;
-		base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));
+		SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
+		base.NetworkManager.SceneManager.UnloadScene(SceneManager.GetSceneAt(1));;
 	}
 
 	[Rpc(SendTo.Everyone)]
@@ -543,7 +545,7 @@ public class GameSessionManager : NetworkBehaviour
 			}
 		}
 		
-		localPlayerController.TeleportPlayer(GameSessionManager.Instance.playerSpawnTransform.position);
+		//localPlayerController.TeleportPlayer(GameSessionManager.Instance.playerSpawnTransform.position);
 		//revive
 		localPlayerController.Respawn();
 	}

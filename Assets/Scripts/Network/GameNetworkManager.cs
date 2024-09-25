@@ -666,7 +666,7 @@ public class GameNetworkManager : MonoBehaviour
 			response.Reason = "Lobby is full!";
 			flag = false;
 		}
-		else if (GameSessionManager.Instance && GameSessionManager.Instance.gameStarted)
+		else if (GameSessionManager.Instance && GameSessionManager.Instance.gameStarted.Value)
 		{
 			response.Reason = "Game has already started!";
 			flag = false;
