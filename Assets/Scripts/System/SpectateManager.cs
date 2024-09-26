@@ -50,7 +50,7 @@ public class SpectateManager : MonoBehaviour
         }
         else
         {
-            if (spectateTargetPlayerController.isPlayerDead.Value || !spectateTargetPlayerController.controlledByClient)
+            if (spectateTargetPlayerController.isPlayerDead.Value || spectateTargetPlayerController.isPlayerExtracted.Value || !spectateTargetPlayerController.controlledByClient)
             {
                 SpectateNextPlayer();
             }
@@ -64,7 +64,8 @@ public class SpectateManager : MonoBehaviour
     {
         isSpectating = true;
         spectateTargetPlayerController = GameSessionManager.Instance.localPlayerController;
-        GameSessionManager.Instance.localPlayerController.headPosition.transform.GetChild(0).parent = SpectateTargetTransform;
+        Camera.main.transform.parent = SpectateTargetTransform;
+        Camera.main.transform.localRotation = Quaternion.identity;
         SpectateTargetTransform.position = GameSessionManager.Instance.localPlayerController.transform.position;
         onDeathZoomOutTime = 0;
     }
@@ -75,8 +76,9 @@ public class SpectateManager : MonoBehaviour
         spectateTargetPlayerController = null;
         if (SpectateTargetTransform.childCount > 0)
         {
-            SpectateTargetTransform.GetChild(0).parent = GameSessionManager.Instance.localPlayerController.headPosition.transform;
-            GameSessionManager.Instance.localPlayerController.headPosition.transform.GetChild(0).localPosition = Vector3.zero;
+            Camera.main.transform.parent = GameSessionManager.Instance.localPlayerController.cameraBob.transform;
+            Camera.main.transform.localPosition = Vector3.zero;
+            Camera.main.transform.localRotation = Quaternion.identity;
         }
     }
     
@@ -94,7 +96,7 @@ public class SpectateManager : MonoBehaviour
             targetPlayerId = (targetPlayerId + 1) % 4;
             PlayerController targetPlayerController = GameSessionManager.Instance.playerControllerList[targetPlayerId];
             
-            if (targetPlayerController.controlledByClient && !targetPlayerController.isPlayerDead.Value && targetPlayerController != GameSessionManager.Instance.localPlayerController)
+            if (targetPlayerController.controlledByClient && !targetPlayerController.isPlayerDead.Value && !targetPlayerController.isPlayerExtracted.Value && targetPlayerController != GameSessionManager.Instance.localPlayerController)
             {
                 spectateTargetPlayerController = targetPlayerController;
                 return;

@@ -566,17 +566,15 @@ public class UIManager : MonoBehaviour
                currentLine.GetChild(1).GetComponent<TMP_Text>().text += " | Score: " + GameSessionManager.Instance.playerControllerList[i].GetComponent<PlayerRating>().score.Value;
 
 
-               /*if (!GameNetworkManager.Instance.steamDisabled)
+               if (!GameNetworkManager.Instance.steamDisabled)
                {
                    currentLine.GetChild(2).GetComponent<RawImage>().color = Color.white;
-                   currentLine.GetChild(2).GetComponent<RawImage>().texture =
-                       GetTextureFromImage(await SteamFriends.GetSmallAvatarAsync(GameSessionManager.Instance
-                           .playerControllerList[i].localSteamId.Value));
+                   currentLine.GetChild(2).GetComponent<RawImage>().texture = GameSessionManager.Instance.playerControllerList[i].steamAvatar;
                }
                else
                {
                    currentLine.GetChild(2).GetComponent<RawImage>().color = Color.clear;
-               }*/
+               }
            }
            else
            {

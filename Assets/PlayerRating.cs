@@ -58,7 +58,7 @@ public class PlayerRating : NetworkBehaviour
                 UIManager.instance.addScoreText.text = "";
             }
 
-            if (GameSessionManager.Instance.gameStarted.Value)
+            if (GameSessionManager.Instance.gameStarted.Value && !playerController.isPlayerExtracted.Value)
             {
                 if (ratingMeter <= 0 && rating.Value == Rating.D)
                 {

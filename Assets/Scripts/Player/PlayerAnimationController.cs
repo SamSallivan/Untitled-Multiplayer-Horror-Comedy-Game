@@ -481,7 +481,7 @@ public class PlayerAnimationController : MonoBehaviour
             {
                 Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, emoteData.targetCameraPosition, Time.deltaTime * 10f);
             }
-            else
+            else if (!SpectateManager.Instance.isSpectating)
             {
                 Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, new Vector3(0, 0, 0), Time.deltaTime * 10f);
             }
