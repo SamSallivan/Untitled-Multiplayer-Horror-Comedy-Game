@@ -1190,6 +1190,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
    {
        GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, transform.GetChild(0).rotation);
        ragdoll.GetComponent<NetworkObject>().Spawn();
+       InstantiateRagdollClientRPC(ragdoll.GetComponent<NetworkObject>());
+   }
+   
+   [Rpc(SendTo.Everyone)]
+   public void InstantiateRagdollClientRPC(NetworkObjectReference ragdoll)
+   {
+       if (ragdoll.TryGet(out NetworkObject ragdollObject))
+       {
+           ragdollObject.transform.GetChild(currentCharacterModelIndex.Value).gameObject.SetActive(true);
+       }
    }
 
 
@@ -1227,13 +1237,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    public void OnIsPlayerDeadChanged(bool prevIsPlayerDead, bool newIsPlayerDead)
    {
-       for (int i = 0; i < playerMeshRendererList.Count; i++)
+       /*for (int i = 0; i < playerMeshRendererList.Count; i++)
        {
            playerMeshRendererList[i].enabled = !isPlayerDead.Value;
-       }
+       }*/
       
+       playerAnimationController.modelList[currentCharacterModelIndex.Value].SetActive(!isPlayerDead.Value);
+       
        playerUsernameCanvasTransform.gameObject.SetActive(!isPlayerDead.Value);
-
 
        playerCollider.enabled = !isPlayerDead.Value;
    }
@@ -1604,7 +1615,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            model.SetActive(false);
        }
-       playerAnimationController.modelList[currentCharacterModelIndex.Value].SetActive(true);
+       playerAnimationController.modelList[currentCharacterModelIndex.Value].SetActive(!isPlayerDead.Value);
        playerAnimationController.bodyAnimator.avatar = playerAnimationController.avatarList[currentCharacterModelIndex.Value];
    }
   

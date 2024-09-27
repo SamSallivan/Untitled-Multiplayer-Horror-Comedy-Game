@@ -65,7 +65,7 @@ public class SpectateManager : MonoBehaviour
         isSpectating = true;
         spectateTargetPlayerController = GameSessionManager.Instance.localPlayerController;
         Camera.main.transform.parent = SpectateTargetTransform;
-        Camera.main.transform.localRotation = Quaternion.identity;
+        Camera.main.transform.localRotation = Quaternion.Euler(0,0,0);
         SpectateTargetTransform.position = GameSessionManager.Instance.localPlayerController.transform.position;
         onDeathZoomOutTime = 0;
     }
@@ -127,5 +127,6 @@ public class SpectateManager : MonoBehaviour
         }
         
         SpectateTargetTransform.transform.GetChild(0).transform.LookAt(SpectateTargetTransform);
+        Camera.main.transform.localRotation = Quaternion.Euler(0,0,0);
     }
 }
