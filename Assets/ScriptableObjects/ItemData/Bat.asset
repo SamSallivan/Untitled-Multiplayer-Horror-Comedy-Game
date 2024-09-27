@@ -18,6 +18,7 @@ MonoBehaviour:
   isStackable: 0
   maxStackAmount: 1
   hasDurability: 0
+  isHeavy: 0
   discoverScore: 5
   equipPosition: {x: 0, y: 0, z: 0}
   equipRotation: {x: 0, y: 0, z: 0}
@@ -25,4 +26,5 @@ MonoBehaviour:
   examineScale: 1
   examineRotation: {x: 0.25881904, y: 0, z: 0, w: 0.9659258}
   equipAnimatorParameter: Bat
-  twoHandAnimation: 1
+  leftHandAnimation: 1
+  rightHandAnimation: 1

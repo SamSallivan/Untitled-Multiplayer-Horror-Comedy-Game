@@ -571,7 +571,8 @@ MonoBehaviour:
   highlightTarget: {fileID: 1576475593488901863}
   interactionType: 2
   onceOnly: 0
-  interactedOnce: 0
+  requireHold: 0
+  requireHoldDuration: 1
   examineImage: {fileID: 0}
   hasText: 0
   examineText: 
@@ -582,6 +583,9 @@ MonoBehaviour:
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
+  interactedOnce: 0
+  isHeld: 0
+  heldDuration: 0
   ownerPlayerId:
     m_InternalValue: -1
   owner: {fileID: 0}
@@ -616,6 +620,7 @@ MonoBehaviour:
   light: {fileID: 7046685739311265399}
   activated:
     m_InternalValue: 0
+  durabilityCostPerSecond: 0.01667
 --- !u!114 &6796858063129461121
 MonoBehaviour:
   m_ObjectHideFlags: 0

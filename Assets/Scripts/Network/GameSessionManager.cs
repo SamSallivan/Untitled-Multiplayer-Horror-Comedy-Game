@@ -205,6 +205,8 @@ public class GameSessionManager : NetworkBehaviour
       catch (Exception arg)
       {
       }
+      
+      ES3.Save("BaseCurrencyBalanceSaveData", localPlayerController.baseCurrencyBalance);
    }
 
 
@@ -212,8 +214,7 @@ public class GameSessionManager : NetworkBehaviour
    public void Load()
    {
       InventoryItemSaveData[] list = ES3.Load<InventoryItemSaveData[]>("StorageSlotSaveData");
-
-
+      
       for(int i = 0; i < list.Length; i++)
       {
          if(list[i].index != -1)
@@ -221,14 +222,14 @@ public class GameSessionManager : NetworkBehaviour
             InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, list[i].durability, i, localPlayerController.NetworkObject);
          }
       }
+      
+      localPlayerController.baseCurrencyBalance = ES3.Load<int>("BaseCurrencyBalanceSaveData", 0);
    }
 
 
    public IEnumerator LoadCoroutine()
    {
       yield return new WaitUntil(() =>  localPlayerController != null && localPlayerController.controlledByClient);
-
-
       Load();
    }
 
@@ -316,7 +317,7 @@ public class GameSessionManager : NetworkBehaviour
          }
 
 
-           PlayerController playerController = playerControllerList[targetPlayerId];
+         PlayerController playerController = playerControllerList[targetPlayerId];
          playerController.localClientId = clientId;
          playerController.GetComponent<NetworkObject>().ChangeOwnership(clientId);
          playerController.controlledByClient = true;
@@ -577,15 +578,17 @@ public class GameSessionManager : NetworkBehaviour
      
       yield return new WaitUntil(() => loaded == true && LevelManager.Instance != null);
       yield return new WaitForSeconds(1f);
-
-
+      
       localPlayerController.TeleportPlayer(LevelManager.Instance.playerSpawnTransform.position);
+      UIManager.instance.extractionUI.SetActive(true);
+      UIManager.instance.ratingUI.SetActive(true);
+      UIManager.instance.currencyUI.SetActive(false);
      
       if (!GameNetworkManager.Instance.steamDisabled)
       {
-      SteamFriends.SetRichPresence("steam_player_group", GameNetworkManager.Instance.currentSteamLobbyName);
-      SteamFriends.SetRichPresence("steam_player_group_size", connectedPlayerCount.ToString());
-      SteamFriends.SetRichPresence("steam_display", "Running the show.");
+         SteamFriends.SetRichPresence("steam_player_group", GameNetworkManager.Instance.currentSteamLobbyName);
+         SteamFriends.SetRichPresence("steam_player_group_size", connectedPlayerCount.ToString());
+         SteamFriends.SetRichPresence("steam_display", "Running the show.");
       }
    }
 
@@ -624,6 +627,10 @@ public class GameSessionManager : NetworkBehaviour
             localPlayerController.Die();
          }
       }
+      
+      UIManager.instance.extractionUI.SetActive(false);
+      UIManager.instance.ratingUI.SetActive(false);
+      UIManager.instance.currencyUI.SetActive(true);
      
       yield return new WaitForSeconds(1f);
      
@@ -641,6 +648,10 @@ public class GameSessionManager : NetworkBehaviour
 
       yield return new WaitForSeconds(1f);
      
+      //GameSessionManager.Instance.localPlayerController.LockMovement(true);
+      //GameSessionManager.Instance.localPlayerController.LockCamera(true);
+      localPlayerController.TeleportPlayer(GameSessionManager.Instance.summaryPlayerTransformList[GameSessionManager.Instance.localPlayerController.localPlayerId].position);
+      localPlayerController.ResetCamera();
       UIManager.instance.OpenSummary();
      
       loaded = false;

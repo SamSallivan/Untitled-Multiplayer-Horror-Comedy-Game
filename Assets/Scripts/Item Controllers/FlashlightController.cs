@@ -7,6 +7,7 @@ public class FlashlightController : ItemController
 {
     public GameObject light;
     public NetworkVariable<bool> activated;
+    public float durabilityCostPerSecond = 0.1667f;
 
     public override void  OnNetworkSpawn(){
         base.OnNetworkSpawn();
@@ -22,6 +23,19 @@ public class FlashlightController : ItemController
             if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped.Value & activated.Value) 
             {
                 ToggleLightServerRpc();
+            }
+        }
+        
+        if (activated.Value) 
+        {
+            if (inventoryItem.itemStatus.durability <= 0)
+            {
+                ToggleLightServerRpc();
+            }
+            else
+            {
+                inventoryItem.itemStatus.durability -= durabilityCostPerSecond * Time.deltaTime;
+                InventoryManager.instance.SetItemDurarbilityRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.durability);
             }
         }
     }

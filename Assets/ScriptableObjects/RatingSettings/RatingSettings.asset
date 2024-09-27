@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: RatingSettings
+  m_EditorClassIdentifier: Assembly-CSharp::RatingSettings
+  ratings:
+  - rating: 0
+    ratingName: Dismal
+    ratingColor: {r: 1, g: 1, b: 1, a: 1}
+    dropRatePerSecond: 0.01
+    scoreMultiplier: 1
+  - rating: 1
+    ratingName: Cringe
+    ratingColor: {r: 1, g: 1, b: 1, a: 1}
+    dropRatePerSecond: 0.0222
+    scoreMultiplier: 1
+  - rating: 2
+    ratingName: Bland
+    ratingColor: {r: 1, g: 1, b: 1, a: 1}
+    dropRatePerSecond: 0.0333
+    scoreMultiplier: 1
+  - rating: 3
+    ratingName: Alright!
+    ratingColor: {r: 1, g: 1, b: 1, a: 1}
+    dropRatePerSecond: 0.05
+    scoreMultiplier: 1.25
+  - rating: 4
+    ratingName: Showtime!
+    ratingColor: {r: 1, g: 1, b: 1, a: 1}
+    dropRatePerSecond: 0.0666
+    scoreMultiplier: 1.5
+  - rating: 5
+    ratingName: Super Star!
+    ratingColor: {r: 1, g: 1, b: 1, a: 1}
+    dropRatePerSecond: 0.1
+    scoreMultiplier: 2
+  - rating: 6
+    ratingName: Supreme Showbiz Star!
+    ratingColor: {r: 1, g: 1, b: 1, a: 1}
+    dropRatePerSecond: 0.2
+    scoreMultiplier: 2.5

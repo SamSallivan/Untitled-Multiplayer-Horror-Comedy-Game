@@ -6,23 +6,14 @@ using UnityEngine;
 
 public class PlayerRating : NetworkBehaviour
 {
-    
-    public enum Rating{
-        D = 0,
-        C = 1,
-        B = 2,
-        A = 3,
-        S = 4,
-        SS = 5,
-        SSS = 6
-    }
-
     public NetworkVariable<float> score = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
     public NetworkVariable<Rating> rating = new NetworkVariable<Rating>(writePerm: NetworkVariableWritePermission.Owner);
     public float ratingMeter;
     public float scoreTextTimer;
 
     private PlayerController playerController;
+    
+    public RatingSettings ratingSettings;
     
 
     // Start is called before the first frame update
@@ -36,8 +27,6 @@ public class PlayerRating : NetworkBehaviour
             score.Value = 0;
             UpdateRatingText();
         }
-
-
     }
 
     // Update is called once per frame
@@ -46,7 +35,7 @@ public class PlayerRating : NetworkBehaviour
         if (IsOwner && playerController.controlledByClient)
         {
             UIManager.instance.ratingBar.fillAmount = ratingMeter;
-            UIManager.instance.scoreText.text = "Total Score: " + score.Value;
+            UIManager.instance.scoreText.text = "Score: " + score.Value;
             
             if(scoreTextTimer > 0)
             {
@@ -91,80 +80,35 @@ public class PlayerRating : NetworkBehaviour
     
     public float GetMeterDropRatePerSecond()
     {
-        switch(rating.Value)
-        {
-            case Rating.D:
-                return 0.033f;
-
-            case Rating.C:
-                return 0.033f;
-                
-            case Rating.B:
-                return 0.033f;
-                
-            case Rating.A:
-                return 0.033f;
-                
-            case Rating.S:
-                return 0.033f;
-                
-            case Rating.SS:
-                return 0.033f;
-                
-            case Rating.SSS:
-                return 0.033f;
-
-            default:
-                return 0.033f;
-        }
+        return ratingSettings.ratings[(int)rating.Value].dropRatePerSecond;
+    }
+    
+    public float GetScoreMultiplier()
+    {
+        return ratingSettings.ratings[(int)rating.Value].scoreMultiplier;
     }
 
     public void UpdateRatingText()
     {
-        switch(rating.Value)
+        UIManager.instance.ratingText.text = ratingSettings.ratings[(int)rating.Value].ratingName;
+        UIManager.instance.ratingText.color = ratingSettings.ratings[(int)rating.Value].ratingColor;
+        if (GetScoreMultiplier() != 1.0f)
         {
-            case Rating.D:
-                UIManager.instance.ratingText.text = "Dismal";
-                break;
-
-            case Rating.C:
-                UIManager.instance.ratingText.text = "Cringe";
-                break;
-                
-            case Rating.B:
-                UIManager.instance.ratingText.text = "Bland";
-                break;
-                
-            case Rating.A:
-                UIManager.instance.ratingText.text = "Alright!";
-                break;
-                
-            case Rating.S:
-                UIManager.instance.ratingText.text = "Showtime!";
-                break;
-                
-            case Rating.SS:
-                UIManager.instance.ratingText.text = "Super Star!";
-                break;
-                
-            case Rating.SSS:
-                UIManager.instance.ratingText.text = "Supreme Showbiz Star!";
-                break;
+            UIManager.instance.multiplierText.text = "x" + GetScoreMultiplier();
+        }
+        else
+        {
+            UIManager.instance.multiplierText.text = "";
         }
     }
     
-    public void AddScore(int score)
-    {
-        AddScore(score,"");
-        
-    }
-    
-    public void AddScore(int score, string message)
+    public void AddScore(float score, string message = "")
     {
         if (IsOwner&& playerController.controlledByClient)
         {
+            score *= GetScoreMultiplier();
             this.score.Value += score;
-            ratingMeter += (float)score/100;
+            ratingMeter += (float)score/10;
             if(ratingMeter >= 1 && rating.Value == Rating.SSS)
             {
                 ratingMeter = 1;
@@ -174,7 +118,16 @@ public class PlayerRating : NetworkBehaviour
         }
 
     }
-    
-}
 
+    [System.Serializable]
+    public enum Rating{
+        D = 0,
+        C = 1,
+        B = 2,
+        A = 3,
+        S = 4,
+        SS = 5,
+        SSS = 6
+    }
+}
 

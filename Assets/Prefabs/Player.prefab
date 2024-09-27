@@ -4492,7 +4492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 88465425
+  GlobalObjectIdHash: 733293365
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -4521,6 +4521,7 @@ MonoBehaviour:
   localClientId: 0
   localSteamId:
     m_InternalValue: 0
+  steamAvatar: {fileID: 0}
   controlledByClient: 0
   awaitInitialization: 0
   playerUsernameCanvasTransform: {fileID: 15498366079930494}
@@ -4622,6 +4623,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c7f03c1437ca48044ab7d459a1551ee4, type: 2}
   damageTimer: 0
   drunkTimer: 0
+  baseCurrencyBalance: 0
 --- !u!114 &8793975911923707449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4742,6 +4744,7 @@ MonoBehaviour:
     m_InternalValue: 0
   ratingMeter: 0
   scoreTextTimer: 0
+  ratingSettings: {fileID: 11400000, guid: d0fbac0936f3e2644b9678e988816def, type: 2}
 --- !u!1 &6788842259213357691
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ public class CameraItemController : ItemController
     public GameObject light;
     public NetworkVariable<bool> activated;
     public LayerMask lm;
+    public float durabilityCostPerUse = 0.5f;
     
 
     
@@ -32,9 +33,11 @@ public class CameraItemController : ItemController
     
     public override void OnButtonHeld()
     {
-        if (cooldown <= 0)
+        if (cooldown <= 0 && inventoryItem.itemStatus.durability >= durabilityCostPerUse)
         {
             cooldown = cooldownSetting;
+            inventoryItem.itemStatus.durability -= durabilityCostPerUse;
+            InventoryManager.instance.SetItemDurarbilityRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.durability);
             Activate();
         }
     }

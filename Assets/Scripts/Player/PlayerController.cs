@@ -24,6 +24,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    // [FoldoutGroup("Inventory")]
    // public List<I_InventoryItem> storageItemList = new List<I_InventoryItem>();
   
+   
    [FoldoutGroup("Inventory")]
    public I_InventoryItem currentEquippedItem;
 
@@ -91,9 +92,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("References")]
    public Rigidbody rb;
   
+   
    [FoldoutGroup("References")]
    public Animator animator;
   
+   
    [FoldoutGroup("References")]
    public PlayerAnimationController playerAnimationController;
 
@@ -117,9 +120,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("References")]
    public CameraBob cameraBob;
   
+   
    [FoldoutGroup("References")]
    public HeadPosition headPosition;
   
+   
    [FoldoutGroup("References")]
    public List<SkinnedMeshRenderer> playerMeshRendererList = new List<SkinnedMeshRenderer>();
 
@@ -155,6 +160,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Inputs")]
    public Vector3 inputDir;
   
+   
    [FoldoutGroup("Inputs")]
    public NetworkVariable<Vector3> inputDirNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
@@ -162,6 +168,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Settings")]
    public NetworkVariable<bool> isPlayerDead = new (writePerm: NetworkVariableWritePermission.Owner);
   
+   
    [FoldoutGroup("Settings")]
    public NetworkVariable<bool> isPlayerExtracted = new (writePerm: NetworkVariableWritePermission.Owner);
 
@@ -185,15 +192,19 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Physics Based Movements")]
    public float dynamicSpeed = 1f;
   
+   
    [FoldoutGroup("Physics Based Movements")]
    public bool sprinting;
   
+   
    [FoldoutGroup("Physics Based Movements")]
    public NetworkVariable<bool> sprintingNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
   
+   
    [FoldoutGroup("Physics Based Movements")]
    public bool crouching;
   
+   
    [FoldoutGroup("Physics Based Movements")]
    public NetworkVariable<bool> crouchingNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
@@ -201,6 +212,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Physics Based Movements")]
    public Vector3 vel;
   
+   
    [FoldoutGroup("Physics Based Movements")]
    public NetworkVariable<Vector3> velNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
@@ -248,9 +260,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Physics Based Movements")]
    public float jumpCooldown;
   
+   
    [FoldoutGroup("Physics Based Movements")]
    public NetworkVariable<float> JumpCooldownNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
   
+   
    [FoldoutGroup("Physics Based Movements")]
    public float jumpCooldownSetting = 0.5f;
 
@@ -306,6 +320,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Kinematic Movements")]
    public LayerMask nonPhysicsCollisions;*/
   
+   
    [FoldoutGroup("Interaction")]
    public Interactable targetInteractable;
   
@@ -350,6 +365,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Health")]
    public GameObject ragdollPrefab;
   
+   
    [FoldoutGroup("Emote")]
    public NetworkVariable<int> currentEmoteIndex =  new(-1, writePerm: NetworkVariableWritePermission.Owner);
 
@@ -361,11 +377,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Effects")]
    public float damageTimer;
   
+   
    [FoldoutGroup("Effects")]
    public float drunkTimer;
-
-
-
+  
+   
+   [FoldoutGroup("Currency")]
+   public int baseCurrencyBalance;
+   
 
    private void Awake()
    {
@@ -1139,6 +1158,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
            {
                Die();
            }
+           
+           GetComponent<PlayerRating>().AddScore((int)damage * 10, "Took Damage");
            Debug.Log($"{playerUsernameText} took {damage} damage.");
        }
    }
@@ -1308,7 +1329,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            }
            else if (isPlayerDead.Value)
            {
-               Respawn();
+               //Respawn();
            }
        }
    }

@@ -59,6 +59,12 @@ public class UIManager : MonoBehaviour
 
    [FoldoutGroup("Score & Rating")]
    public TMP_Text addScoreText;
+
+   [FoldoutGroup("Score & Rating")]
+   public TMP_Text multiplierText;
+  
+   [FoldoutGroup("Extraction")]
+   public GameObject extractionUI;
   
    [FoldoutGroup("Extraction")]
    public TMP_Text timerText;
@@ -136,6 +142,12 @@ public class UIManager : MonoBehaviour
   
    [FoldoutGroup("Game Summary")]
    public GameObject gameSummaryUI;
+  
+   [FoldoutGroup("Currency")]
+   public GameObject currencyUI;
+  
+   [FoldoutGroup("Currency")]
+   public TMP_Text currencyText;
 
    private void Awake()
    {
@@ -154,7 +166,12 @@ public class UIManager : MonoBehaviour
    // Update is called once per frame
    void Update()
    {
-       if (!gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera && GameSessionManager.Instance.localPlayerController)
+       if (!GameSessionManager.Instance.localPlayerController)
+       {
+           return;
+       }
+       
+       if (!gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera)
        {
            gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera = GameSessionManager.Instance.localPlayerController.cameraList[1];
        }
@@ -165,14 +182,21 @@ public class UIManager : MonoBehaviour
            staminaBar.fillAmount = GameSessionManager.Instance.localPlayerController.stamina.Value / 100f;
        }
 
-       /*if (scoreBoardUI.activeInHierarchy)
+       if (scoreBoardUI.activeInHierarchy)
        {
            UpdateScoreBoard();
-       }*/
+       }
 
-       UpdateExtractionTimer();
+       if (extractionUI.activeInHierarchy)
+       {
+           UpdateExtractionTimer();
+       }
+       
 
-
+       if (currencyUI.activeInHierarchy)
+       {
+           currencyText.text = "$ " + GameSessionManager.Instance.localPlayerController.baseCurrencyBalance;
+       }
    }
 
 
@@ -192,7 +216,6 @@ public class UIManager : MonoBehaviour
    public IEnumerator CoFadeInOutUI(GameObject UI, float inTime, float duration, float outTime)
    {
        //UI.SetActive(true);
-
 
        foreach (Image image in UI.transform.GetComponentsInChildren<Image>())
        {
@@ -498,10 +521,6 @@ public class UIManager : MonoBehaviour
 
    public async void OpenSummary()
    {
-       GameSessionManager.Instance.localPlayerController.TeleportPlayer(GameSessionManager.Instance.summaryPlayerTransformList[GameSessionManager.Instance.localPlayerController.localPlayerId].position);
-       GameSessionManager.Instance.localPlayerController.ResetCamera();
-       //GameSessionManager.Instance.localPlayerController.LockMovement(true);
-       //GameSessionManager.Instance.localPlayerController.LockCamera(true);
        gameSummaryUI.SetActive(true);
        Cursor.lockState = CursorLockMode.Confined;
        Cursor.visible = true;
@@ -549,9 +568,11 @@ public class UIManager : MonoBehaviour
            {
                currentLine.gameObject.SetActive(false);
            }
-
-
+           
        }
+       
+       GameSessionManager.Instance.localPlayerController.baseCurrencyBalance += (int)GameSessionManager.Instance.localPlayerController.GetComponent<PlayerRating>().score.Value;
+       GameSessionManager.Instance.localPlayerController.GetComponent<PlayerRating>().score.Value = 0;
    }
   
    static int SortByScore(PlayerController p1, PlayerController p2)
@@ -563,7 +584,6 @@ public class UIManager : MonoBehaviour
    {
        GameSessionManager.Instance.localPlayerController.LockMovement(false);
        GameSessionManager.Instance.localPlayerController.LockCamera(false);
-       GameSessionManager.Instance.localPlayerController.GetComponent<PlayerRating>().score.Value = 0;
        gameSummaryUI.SetActive(false);
        Cursor.lockState = CursorLockMode.Locked;
        Cursor.visible = false;
