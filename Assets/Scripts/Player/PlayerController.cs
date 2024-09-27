@@ -384,6 +384,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
    
    [FoldoutGroup("Currency")]
    public int baseCurrencyBalance;
+  
+   
+   [FoldoutGroup("Model")]
+   public NetworkVariable<int> currentCharacterModelIndex = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Owner);
    
 
    private void Awake()
@@ -421,11 +425,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
       
        OnIsPlayerDeadChanged(false, isPlayerDead.Value);
        isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
-       isPlayerExtracted.Value = false;
-
-
-
-
+       OnCurrentCharacterModelIndexChanged(0, currentCharacterModelIndex.Value);
+       currentCharacterModelIndex.OnValueChanged += OnCurrentCharacterModelIndexChanged;
    }
 
 
@@ -1591,6 +1592,21 @@ public class PlayerController : NetworkBehaviour, IDamagable
        SpectateManager.Instance.StopSpectating();
    }
   
+
+   public void SwitchCharacterModel()
+   {
+       currentCharacterModelIndex.Value = (currentCharacterModelIndex.Value + 1) % playerAnimationController.modelList.Count;
+   }
+
+   public void OnCurrentCharacterModelIndexChanged(int prevValue, int newValue)
+   {
+       foreach (GameObject model in playerAnimationController.modelList)
+       {
+           model.SetActive(false);
+       }
+       playerAnimationController.modelList[currentCharacterModelIndex.Value].SetActive(true);
+       playerAnimationController.bodyAnimator.avatar = playerAnimationController.avatarList[currentCharacterModelIndex.Value];
+   }
   
 }
 

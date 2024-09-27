@@ -107,8 +107,8 @@ public class PlayerRating : NetworkBehaviour
         if (IsOwner&& playerController.controlledByClient)
         {
             score *= GetScoreMultiplier();
-            this.score.Value += score;
-            ratingMeter += (float)score/10;
+            this.score.Value += (int)score;
+            ratingMeter += score/10;
             if(ratingMeter >= 1 && rating.Value == Rating.SSS)
             {
                 ratingMeter = 1;

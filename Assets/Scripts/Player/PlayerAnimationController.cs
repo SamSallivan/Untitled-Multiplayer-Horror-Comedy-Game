@@ -74,6 +74,11 @@ public class PlayerAnimationController : MonoBehaviour
     private bool leftArmAnimation;
     [SerializeField]
     private bool rightArmAnimation;
+    
+    
+    [Header("Models")] 
+    public List<GameObject> modelList = new List<GameObject>();
+    public List<Avatar> avatarList = new List<Avatar>();
 
     void Awake()
     {
