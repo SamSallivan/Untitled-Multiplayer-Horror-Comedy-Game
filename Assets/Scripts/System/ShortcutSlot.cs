@@ -56,6 +56,11 @@ public class ShortcutSlot : MonoBehaviour
             {
                 durabilityFill.fillAmount = 0;
             }
+            
+            if (inventoryItem.itemData.isHeavy && InventoryManager.instance.equippedSlotIndex == shortcutIndex)
+            {
+                UIManager.instance.shortcutSlotHeavyBackground.enabled = true;
+            }
         }
         else
         {

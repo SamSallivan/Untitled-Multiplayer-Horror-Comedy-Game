@@ -1,5 +1,6 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "ItemData", menuName = "ScriptableObjects/ItemData")]
 public class ItemData : ScriptableObject
@@ -41,11 +42,12 @@ public class ItemData : ScriptableObject
 
     [FoldoutGroup("Settings")]
     public bool hasDurability;
+
+    [FoldoutGroup("Settings")]
+    public bool isHeavy;
     
     [FoldoutGroup("Settings")]
     public int discoverScore= 5;
-
-    //public bool isEquippable;
 
     //[ConditionalField(nameof(isEquippable))]
     //public EquipType equipType;
@@ -69,7 +71,10 @@ public class ItemData : ScriptableObject
     public string equipAnimatorParameter;
     
     [FoldoutGroup("Settings")]
-    public bool twoHandAnimation = false;
+    public bool leftHandAnimation = false;
+    
+    [FoldoutGroup("Settings")]
+    public bool rightHandAnimation = true;
 
     /*[ConditionalField(nameof(isExaminable))]
     public bool isReadable;

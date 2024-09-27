@@ -14,34 +14,26 @@ public class UIManager : MonoBehaviour
 {
    public static UIManager instance;
 
-
    [FoldoutGroup("Gameplay")]
    public GameObject gameplayUI;
-
 
    [FoldoutGroup("Gameplay")]
    public GameObject generalTips;
 
-
    [FoldoutGroup("Gameplay")]
    public GameObject notificationUI;
-
-
-   // [Header("Objective")]
-   // public GameObject objectiveUI;
-   // public GameObject objectiveUIAnim;
-
 
    [FoldoutGroup("Gameplay")]
    public TMP_Text interactionName;
 
-
    [FoldoutGroup("Gameplay")]
    public TMP_Text interactionPrompt;
 
+   [FoldoutGroup("Gameplay")]
+   public Image interactionHoldBar;
 
    [FoldoutGroup("Gameplay")]
-   public Animation interactionPromptAnimation;
+   public Image interactionHoldBarBackground;
   
    [FoldoutGroup("Gameplay")]
    public Image healthBar;
@@ -49,10 +41,12 @@ public class UIManager : MonoBehaviour
    [FoldoutGroup("Gameplay")]
    public Image staminaBar;
 
+   // [Header("Objective")]
+   // public GameObject objectiveUI;
+   // public GameObject objectiveUIAnim;
 
    [FoldoutGroup("Score & Rating")]
    public GameObject ratingUI;
-
 
    [FoldoutGroup("Score & Rating")]
    public TMP_Text ratingText;
@@ -60,10 +54,8 @@ public class UIManager : MonoBehaviour
    [FoldoutGroup("Score & Rating")]
    public Image ratingBar;
 
-
    [FoldoutGroup("Score & Rating")]
    public TMP_Text scoreText;
-
 
    [FoldoutGroup("Score & Rating")]
    public TMP_Text addScoreText;
@@ -71,90 +63,70 @@ public class UIManager : MonoBehaviour
    [FoldoutGroup("Extraction")]
    public TMP_Text timerText;
 
-
    // [Header("Subtitle")]
    //     public TMP_Text radioSubtitleUI;
    //     public TMP_Text dialogueSubtitleUI;
-
 
    // [Header("Fishing")]
    //     public GameObject fishingUI;
    //     public Slider reelSlider;
    //     public Image reelImage;
-
-
+   
    [FoldoutGroup("Inventory")]
    public GameObject inventoryUI;
-
 
    [FoldoutGroup("Inventory")]
    public GameObject detailPanel;
 
-
    [FoldoutGroup("Inventory")]
    public GameObject StoragePanel;
-
 
    [FoldoutGroup("Inventory")]
    public GameObject inventorySlotGrid;
 
-
    [FoldoutGroup("Inventory")]
    public GameObject storageSlotGrid;
-
-
-   [FoldoutGroup("Inventory")]
-   public GameObject inventoryTypeGrid;
   
    [FoldoutGroup("Inventory")]
    public TMP_Text detailName;
 
-
    [FoldoutGroup("Inventory")]
    public TMP_Text detailDescription;
-
 
    [FoldoutGroup("Inventory")]
    public Transform detailObjectPivot;
 
-
    [FoldoutGroup("Inventory")]
    public bool detailObjectInBound;
-
 
    [FoldoutGroup("Inventory")]
    public GameObject draggedItemDisplay;
 
-
    [FoldoutGroup("Inventory")]
    public Image draggedImage;
 
+   [FoldoutGroup("Inventory")]
+   public Image shortcutSlotHeavyBackground;
 
    // [Foldout("Upgrade", true)]
    // public GameObject upgradeUI;
    // public TMP_Text upgradeTitle;
    // public GameObject UpgradeOptionList;
 
-
    /*[FoldoutGroup("Examine")]
    public GameObject examineUI;
-
 
    [FoldoutGroup("Examine")]
    public TMP_Text examineText;
 
-
    [FoldoutGroup("Examine")]
    public Image examineImage;
-
 
    [FoldoutGroup("Game Over")]
    public GameObject gameOverUI;
 
-
    [FoldoutGroup("Game Over")]
    public TMP_Text deathText;*/
-
 
    [FoldoutGroup("Pause Menu")]
    public GameObject pauseUI;
@@ -164,9 +136,6 @@ public class UIManager : MonoBehaviour
   
    [FoldoutGroup("Game Summary")]
    public GameObject gameSummaryUI;
-
-
-
 
    private void Awake()
    {
@@ -539,10 +508,10 @@ public class UIManager : MonoBehaviour
       
        List<PlayerController> playersRanked = GameSessionManager.Instance.playerControllerList;
        playersRanked.Sort(SortByScore);
-       foreach (PlayerController player in playersRanked)
+       /*foreach (PlayerController player in playersRanked)
        {
            Debug.Log(player.name);
-       }
+       }*/
 
        for (int i = 0; i < 4; i++)
        {

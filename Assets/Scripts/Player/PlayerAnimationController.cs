@@ -148,7 +148,7 @@ public class PlayerAnimationController : MonoBehaviour
         
         if (playerController.currentEquippedItem != null)
         {
-            if (playerController.currentEquippedItem.itemData.twoHandAnimation)
+            if (playerController.currentEquippedItem.itemData.leftHandAnimation)
             {
                 leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
@@ -157,7 +157,14 @@ public class PlayerAnimationController : MonoBehaviour
                 leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
 
-            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            if (playerController.currentEquippedItem.itemData.rightHandAnimation)
+            {
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            }
+            else
+            {
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            }
 
             foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
             {

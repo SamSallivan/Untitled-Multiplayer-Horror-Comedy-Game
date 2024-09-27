@@ -45,9 +45,12 @@ public abstract class Interactable : NetworkBehaviour
     [FoldoutGroup("Settings")]
     public bool onceOnly;
 
-    [ShowIf(nameof(onceOnly))]
-    [ReadOnly]
-    public bool interactedOnce;
+    [FoldoutGroup("Settings")]
+    public bool requireHold;
+
+    [FoldoutGroup("Settings")]
+    [ShowIf("requireHold")]
+    public float requireHoldDuration = 1f;
     
     [FoldoutGroup("Settings")]
     [ShowIf(nameof(interactionType), InteractionType.Examine)]
@@ -91,18 +94,69 @@ public abstract class Interactable : NetworkBehaviour
     [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
     [ReadOnly]
     public bool activated;
+    
+    [FoldoutGroup("Values")]
+    [ShowIf(nameof(onceOnly))]
+    [ReadOnly]
+    public bool interactedOnce;
 
-    public virtual IEnumerator InteractionEvent()
+    [FoldoutGroup("Values")]
+    [ShowIf("requireHold")]
+    [ReadOnly]
+    public bool isHeld;
+
+    [FoldoutGroup("Values")]
+    [ShowIf("requireHold")]
+    [ReadOnly]
+    public float heldDuration;
+
+    public void Update()
     {
-        yield break;
+        if (isHeld)
+        {
+            heldDuration += Time.deltaTime;
+            UIManager.instance.interactionHoldBar.fillAmount = heldDuration / requireHoldDuration;
+            
+            if (heldDuration >= requireHoldDuration)
+            {
+                Interact();
+                CancelInteract();
+            }
+        }
     }
 
-    public virtual void Interact()
+    public void PerformInteract()
+    {
+        if (!requireHold)
+        {
+            Interact();
+        }
+        else
+        {
+            isHeld = true;
+        }
+    }
+
+    public void CancelInteract()
+    {
+        if (!requireHold)
+        {
+            return;
+        }
+        else
+        {
+            isHeld = false;
+            heldDuration = 0;
+            UIManager.instance.interactionHoldBar.fillAmount = 0;
+        }
+    }
+    
+    public void Interact()
     {
 
         if (!interactedOnce)
         {
-            switch (interactionType)
+            /*switch (interactionType)
             {
                 case InteractionType.None:
                     break;
@@ -120,20 +174,21 @@ public abstract class Interactable : NetworkBehaviour
                     break;
 
                 case InteractionType.CustomToggle:
-
-                    if(!activated && excludeOtherInteraction)
-                    {
-                        GameSessionManager.Instance.localPlayerController.exclusiveInteractable = this;
-                    }
-                    else if(activated && excludeOtherInteraction)
-                    {
-                        GameSessionManager.Instance.localPlayerController.exclusiveInteractable = null;
-                    }
-
                     StartCoroutine(InteractionEvent());
                     break;
+            }*/
+            
+            StartCoroutine(InteractionEvent());
+            
+            if(activated && excludeOtherInteraction)
+            {
+                GameSessionManager.Instance.localPlayerController.exclusiveInteractable = this;
             }
-
+            else if(!activated && excludeOtherInteraction)
+            {
+                GameSessionManager.Instance.localPlayerController.exclusiveInteractable = null;
+            }
+            
             if (onceOnly)
             {
                 interactedOnce = true;
@@ -144,6 +199,11 @@ public abstract class Interactable : NetworkBehaviour
             //     DialogueManager.instance.OverrideDialogue(dialogueOnInteraction);
             // }
         }
+    }
+
+    public virtual IEnumerator InteractionEvent()
+    {
+        yield break;
     }
 
     public virtual void Target()
@@ -157,15 +217,18 @@ public abstract class Interactable : NetworkBehaviour
                 outline.OutlineWidth = 10;
             }
         }
+        
         UIManager.instance.interactionName.text = textName;
-        //UI.instance.interactionPrompt.text = textPrompt;
 
         if (textPrompt != "" && interactionType != InteractionType.None)
         {
             UIManager.instance.interactionPrompt.text = "[E] ";
             UIManager.instance.interactionPrompt.text += activated ? textPromptActivated : textPrompt;
-            //enable button prompt image instead
-            //UIManager.instance.interactionPromptAnimation.Play("PromptButtonAppear");
+        }
+
+        if (requireHold)
+        {
+            UIManager.instance.interactionHoldBarBackground.enabled = true;
         }
     }
 
@@ -175,10 +238,17 @@ public abstract class Interactable : NetworkBehaviour
         {
             Destroy(highlightTarget.GetComponent<OutlineRenderer>());
         }
+        
         UIManager.instance.interactionName.text = "";
+        
         UIManager.instance.interactionPrompt.text = "";
-        //disable button prompt image here
-        //UIManager.instance.interactionPromptAnimation.Play("PromptButtonDisappear");
+
+        if (requireHold)
+        {
+            UIManager.instance.interactionHoldBarBackground.enabled = false;
+        }
+        
+        CancelInteract();
     }
 
 }

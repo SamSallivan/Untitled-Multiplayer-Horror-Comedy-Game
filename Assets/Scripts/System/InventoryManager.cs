@@ -220,33 +220,33 @@ public class InventoryManager : NetworkBehaviour
 
     public I_InventoryItem AddItemToInventory(I_InventoryItem inventoryItem)
     {
-        
-       
-
         PocketItemRpc(inventoryItem.NetworkObject, playerController.NetworkObject);
 
         int temp = inventoryItem.itemStatus.amount;
 
-        foreach (InventorySlot slot in inventorySlotList)
+        if (inventoryItem.itemData.isStackable)
         {
-            if(slot.inventoryItem != null)
+            foreach (InventorySlot slot in inventorySlotList)
             {
-                I_InventoryItem item = slot.inventoryItem;
-
-                if (item.itemData == inventoryItem.itemData && item.itemData.isStackable)
+                if (slot.inventoryItem != null)
                 {
-                    while (item.itemStatus.amount < item.itemData.maxStackAmount && temp > 0)
-                    {
-                        item.itemStatus.amount++;
-                        SetItemAmountRpc(item.NetworkObject, item.itemStatus.amount);
-                        temp--;
-                        item.inventorySlot.amount.text = "" + item.itemStatus.amount;
-                    }
+                    I_InventoryItem item = slot.inventoryItem;
 
-                    if (temp <= 0)
+                    if (item.itemData == inventoryItem.itemData)
                     {
-                        DestoryItemServerRpc(inventoryItem.NetworkObject);
-                        return item;
+                        while (item.itemStatus.amount < item.itemData.maxStackAmount && temp > 0)
+                        {
+                            item.itemStatus.amount++;
+                            SetItemAmountRpc(item.NetworkObject, item.itemStatus.amount);
+                            temp--;
+                            item.inventorySlot.amount.text = "" + item.itemStatus.amount;
+                        }
+
+                        if (temp <= 0)
+                        {
+                            DestoryItemServerRpc(inventoryItem.NetworkObject);
+                            return item;
+                        }
                     }
                 }
             }
@@ -267,12 +267,14 @@ public class InventoryManager : NetworkBehaviour
                 slot = GetFirstEmptyInventorySlot();
             }
 
-            /*InventorySlot slot;
-            slot = GetFirstEmptyInventorySlot();
-            if (inventorySlotList[equippedSlotIndex].inventoryItem == null)
+
+            if (slot != null)
             {
-                equippedSlotIndex = slot.GetIndex();
-            }*/
+                if (inventoryItem.itemData.isHeavy && slot.GetIndex() > 3)
+                {
+                    slot = null;
+                }
+            }
 
             if (slot != null)
             {
@@ -605,6 +607,11 @@ public class InventoryManager : NetworkBehaviour
 
     public void ClearInventorySlot(InventorySlot slot)
     {
+        if (slot == null)
+        {
+            return;
+        }
+        
         slot.inventoryItem = null;
         slot.image.sprite = null;
         slot.image.color = new UnityEngine.Color(1, 1, 1, 0);
@@ -622,10 +629,6 @@ public class InventoryManager : NetworkBehaviour
         UnequipItem();
 
         equippedItem = inventoryItem;
-        //playerController.currentEquippedItem = inventoryItem;
-        /*playerController.playerAnimationController.armAnimator.SetBool("Equipped", true);
-        playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
-        playerController.playerAnimationController.armAnimator.SetBool(inventoryItem.itemData.equipAnimatorParameter, true);*/
 
         //playerController.inventoryAudio.PlayItemEquip();
         
@@ -650,20 +653,23 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
-    public void UnequipItem()//(ItemData.EquipType type)
+    public void UnequipItem()
     {
         //playerController.inventoryAudio.PlayItemUnequip();
-        
-        /*playerController.playerAnimationController.armAnimator.SetBool("Equipped", false);
-        playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");*/
 
         if (equippedItem != null && equippedItem.inventorySlot != null)
         {
-            //playerController.playerAnimationController.armAnimator.SetBool(equippedItem.itemData.equipAnimatorParameter, false);
             UnequipItemRpc(equippedItem.NetworkObject, playerController.NetworkObject);
-        }
+
+            I_InventoryItem item = equippedItem;
+            equippedItem = null;
         
-        equippedItem = null;
+            if (item.itemData.isHeavy)
+            {
+                DropItemFromInventory(item);
+                UIManager.instance.shortcutSlotHeavyBackground.enabled = false;
+            }
+        }
     }
 
     [Rpc(SendTo.Everyone)]

@@ -428,6 +428,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        playerInputActions.FindAction("ActivateItem").canceled += ActivateItem_canceled;
        // playerInputActions.FindAction("ItemSecondaryUse").performed += ItemSecondaryUse_performed;
        playerInputActions.FindAction("Interact").performed += Interact_performed;
+       playerInputActions.FindAction("Interact").canceled += Interact_canceled;
        playerInputActions.FindAction("Discard").performed += Discard_performed;
        playerInputActions.FindAction("SwitchItem").performed += SwitchItem_performed;
        playerInputActions.FindAction("Emote1").performed += Emote1_performed;
@@ -450,6 +451,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        playerInputActions.FindAction("ActivateItem").canceled -= ActivateItem_canceled;
        // playerInputActions.FindAction("ItemSecondaryUse").performed -= ItemSecondaryUse_performed;
        playerInputActions.FindAction("Interact").performed -= Interact_performed;
+       playerInputActions.FindAction("Interact").canceled -= Interact_canceled;
        playerInputActions.FindAction("Discard").performed -= Discard_performed;
        playerInputActions.FindAction("SwitchItem").performed -= SwitchItem_performed;
        playerInputActions.FindAction("Emote1").performed -= Emote1_performed;
@@ -1384,20 +1386,29 @@ public class PlayerController : NetworkBehaviour, IDamagable
            playerAnimationController.StopEmoteAnimation();
        }
    }
-
-
+   
    private void Interact_performed(InputAction.CallbackContext context)
    {
        if (base.IsOwner && controlledByClient & enableMovement)
        {
            if (enableMovement && targetInteractable != null)
            {
-               targetInteractable.Interact();
+               targetInteractable.PerformInteract();
                playerAnimationController.StopEmoteAnimation();
            }
        }
    }
-
+   
+   private void Interact_canceled(InputAction.CallbackContext context)
+   {
+       if (base.IsOwner && controlledByClient)
+       {
+           if (enableMovement && targetInteractable != null)
+           {
+               targetInteractable.CancelInteract();
+           }
+       }
+   }
 
    private void Emote1_performed(InputAction.CallbackContext context)
    {
