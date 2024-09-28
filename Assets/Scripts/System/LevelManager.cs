@@ -3,35 +3,24 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : NetworkBehaviour
 {
     public static LevelManager Instance { get; private set; } = null;
     
-    private void Awake()
-    {
-        if (Instance == null){
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
-    
     [FoldoutGroup("Match Time")]
     [SerializeField] 
     float preExtractionTime = 300f;
+    
     [FoldoutGroup("Match Time")]
     [SerializeField] 
     float extractionTime = 60f;
+    
     [FoldoutGroup("Match Time")]
     public NetworkVariable<float> matchTimer = new NetworkVariable<float>(0);
 
     public List<GameObject> ExtractionLocations;
-
-    public bool gameOver = false;
     
     public Transform playerSpawnTransform;
     
@@ -45,15 +34,50 @@ public class LevelManager : NetworkBehaviour
     }
 
     public NetworkVariable<GameState> currentGameState = new NetworkVariable<GameState>(GameState.NotStarted);
-
+    
+    private void Awake()
+    {
+        if (Instance == null){
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
             currentGameState.Value = GameState.NotStarted;
             matchTimer.Value = preExtractionTime;
+            
+            I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
+            foreach (I_InventoryItem inventoryItem in inventoryItems)
+            {
+                if (inventoryItem.owner == null)
+                {
+                    var gameObject = Instantiate(inventoryItem);
+                    inventoryItem.NetworkObject.Despawn();
+                    gameObject.GetComponent<NetworkObject>().Spawn();
+                    SceneManager.MoveGameObjectToScene(gameObject.gameObject, SceneManager.GetSceneAt(1));
+                }
+            }
         }
         currentGameState.OnValueChanged += OnStateChanged;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
+        foreach (I_InventoryItem inventoryItem in inventoryItems)
+        {
+            if (inventoryItem.owner == null)
+            {
+                inventoryItem.NetworkObject.Despawn();
+            }
+        }
     }
 
     // Start is called before the first frame update

@@ -41,9 +41,17 @@ public class UIManager : MonoBehaviour
    [FoldoutGroup("Gameplay")]
    public Image staminaBar;
 
-   // [Header("Objective")]
-   // public GameObject objectiveUI;
-   // public GameObject objectiveUIAnim;
+   [FoldoutGroup("Objective")]
+   public GameObject objectiveUI;
+
+   [FoldoutGroup("Objective")]
+   public List<TMP_Text> objectiveTextList;
+
+   [FoldoutGroup("Objective")]
+   public GameObject objectiveNotificationUI;
+
+   [FoldoutGroup("Objective")]
+   public TMP_Text objectiveNotificationText;
 
    [FoldoutGroup("Score & Rating")]
    public GameObject ratingUI;

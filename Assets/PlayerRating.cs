@@ -131,3 +131,14 @@ public class PlayerRating : NetworkBehaviour
     }
 }
 
+
+[System.Serializable]
+public struct RatingSetting
+{
+    public PlayerRating.Rating rating;
+    public string ratingName;
+    public Color ratingColor;
+    public float dropRatePerSecond;
+    public float scoreMultiplier;
+}
+
