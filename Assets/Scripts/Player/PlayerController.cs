@@ -609,6 +609,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
        {
            string playerName = new Friend(playerController.localSteamId.Value).Name;
+           playerController.playerUsername = playerName;
            playerController.playerUsernameText.text = playerName;
 
 
