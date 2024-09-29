@@ -1493,7 +1493,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void ScoreBoard_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & !isPlayerDead.Value)
+       if (base.IsOwner && controlledByClient)
        {
            UIManager.instance.scoreBoardUI.SetActive(true);
            UIManager.instance.UpdateScoreBoard();
@@ -1502,7 +1502,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void ScoreBoard_canceled(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & !isPlayerDead.Value)
+       if (base.IsOwner && controlledByClient)
        {
            UIManager.instance.scoreBoardUI.SetActive(false);
        }
@@ -1510,7 +1510,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void Pause_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & !isPlayerDead.Value)
+       if (base.IsOwner && controlledByClient)
        {
            if (InventoryManager.instance.inventoryOpened)
            {

@@ -471,7 +471,7 @@ public class GameNetworkManager : MonoBehaviour
             return false;
 		}
 
-		if (lobby.MemberCount >= 4 || lobby.MemberCount < 1)
+		if (lobby.MemberCount >= maxPlayerNumber || lobby.MemberCount < 1)
 		{
 			Debug.Log($"IsLobbyJoinable: Lobby join denied! Too many members in lobby! {lobby.Id}");
             MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "The server is full!");

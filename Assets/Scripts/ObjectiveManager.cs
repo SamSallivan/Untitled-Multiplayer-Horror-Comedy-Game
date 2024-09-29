@@ -28,10 +28,17 @@ public class ObjectiveManager : NetworkBehaviour
         if(IsServer){
             if (initialObjective)
             {
-                instance.AssignObjective(initialObjective);
+                StartCoroutine(AssignInitialObjectiveCoroutine());
             }
         }
     }
+
+    public virtual IEnumerator AssignInitialObjectiveCoroutine()
+    {
+        yield return new WaitForSeconds(2.5f);
+        instance.AssignObjective(initialObjective);
+    }
+
     
     [Button]
     public void AssignObjective(Objective objective)
@@ -93,7 +100,7 @@ public class ObjectiveManager : NetworkBehaviour
         {
             if (i < objectiveList.Count)
             {
-                string text = objectiveList[i].objectiveName;
+                string text = "\u2748" + objectiveList[i].objectiveName;
                 if (objectiveList[i].requiredValue > 1)
                 {
                     text += $" ({objectiveList[i].completedValue.Value}/{objectiveList[i].requiredValue})";

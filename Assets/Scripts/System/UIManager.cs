@@ -540,7 +540,7 @@ public class UIManager : MonoBehaviour
            Debug.Log(player.name);
        }*/
 
-       for (int i = 0; i < 4; i++)
+       for (int i = 0; i < gameSummaryUI.transform.GetChild(1).childCount; i++)
        {
            Transform currentLine = gameSummaryUI.transform.GetChild(1).GetChild(i);
 

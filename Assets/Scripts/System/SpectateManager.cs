@@ -93,7 +93,7 @@ public class SpectateManager : MonoBehaviour
         
         for (int i = 0; i < GameNetworkManager.Instance.maxPlayerNumber; i++)
         {
-            targetPlayerId = (targetPlayerId + 1) % 4;
+            targetPlayerId = (targetPlayerId + 1) % GameSessionManager.Instance.connectedPlayerCount;
             PlayerController targetPlayerController = GameSessionManager.Instance.playerControllerList[targetPlayerId];
             
             if (targetPlayerController.controlledByClient && !targetPlayerController.isPlayerDead.Value && !targetPlayerController.isPlayerExtracted.Value && targetPlayerController != GameSessionManager.Instance.localPlayerController)
