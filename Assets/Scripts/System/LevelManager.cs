@@ -214,9 +214,11 @@ public class LevelManager : NetworkBehaviour
             {
                 var instance = Instantiate(monsterToSpawn);
                 var instanceNetworkObject = instance.GetComponent<NetworkObject>();
+                SceneManager.MoveGameObjectToScene(instance,SceneManager.GetSceneAt(1));
                 instance.transform.position = spawnLocations.transform.GetChild(sdata.spawnLocationIndex).position;
                 instanceNetworkObject.Spawn();
                 
+
             }
             spawnIndex++;
             if (spawnIndex < levelSpawnData.spawnData.Count)

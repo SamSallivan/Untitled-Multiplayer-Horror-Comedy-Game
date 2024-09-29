@@ -7,6 +7,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class MonsterAI : NetworkBehaviour, IDamagable
 {
@@ -51,6 +52,10 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     
     public float jumpForce;
     public float thrustForce;
+    
+    //patrol
+    public float patrolTimer = 0;
+    public float patrolTime;
 
     public enum MonsterState
     {
@@ -93,9 +98,15 @@ public class MonsterAI : NetworkBehaviour, IDamagable
                     {
                         if (monState.Value != MonsterState.Attacking)
                         {
+                            if(_agent.isOnNavMesh)
+                                Chase();
+
                             UpdateTarget();
-                            Chase();
                             JumpAttack();
+                            if (monState.Value==MonsterState.Idle)
+                            {
+                                    Patrol();
+                            }
 
                         }
 
@@ -136,6 +147,21 @@ public class MonsterAI : NetworkBehaviour, IDamagable
 
     }
 
+    public void Patrol()
+    {
+        if (patrolTimer <= 0)
+        {
+            patrolTimer = patrolTime + Random.Range(-4,4);
+            if (_agent.isOnNavMesh)
+            {
+                _agent.SetDestination(transform.position + new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)));
+            }
+        }
+        else
+        {
+            patrolTimer -= Time.deltaTime;
+        }
+    }
     public void AttachedUpdate()
     {
         _agent.enabled = false;
@@ -209,7 +235,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
             NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 0.5f, _agent.areaMask));
         _agent.enabled = true;
         rb.velocity = Vector3.zero;
-        monState.Value = MonsterState.Chasing;
+        monState.Value = MonsterState.Idle;
         currentJumpCD = maxJumpCD;
     }
     
@@ -247,6 +273,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
             _agent.isStopped = false;
             if (target != null)
             {
+                monState.Value = MonsterState.Chasing;
                 _agent.SetDestination(target.position);
             }
         }
