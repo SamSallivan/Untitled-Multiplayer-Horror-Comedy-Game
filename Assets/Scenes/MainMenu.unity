@@ -1277,7 +1277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameVersionNumber: 0
-  maxPlayerNumber: 4
+  maxPlayerNumber: 8
   steamDisabled: 0
   disconnecting: 0
   localClientJoinRequestPending: 0

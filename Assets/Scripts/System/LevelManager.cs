@@ -57,32 +57,39 @@ public class LevelManager : NetworkBehaviour
         {
             currentGameState.Value = GameState.NotStarted;
             matchTimer.Value = preExtractionTime;
-            
-            I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
-            foreach (I_InventoryItem inventoryItem in inventoryItems)
-            {
-                if (inventoryItem.owner == null)
-                {
-                    var gameObject = Instantiate(inventoryItem);
-                    inventoryItem.NetworkObject.Despawn();
-                    gameObject.GetComponent<NetworkObject>().Spawn();
-                    SceneManager.MoveGameObjectToScene(gameObject.gameObject, SceneManager.GetSceneAt(1));
-                }
-            }
+
+            StartCoroutine(RespawnScenePlacedInventoryItemsCoroutine());
         }
         currentGameState.OnValueChanged += OnStateChanged;
     }
 
+    IEnumerator RespawnScenePlacedInventoryItemsCoroutine()
+    {
+        yield return new WaitForSeconds(2.5f);
+            
+        I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
+        foreach (I_InventoryItem inventoryItem in inventoryItems)
+        {
+            if (inventoryItem.owner == null)
+            {
+                var gameObject = Instantiate(inventoryItem.itemData.dropObject, inventoryItem.transform.position, inventoryItem.transform.rotation);
+                gameObject.GetComponent<NetworkObject>().Spawn();
+                inventoryItem.NetworkObject.Despawn();
+                SceneManager.MoveGameObjectToScene(gameObject.gameObject, SceneManager.GetSceneAt(1));
+            }
+        }
+    }
+
     public override void OnNetworkDespawn()
     {
-        I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
+        /*I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
         foreach (I_InventoryItem inventoryItem in inventoryItems)
         {
             if (inventoryItem.owner == null)
             {
                 inventoryItem.NetworkObject.Despawn();
             }
-        }
+        }*/
     }
 
     // Start is called before the first frame update
