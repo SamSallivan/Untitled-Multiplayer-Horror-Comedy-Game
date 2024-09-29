@@ -10,6 +10,7 @@ using TMPro;
 using Dissonance;
 using Sirenix.OdinInspector;
 using Enviro;
+using Unity.Collections;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
@@ -42,7 +43,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
    [FoldoutGroup("Networks")]
-   public string playerUsername = "Player";
+   public NetworkVariable<FixedString128Bytes> playerUsername = new NetworkVariable<FixedString128Bytes>("player",NetworkVariableReadPermission.Owner);
 
 
    [FoldoutGroup("Networks")]
@@ -412,8 +413,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
        mouseLookY = headTransform.GetComponent<MouseLook>();
 
 
-       playerUsername = $"Player #{localPlayerId}";
-       playerUsernameText.text = playerUsername;
+       playerUsername.Value = $"Player #{localPlayerId}";
+       playerUsernameText.text = playerUsername.Value.ToString();
 
 
    }
@@ -555,7 +556,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            localSteamId.Value = SteamClient.SteamId;
            GameNetworkManager.Instance.localSteamClientUsername = SteamClient.Name.ToString();
-           playerUsername = GameNetworkManager.Instance.localSteamClientUsername;
+           playerUsername.Value = GameNetworkManager.Instance.localSteamClientUsername;
            //UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
            StartCoroutine(UpdatePlayerUsernameCoroutine());
        }
