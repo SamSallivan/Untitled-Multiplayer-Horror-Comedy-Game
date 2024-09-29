@@ -341,8 +341,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    public NetworkVariable<float> health = new (100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 
-   [FoldoutGroup("Health")]
-   public NetworkVariable<float> stamina = new (100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+   [FoldoutGroup("Health")] public float stamina = 100;
 
 
    [FoldoutGroup("Health")]
@@ -719,7 +718,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            //return;
        }
-       if (!enableJump || jumpCooldown > 0 || stamina.Value < staminaCostPerJump)
+       if (!enableJump || jumpCooldown > 0 || stamina < staminaCostPerJump)
        {
            return;
        }
@@ -753,7 +752,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        crouching = false;
        crouchingNetworkVariable.Value = crouching;
       
-       stamina.Value -= staminaCostPerJump;
+       stamina -= staminaCostPerJump;
        staminaReplenishCooldown = 0.5f;
        //playerAudio.PlayJumpSound();
    }
@@ -842,11 +841,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            if (sprinting)
            {
-               stamina.Value -= staminaCostSprintPerSecond * Time.fixedDeltaTime;
+               stamina -= staminaCostSprintPerSecond * Time.fixedDeltaTime;
                staminaReplenishCooldown = 0.5f;
               
                //Stops sprinting if not inputing forward
-               if (stamina.Value <= 0f || inputDir == Vector3.zero || inputDir.z < 0)
+               if (stamina <= 0f || inputDir == Vector3.zero || inputDir.z < 0)
                {
                    sprinting = false;
                    sprintingNetworkVariable.Value = false;
@@ -974,9 +973,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            staminaReplenishCooldown -= Time.deltaTime;
        }
-       else if (stamina.Value < 100)
+       else if (stamina < 100)
        {
-           stamina.Value += staminaReplenishPerSecond * Time.deltaTime;
+           stamina += staminaReplenishPerSecond * Time.deltaTime;
        }
    }
 

@@ -187,7 +187,7 @@ public class UIManager : MonoBehaviour
        if (GameSessionManager.Instance.localPlayerController)
        {
            healthBar.fillAmount = GameSessionManager.Instance.localPlayerController.health.Value / 100f;
-           staminaBar.fillAmount = GameSessionManager.Instance.localPlayerController.stamina.Value / 100f;
+           staminaBar.fillAmount = GameSessionManager.Instance.localPlayerController.stamina / 100f;
        }
 
        if (scoreBoardUI.activeInHierarchy)
