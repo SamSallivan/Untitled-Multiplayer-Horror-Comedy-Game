@@ -1301,7 +1301,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.25
+  m_Radius: 0.35
   m_Height: 1.25
   m_Direction: 1
   m_Center: {x: 0, y: 0.025, z: 0}
@@ -1344,7 +1344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 733293365
+  GlobalObjectIdHash: 88465425
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -1476,11 +1476,10 @@ MonoBehaviour:
   maxHp: 100
   health:
     m_InternalValue: 100
-  stamina:
-    m_InternalValue: 100
-  staminaReplenishPerSecond: 25
+  stamina: 100
+  staminaReplenishPerSecond: 10
   staminaReplenishCooldown: 0
-  staminaCostPerJump: 25
+  staminaCostPerJump: 50
   staminaCostSprintPerSecond: 10
   ragdollPrefab: {fileID: 7884753425393965448, guid: dca4d5f6b2102364fa1f096610003861, type: 3}
   currentEmoteIndex:
