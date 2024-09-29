@@ -297,7 +297,7 @@ public class UIManager : MonoBehaviour
 
 
                currentLine.GetChild(0).GetComponent<TMP_Text>().text =
-                   playersRanked[i].playerUsername.Value.ToString();
+                   playersRanked[i].playerUsername;
 
 
                currentLine.GetChild(1).GetComponent<TMP_Text>().text =
@@ -554,7 +554,7 @@ public class UIManager : MonoBehaviour
 
 
                currentLine.GetChild(0).GetComponent<TMP_Text>().text =
-                   GameSessionManager.Instance.playerControllerList[i].playerUsername.Value.ToString();
+                   GameSessionManager.Instance.playerControllerList[i].playerUsername.ToString();
 
 
                currentLine.GetChild(1).GetComponent<TMP_Text>().text = $"#{playersRanked.IndexOf(GameSessionManager.Instance.playerControllerList[i]) + 1}";

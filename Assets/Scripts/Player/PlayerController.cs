@@ -42,9 +42,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    public AudioSource playerVoiceChatAudioSource;
 
 
-   [FoldoutGroup("Networks")]
-   public NetworkVariable<FixedString128Bytes> playerUsername = new NetworkVariable<FixedString128Bytes>("player",NetworkVariableReadPermission.Owner);
-
+   [FoldoutGroup("Networks")] public string playerUsername = "Player";
 
    [FoldoutGroup("Networks")]
    public int localPlayerId;
@@ -413,8 +411,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
        mouseLookY = headTransform.GetComponent<MouseLook>();
 
 
-       playerUsername.Value = $"Player #{localPlayerId}";
-       playerUsernameText.text = playerUsername.Value.ToString();
+       playerUsername = $"Player #{localPlayerId}";
+       playerUsernameText.text = playerUsername.ToString();
 
 
    }
@@ -556,7 +554,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            localSteamId.Value = SteamClient.SteamId;
            GameNetworkManager.Instance.localSteamClientUsername = SteamClient.Name.ToString();
-           playerUsername.Value = GameNetworkManager.Instance.localSteamClientUsername;
+           playerUsername = GameNetworkManager.Instance.localSteamClientUsername;
            //UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
            StartCoroutine(UpdatePlayerUsernameCoroutine());
        }
