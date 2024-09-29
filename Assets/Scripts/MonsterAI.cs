@@ -98,15 +98,27 @@ public class MonsterAI : NetworkBehaviour, IDamagable
                     {
                         if (monState.Value != MonsterState.Attacking)
                         {
-                            if(_agent.isOnNavMesh)
+                            if (_agent.isOnNavMesh)
+                            {
                                 Chase();
+                            }
+                            else
+                            {
+                                TeleportToNearestNavmesh();
+                            }
 
                             UpdateTarget();
                             JumpAttack();
                             if (monState.Value==MonsterState.Idle)
                             {
+                                if(_agent.isOnNavMesh)
                                     Patrol();
+                                else
+                                {
+                                    TeleportToNearestNavmesh();
+                                }
                             }
+
 
                         }
 
@@ -160,6 +172,14 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         else
         {
             patrolTimer -= Time.deltaTime;
+        }
+    }
+
+    public void TeleportToNearestNavmesh()
+    {
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
+        {
+            _agent.Warp(hit.position+ new Vector3(0,2,0));
         }
     }
     public void AttachedUpdate()
