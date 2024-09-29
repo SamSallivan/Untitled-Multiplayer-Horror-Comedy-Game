@@ -1341,7 +1341,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            }
            else if (isPlayerDead.Value)
            {
-               //Respawn();
+               Respawn();
            }
        }
    }
