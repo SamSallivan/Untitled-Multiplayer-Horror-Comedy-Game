@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9779aa8e4e858e48a056e1f7e1b3b31, type: 3}
+  m_Name: Level1Spawn
+  m_EditorClassIdentifier: 
+  monsters:
+  - {fileID: 9003375152520329749, guid: 92061c9189ae6c744a6bd7c5b1a418d6, type: 3}
+  spawnData:
+  - mType: 0
+    spawnLocationIndex: 0
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 1
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 2
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 4
+    spawnTime: 20
+  - mType: 0
+    spawnLocationIndex: 3
+    spawnTime: 10
+  - mType: 0
+    spawnLocationIndex: 5
+    spawnTime: 20
+  - mType: 0
+    spawnLocationIndex: 0
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 1
+    spawnTime: 10
+  - mType: 0
+    spawnLocationIndex: 1
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 2
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 4
+    spawnTime: 30
+  - mType: 0
+    spawnLocationIndex: 3
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 5
+    spawnTime: 0
+  - mType: 0
+    spawnLocationIndex: 2
+    spawnTime: 20
+  - mType: 0
+    spawnLocationIndex: 0
+    spawnTime: 0

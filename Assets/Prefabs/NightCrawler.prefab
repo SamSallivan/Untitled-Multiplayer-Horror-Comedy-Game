@@ -404,7 +404,7 @@ GameObject:
   - component: {fileID: 3310682076760127176}
   - component: {fileID: 3509499193733714848}
   m_Layer: 0
-  m_Name: MONSTER
+  m_Name: NightCrawler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,7 +24,11 @@ public class LevelManager : NetworkBehaviour
     public List<GameObject> ExtractionLocations;
     
     public Transform playerSpawnTransform;
-    
+
+    [FoldoutGroup("Monster Spawning")] public LevelSpawnData levelSpawnData;
+    [FoldoutGroup("Monster Spawning")] public Transform spawnLocations;
+    [FoldoutGroup("Monster Spawning")] public float monsterSpawnTimer = 0;
+    public int spawnIndex = 0;
 
     public enum GameState
     {
@@ -104,6 +109,7 @@ public class LevelManager : NetworkBehaviour
         else if (currentGameState.Value == GameState.PreExtraction)
         {
             matchTimer.Value -= Time.deltaTime;
+            SpawnMonsters();
             if (matchTimer.Value <= 0)
             {
                 matchTimer.Value = extractionTime;
@@ -117,6 +123,7 @@ public class LevelManager : NetworkBehaviour
         else if (currentGameState.Value == GameState.Extraction)
         {
             matchTimer.Value -= Time.deltaTime;
+            SpawnMonsters();
             if (matchTimer.Value <= 0)
             {
                 matchTimer.Value = 0;
@@ -131,6 +138,13 @@ public class LevelManager : NetworkBehaviour
 
     public void OnStateChanged(GameState previous, GameState current)
     {
+        if (current == GameState.PreExtraction)
+        {
+            if (IsServer)
+            {
+                monsterSpawnTimer = levelSpawnData.spawnData[spawnIndex].spawnTime;
+            }
+        }
         if (current == GameState.Finished)
         {
             if (IsServer)
@@ -170,6 +184,43 @@ public class LevelManager : NetworkBehaviour
         }
 
         currentGameState.Value = GameState.Finished;
+    }
+
+    public void SpawnMonsters()
+    {
+        if (monsterSpawnTimer <= 0&& spawnIndex<levelSpawnData.spawnData.Count)
+        {
+            LevelSpawnData.SpawnData sdata = levelSpawnData.spawnData[spawnIndex];
+            
+            GameObject monsterToSpawn;
+            switch (sdata.mType)
+            {
+                case LevelSpawnData.MonsterType.NightCrawler:
+                    monsterToSpawn = levelSpawnData.monsters[0];
+                    break;
+                default:
+                    monsterToSpawn = null;
+                    break;
+            }
+
+            if (monsterToSpawn != null)
+            {
+                var instance = Instantiate(monsterToSpawn);
+                var instanceNetworkObject = instance.GetComponent<NetworkObject>();
+                instance.transform.position = spawnLocations.transform.GetChild(sdata.spawnLocationIndex).position;
+                instanceNetworkObject.Spawn();
+                
+            }
+            spawnIndex++;
+            if (spawnIndex < levelSpawnData.spawnData.Count)
+            {
+                monsterSpawnTimer = levelSpawnData.spawnData[spawnIndex].spawnTime;
+            }
+        }
+        else
+        {
+            monsterSpawnTimer -= Time.deltaTime;
+        }
     }
     
 }
