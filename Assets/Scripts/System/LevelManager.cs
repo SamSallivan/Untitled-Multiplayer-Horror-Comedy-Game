@@ -121,10 +121,7 @@ public class LevelManager : NetworkBehaviour
             {
                 matchTimer.Value = extractionTime;
                 currentGameState.Value = GameState.Extraction;
-                foreach (GameObject location in ExtractionLocations)
-                {
-                    location.SetActive(true);
-                }
+                ActivateExtractRPC();
             }
         }
         else if (currentGameState.Value == GameState.Extraction)
@@ -229,6 +226,15 @@ public class LevelManager : NetworkBehaviour
         else
         {
             monsterSpawnTimer -= Time.deltaTime;
+        }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void ActivateExtractRPC()
+    {
+        foreach (GameObject location in ExtractionLocations)
+        {
+            location.SetActive(true);
         }
     }
     

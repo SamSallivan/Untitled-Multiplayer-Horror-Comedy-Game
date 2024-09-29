@@ -302,16 +302,17 @@ public class UIManager : MonoBehaviour
 
                currentLine.GetChild(1).GetComponent<TMP_Text>().text =
                    playersRanked[i].GetComponent<PlayerRating>().score.Value + "";
-
+               currentLine.GetChild(2).GetComponent<TMP_Text>().text =
+                   playersRanked[i].GetComponent<PlayerRating>().rating.Value.ToString();
 
                if (!GameNetworkManager.Instance.steamDisabled)
                {
-                   currentLine.GetChild(2).GetComponent<RawImage>().color = Color.white;
-                   currentLine.GetChild(2).GetComponent<RawImage>().texture = playersRanked[i].steamAvatar;
+                   currentLine.GetChild(3).GetComponent<RawImage>().color = Color.white;
+                   currentLine.GetChild(3).GetComponent<RawImage>().texture = playersRanked[i].steamAvatar;
                }
                else
                {
-                   currentLine.GetChild(2).GetComponent<RawImage>().color = Color.clear;
+                   currentLine.GetChild(3).GetComponent<RawImage>().color = Color.clear;
                }
            }
            else
@@ -553,14 +554,14 @@ public class UIManager : MonoBehaviour
 
 
                currentLine.GetChild(0).GetComponent<TMP_Text>().text =
-                   GameSessionManager.Instance.playerControllerList[i].playerUsername;
+                   GameSessionManager.Instance.playerControllerList[i].playerUsername.ToString();
 
 
                currentLine.GetChild(1).GetComponent<TMP_Text>().text = $"#{playersRanked.IndexOf(GameSessionManager.Instance.playerControllerList[i]) + 1}";
 
 
                currentLine.GetChild(1).GetComponent<TMP_Text>().text += " | Score: " + GameSessionManager.Instance.playerControllerList[i].GetComponent<PlayerRating>().score.Value;
-
+               
 
                if (!GameNetworkManager.Instance.steamDisabled)
                {

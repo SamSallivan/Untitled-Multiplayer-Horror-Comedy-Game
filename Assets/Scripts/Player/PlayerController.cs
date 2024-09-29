@@ -10,6 +10,7 @@ using TMPro;
 using Dissonance;
 using Sirenix.OdinInspector;
 using Enviro;
+using Unity.Collections;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
@@ -41,9 +42,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    public AudioSource playerVoiceChatAudioSource;
 
 
-   [FoldoutGroup("Networks")]
-   public string playerUsername = "Player";
-
+   [FoldoutGroup("Networks")] public string playerUsername = "Player";
 
    [FoldoutGroup("Networks")]
    public int localPlayerId;
@@ -413,7 +412,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
        playerUsername = $"Player #{localPlayerId}";
-       playerUsernameText.text = playerUsername;
+       playerUsernameText.text = playerUsername.ToString();
 
 
    }
