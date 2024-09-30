@@ -6,28 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="ae88ff3d-798b-444a-9315-8e5f906c02c9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Untitled-Multiplayer-Horror-Comedy-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animations/Animator/PlayerArmAnimator.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animations/Animator/PlayerArmAnimator.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DefaultNetworkPrefabs.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DefaultNetworkPrefabs.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Models/COLOR.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Models/COLOR.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Models/MONSTER.fbx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Models/MONSTER.fbx.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Models/lambert2.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Models/lambert2.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Easy Save 3/Resources/ES3/ES3GlobalReferences.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Items/Camera.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Items/Camera.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Items/Flashlight.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Items/Flashlight.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/NightCrawler.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/NightCrawler.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lobby.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MainMenu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MainMenu.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ScriptableObjects/ItemData/Camera.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ScriptableObjects/ItemData/Camera.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AttachTrigger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AttachTrigger.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CameraItemController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CameraItemController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Items/Bat.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Items/Bat.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Items/Beer.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Items/Beer.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BatController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BatController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/FlashlightController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/FlashlightController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightCrawler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MonsterAI.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightCrawler.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BeerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Item Controllers/BeerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightCrawler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightCrawler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -151,7 +134,7 @@
       <workItem from="1727231518895" duration="8096000" />
       <workItem from="1727304142362" duration="1409000" />
       <workItem from="1727553690283" duration="15506000" />
-      <workItem from="1727633283576" duration="9656000" />
+      <workItem from="1727633283576" duration="12841000" />
     </task>
     <servers />
   </component>

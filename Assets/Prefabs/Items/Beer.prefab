@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1743208917
+  GlobalObjectIdHash: 3708180548
   InScenePlacedSourceGlobalObjectIdHash: 1743208917
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -267,7 +267,8 @@ MonoBehaviour:
   highlightTarget: {fileID: 7074802747145682746}
   interactionType: 2
   onceOnly: 0
-  interactedOnce: 0
+  requireHold: 0
+  requireHoldDuration: 1
   examineImage: {fileID: 0}
   hasText: 0
   examineText: 
@@ -278,6 +279,9 @@ MonoBehaviour:
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
+  interactedOnce: 0
+  isHeld: 0
+  heldDuration: 0
   ownerPlayerId:
     m_InternalValue: -1
   owner: {fileID: 0}
@@ -407,3 +411,7 @@ MonoBehaviour:
   targetLookRotationY: 30
   lookRotationInterpolationSpeed: 15
   beerBottleItemDataListIndex: 4
+  chugged: 1
+  drinkSound: {fileID: 8300000, guid: be9f062c34292f74f9e6c7b7bc4e5264, type: 3}
+  chuggedSound: {fileID: 8300000, guid: e8f930e89323254498f9a9307623f459, type: 3}
+  finishedSound: {fileID: 8300000, guid: 9e6a65edbd06f864a9bde5d651dcc2d9, type: 3}

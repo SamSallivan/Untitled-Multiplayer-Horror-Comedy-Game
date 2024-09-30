@@ -13,8 +13,13 @@ public class BeerController : ItemController
     public float lookRotationInterpolationSpeed = 1f;
     //public ItemData beerBottleItemData;
     public int beerBottleItemDataListIndex = 0;
-    
 
+    public bool chugged = true;
+
+    public AudioClip drinkSound;
+    public AudioClip chuggedSound;
+    public AudioClip finishedSound;
+    
     public override void ItemUpdate()
     {
         if (buttonHeld)
@@ -30,6 +35,15 @@ public class BeerController : ItemController
         float currentFillAmount = transform.GetChild(0).GetChild(0).GetComponent<Renderer>().material.GetFloat("_FillAmount");
         float targetFillAmount = Mathf.Lerp(fillAmountRange.x, fillAmountRange.y, inventoryItem.itemStatus.durability);
         transform.GetChild(0).GetChild(0).GetComponent<Renderer>().material.SetFloat("_FillAmount", Mathf.Lerp(currentFillAmount, targetFillAmount, Time.deltaTime * 5f));
+    }
+
+    public override void OnButtonReleased()
+    {
+        base.OnButtonReleased();
+        if (inventoryItem.itemStatus.durability > 0)
+        {
+            chugged = false;
+        }
     }
 
     public override void Activate()
@@ -52,12 +66,25 @@ public class BeerController : ItemController
         }
         inventoryItem.owner.drunkTimer +=  totalDrunkTime / totalDrinkCount;
 
-        RatingManager.instance.AddScore(5, "Drink Beer"); 
+        RatingManager.instance.AddScore(5, "Chug");
+        SoundManager.Instance.PlayClientSoundEffect(drinkSound,transform.position);
         
         yield return new WaitForSeconds(0.25f);
 
         if(inventoryItem.itemStatus.durability <= 0)
         {
+            if (chugged)
+            {
+                SoundManager.Instance.PlayClientSoundEffect(chuggedSound,transform.position);
+                RatingManager.instance.AddScore(20, "CHUUUUUUGGED!"); 
+            }
+            else
+            {
+                SoundManager.Instance.PlayClientSoundEffect(finishedSound,transform.position);
+                RatingManager.instance.AddScore(10, "Refreshing!"); 
+            }
+            
+            
             ReplaceBeerWithBottle();
         }
     }

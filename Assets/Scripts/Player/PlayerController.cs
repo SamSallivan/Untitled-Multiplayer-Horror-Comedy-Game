@@ -1161,7 +1161,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
                Die();
            }
            
-           GetComponent<PlayerRating>().AddScore((int)damage * 10, "Took Damage");
+           GetComponent<PlayerRating>().AddScore((int)damage * 5, "Took Damage");
            Debug.Log($"{playerUsernameText} took {damage} damage.");
        }
    }

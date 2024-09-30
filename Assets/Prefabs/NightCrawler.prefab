@@ -491,7 +491,7 @@ MonoBehaviour:
   maxHealth: 100
   health:
     m_InternalValue: 0
-  JumpTriggerDist: 6
+  JumpTriggerDist: 5
   attackDamage: 24
   maxJumpCD: 1
   maxAttackCD: 2
@@ -501,6 +501,7 @@ MonoBehaviour:
   patrolTime: 0
   monState:
     m_InternalValue: 0
+  jumping: 0
 --- !u!114 &9078181484996867578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -563,7 +564,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9003375152520329749}
   serializedVersion: 4
-  m_Mass: 0.5
+  m_Mass: 2
   m_Drag: 3
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 1, z: 0.4}

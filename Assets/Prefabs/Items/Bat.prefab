@@ -209,7 +209,8 @@ MonoBehaviour:
   highlightTarget: {fileID: 2735389631332600545}
   interactionType: 2
   onceOnly: 0
-  interactedOnce: 0
+  requireHold: 0
+  requireHoldDuration: 1
   examineImage: {fileID: 0}
   hasText: 0
   examineText: 
@@ -220,6 +221,9 @@ MonoBehaviour:
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
+  interactedOnce: 0
+  isHeld: 0
+  heldDuration: 0
   ownerPlayerId:
     m_InternalValue: -1
   owner: {fileID: 0}
@@ -293,8 +297,10 @@ MonoBehaviour:
   heldTime: 0
   minHeldTime: 0.25
   cooldown: 0
-  cooldownSetting: 1
+  cooldownSetting: 1.5
   damage: 20
   attackMask:
     serializedVersion: 2
     m_Bits: 385
+  swingSound: {fileID: 8300000, guid: 024c5313d521a4442b8a49bf71daf75b, type: 3}
+  hitSound: {fileID: 8300000, guid: f06ad26081cbbda4e83e52904513a0dd, type: 3}

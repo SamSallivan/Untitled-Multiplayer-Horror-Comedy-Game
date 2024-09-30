@@ -9,6 +9,9 @@ public class BatController : ItemController
     public float damage;
     public LayerMask attackMask;
 
+    public AudioClip swingSound;
+    public AudioClip hitSound;
+
     public override void Update()
     {
         base.Update();
@@ -23,6 +26,7 @@ public class BatController : ItemController
         if (heldTime > minHeldTime && cooldown <= 0)
         {
             cooldown = cooldownSetting;
+            
             Activate();
         }
     }
@@ -30,6 +34,7 @@ public class BatController : ItemController
     public override void Activate()
     {
         base.Activate();
+        SoundManager.Instance.PlayClientSoundEffect(swingSound,transform.position);
         BatSwingClientRpc();
     }
 
@@ -39,6 +44,7 @@ public class BatController : ItemController
         PlayerController owner = GetComponent<I_InventoryItem>().owner;
         RaycastHit[] hits = Physics.SphereCastAll(owner.headTransform.position + owner.headTransform.right * -0.35f, 0.8f, owner.headTransform.forward, 1.5f, attackMask, QueryTriggerInteraction.Collide);
         List<RaycastHit> hitList = hits.OrderBy((RaycastHit x) => x.distance).ToList();
+        bool hitSomething = false;
         for (int i = 0; i < hitList.Count; i++)
         {
             IDamagable component;
@@ -49,6 +55,7 @@ public class BatController : ItemController
             if (hitList[i].transform.TryGetComponent<IDamagable>(out component) && hitList[i].transform != owner.transform)
             {
                 Vector3 direction = owner.headTransform.forward;
+                hitSomething = true;
                 component.TakeDamage(damage, direction);
             }
             
@@ -66,9 +73,25 @@ public class BatController : ItemController
             
             if (hitList[i].transform.TryGetComponent<NightCrawler>(out ma) && hitList[i].transform != owner.transform)
             {
-                if(ma!=null)
+                if (ma != null)
+                {
+                    if (ma.attatchedPlayer != null)
+                    {
+                        RatingManager.instance.AddScore(50,"Friend Saved!", owner);
+                    }
+                    else if (ma.jumping)
+                    {
+                        RatingManager.instance.AddScore(100,"Home Run!", owner);
+                    }
                     RatingManager.instance.AddScore(30,"Enemy Hit!", owner);
+                }
+                    
             }
+        }
+
+        if (hitSomething)
+        {
+            SoundManager.Instance.PlayClientSoundEffect(hitSound,transform.position);
         }
         
     }

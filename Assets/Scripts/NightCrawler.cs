@@ -69,6 +69,7 @@ public class NightCrawler : NetworkBehaviour, IDamagable
     }
 
     public NetworkVariable<MonsterState> monState;
+    public bool jumping = false;
 
 
     public override void OnNetworkSpawn()
@@ -266,13 +267,16 @@ public class NightCrawler : NetworkBehaviour, IDamagable
         yield return new WaitForSeconds(0.1f);
         rb.velocity = Vector3.zero;
         rb.AddForce(transform.up*jumpForce+transform.forward*thrustForce,ForceMode.Impulse);
+        jumping = true;
         //AttackClientRpc();
         stuckHitbox.SetActive(true);
         yield return new WaitForSeconds(1f);
         stuckHitbox.SetActive(false);
+        jumping = false;
         if (monState.Value == MonsterState.Attached)
             yield break;
         yield return new WaitForSeconds(0.5f);
+        
         yield return new WaitUntil(() =>
             NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, _agent.areaMask));
         _agent.enabled = true;
