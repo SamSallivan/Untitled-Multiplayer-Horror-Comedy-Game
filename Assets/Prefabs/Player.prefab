@@ -1344,7 +1344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 88465425
+  GlobalObjectIdHash: 733293365
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -1417,6 +1417,8 @@ MonoBehaviour:
     m_InternalValue: 0
   isPlayerExtracted:
     m_InternalValue: 0
+  isPlayerGrabbed:
+    m_InternalValue: 0
   enableMovement: 1
   enableLook: 1
   enableJump: 1
@@ -1487,6 +1489,7 @@ MonoBehaviour:
   emoteDataList:
   - {fileID: 11400000, guid: 1bcea3a96d4ecc54489e6c0d3a2617b5, type: 2}
   - {fileID: 11400000, guid: c7f03c1437ca48044ab7d459a1551ee4, type: 2}
+  emote1Sound: {fileID: 8300000, guid: 7b162a40a549b814eb3d5694d29302f2, type: 3}
   damageTimer: 0
   drunkTimer: 0
   baseCurrencyBalance: 0

@@ -462,7 +462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1761431402
+  GlobalObjectIdHash: 3170295626
   InScenePlacedSourceGlobalObjectIdHash: 3170295626
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -495,8 +495,8 @@ MonoBehaviour:
   attackDamage: 24
   maxJumpCD: 1
   maxAttackCD: 2
-  jumpForce: 3.5
-  thrustForce: 12
+  jumpForce: 7
+  thrustForce: 20
   patrolTimer: 0
   patrolTime: 0
   monState:
@@ -564,7 +564,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9003375152520329749}
   serializedVersion: 4
-  m_Mass: 2
+  m_Mass: 1
   m_Drag: 3
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 1, z: 0.4}

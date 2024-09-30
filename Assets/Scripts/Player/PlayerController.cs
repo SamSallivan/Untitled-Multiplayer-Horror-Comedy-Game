@@ -373,6 +373,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Emote")]
    public List<EmoteData> emoteDataList = new List<EmoteData>();
 
+   [FoldoutGroup("Emote")] public AudioClip emote1Sound;
 
    [FoldoutGroup("Effects")]
    public float damageTimer;
@@ -388,6 +389,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    
    [FoldoutGroup("Model")]
    public NetworkVariable<int> currentCharacterModelIndex = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Owner);
+   
    
 
    private void Awake()
@@ -1449,6 +1451,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        if (base.IsOwner && controlledByClient & enableMovement)
        {
            PlayEmote(0);
+           SoundManager.Instance.PlayClientSoundEffect(emote1Sound,transform.position);
        }
    }
   
