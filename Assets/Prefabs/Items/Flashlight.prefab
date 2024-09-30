@@ -621,6 +621,8 @@ MonoBehaviour:
   activated:
     m_InternalValue: 0
   durabilityCostPerSecond: 0.01667
+  on: {fileID: 8300000, guid: 1b8938b360b4a694f982720fc02aa745, type: 3}
+  off: {fileID: 8300000, guid: 1a146c8dd0a906a4892af3e88c6c1db9, type: 3}
 --- !u!114 &6796858063129461121
 MonoBehaviour:
   m_ObjectHideFlags: 0

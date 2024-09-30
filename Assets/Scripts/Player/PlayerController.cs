@@ -171,6 +171,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Settings")]
    public NetworkVariable<bool> isPlayerExtracted = new (writePerm: NetworkVariableWritePermission.Owner);
 
+   [FoldoutGroup("Settings")] public NetworkVariable<bool> isPlayerGrabbed = new NetworkVariable<bool>(false);
+
 
    [FoldoutGroup("Settings")]
    public bool enableMovement = true;

@@ -44,7 +44,7 @@ public class BatController : ItemController
             IDamagable component;
             Rigidbody rb;
             PlayerController pc;
-            MonsterAI ma;
+            NightCrawler ma;
             
             if (hitList[i].transform.TryGetComponent<IDamagable>(out component) && hitList[i].transform != owner.transform)
             {
@@ -64,7 +64,7 @@ public class BatController : ItemController
                     RatingManager.instance.AddScore(20,"Friendly Fire!", owner);
             }
             
-            if (hitList[i].transform.TryGetComponent<MonsterAI>(out ma) && hitList[i].transform != owner.transform)
+            if (hitList[i].transform.TryGetComponent<NightCrawler>(out ma) && hitList[i].transform != owner.transform)
             {
                 if(ma!=null)
                     RatingManager.instance.AddScore(30,"Enemy Hit!", owner);

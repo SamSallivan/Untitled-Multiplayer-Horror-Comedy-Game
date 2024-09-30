@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class AttachTrigger : MonoBehaviour
 {
-    private MonsterAI _monsterAI;
+    private NightCrawler _nightCrawler;
     // Start is called before the first frame update
     void Start()
     {
-        _monsterAI = GetComponentInParent<MonsterAI>();
+        _nightCrawler = GetComponentInParent<NightCrawler>();
     }
 
     // Update is called once per frame
@@ -20,12 +20,12 @@ public class AttachTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_monsterAI.monState.Value != MonsterAI.MonsterState.Attached&&other.GetComponentInParent<PlayerController>())
+        if (_nightCrawler.monState.Value != NightCrawler.MonsterState.Attached&&other.GetComponentInParent<PlayerController>()&&!other.GetComponentInParent<PlayerController>().isPlayerGrabbed.Value)
         {
-            _monsterAI.monState.Value = MonsterAI.MonsterState.Attached;
-            _monsterAI.setAttachedPlayer(other.GetComponentInParent<PlayerController>());
-            
-            
+            _nightCrawler.monState.Value = NightCrawler.MonsterState.Attached;
+            _nightCrawler.SetAttachedPlayer(other.GetComponentInParent<PlayerController>());
+            other.GetComponentInParent<PlayerController>().isPlayerGrabbed.Value = true;
+
         }
         
     }

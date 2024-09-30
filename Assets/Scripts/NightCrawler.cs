@@ -9,8 +9,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-public class MonsterAI : NetworkBehaviour, IDamagable
+public class NightCrawler : NetworkBehaviour, IDamagable
 {
+    private Animator anim;
     private NavMeshAgent _agent;
 
     private Rigidbody rb;
@@ -56,7 +57,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     //patrol
     public float patrolTimer = 0;
     public float patrolTime;
-
+    
     public enum MonsterState
     {
         Idle,
@@ -83,6 +84,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     {
         _agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -100,7 +102,16 @@ public class MonsterAI : NetworkBehaviour, IDamagable
                         {
                             if (_agent.isOnNavMesh)
                             {
+                                if (_agent.velocity != Vector3.zero)
+                                {
+                                    anim.SetBool("Walking",true);
+                                }
+                                else
+                                {
+                                    anim.SetBool("Walking",false);
+                                }
                                 Chase();
+
                             }
                             else
                             {
@@ -111,8 +122,19 @@ public class MonsterAI : NetworkBehaviour, IDamagable
                             JumpAttack();
                             if (monState.Value==MonsterState.Idle)
                             {
-                                if(_agent.isOnNavMesh)
+                                if (_agent.isOnNavMesh)
+                                {
+                                    if (_agent.velocity != Vector3.zero)
+                                    {
+                                        anim.SetBool("Walking",true);
+                                    }
+                                    else
+                                    {
+                                        anim.SetBool("Walking",false);
+                                    }
                                     Patrol();
+                                }
+
                                 else
                                 {
                                     TeleportToNearestNavmesh();
@@ -190,7 +212,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         {
             if (attatchedPlayer.isPlayerDead.Value)
             {
-                unattatch();
+                Unattatch();
             }
             else
             {
@@ -241,7 +263,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         yield return new WaitForSeconds(0.5f);
         transform.LookAt(target.position);
         _agent.enabled = false;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
         rb.velocity = Vector3.zero;
         rb.AddForce(transform.up*jumpForce+transform.forward*thrustForce,ForceMode.Impulse);
         //AttackClientRpc();
@@ -252,7 +274,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
             yield break;
         yield return new WaitForSeconds(0.5f);
         yield return new WaitUntil(() =>
-            NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 0.5f, _agent.areaMask));
+            NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, _agent.areaMask));
         _agent.enabled = true;
         rb.velocity = Vector3.zero;
         monState.Value = MonsterState.Idle;
@@ -305,7 +327,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
         target = null;
         for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
         {
-            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient&&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead.Value)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient&&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead.Value&&!GameSessionManager.Instance.playerControllerList[i].isPlayerGrabbed.Value)
             {
                 float dist= Vector3.Distance(transform.position,
                     GameSessionManager.Instance.playerControllerList[i].transform.position);
@@ -350,29 +372,36 @@ public class MonsterAI : NetworkBehaviour, IDamagable
 
     public IEnumerator Knockback(float damage, Vector3 direction)
     {
+        if(attatchedPlayer!=null)
+            attatchedPlayer.isPlayerGrabbed.Value = false;
         _agent.enabled = false;
         if (monState.Value == MonsterState.Attached)
         {
             GetComponent<Collider>().isTrigger = false;
             UnattachPlayerClientRpc();
         }
+
+        rb.constraints = RigidbodyConstraints.None;
         
         rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
         monState.Value = MonsterState.HitStunned;
         yield return new WaitForSeconds(1.5f);
         yield return new WaitUntil(() =>
-            NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 1f, _agent.areaMask));
+            NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 0.5f, _agent.areaMask));
         rb.velocity = Vector3.zero;
         _agent.enabled = true;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
         monState.Value = MonsterState.Idle;
 
     }
 
-    void unattatch()
+    void Unattatch()
     {
+       
+        attatchedPlayer.isPlayerGrabbed.Value = false;
         GetComponent<Collider>().isTrigger = false;
         UnattachPlayerClientRpc();
-        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 1f, _agent.areaMask))
         {
             _agent.Warp(hit.position+ new Vector3(0,2,0));
             _agent.enabled = true;
@@ -382,7 +411,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
 
     }
 
-    public void setAttachedPlayer(PlayerController playerController)
+    public void SetAttachedPlayer(PlayerController playerController)
     {
         SetAttachedPlayerClientRpc(playerController.NetworkObject);
     }
@@ -391,7 +420,7 @@ public class MonsterAI : NetworkBehaviour, IDamagable
     public void SetAttachedPlayerClientRpc(NetworkObjectReference playerController)
     {
         if(playerController.TryGet(out NetworkObject playerControllerObject))
-        attatchedPlayer = playerControllerObject.GetComponent<PlayerController>();
+            attatchedPlayer = playerControllerObject.GetComponent<PlayerController>();
         GetComponent<Collider>().isTrigger = true;
     }
     [Rpc(SendTo.Everyone)]

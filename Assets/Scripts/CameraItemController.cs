@@ -11,7 +11,8 @@ public class CameraItemController : ItemController
     public NetworkVariable<bool> activated;
     public LayerMask lm;
     public float durabilityCostPerUse = 0.5f;
-    
+
+    public AudioClip flashSound;
 
     
     public override void  OnNetworkSpawn(){
@@ -31,9 +32,9 @@ public class CameraItemController : ItemController
     }
 
     
-    public override void OnButtonHeld()
+    public override void OnButtonReleased()
     {
-        if (cooldown <= 0 && inventoryItem.itemStatus.durability >= durabilityCostPerUse)
+        if (heldTime > minHeldTime && cooldown <= 0&& inventoryItem.itemStatus.durability >= durabilityCostPerUse)
         {
             cooldown = cooldownSetting;
             inventoryItem.itemStatus.durability -= durabilityCostPerUse;
@@ -42,10 +43,21 @@ public class CameraItemController : ItemController
         }
     }
     
+    /*public override void OnButtonHeld()
+    {
+        if (cooldown <= 0 )
+        {
+            cooldown = cooldownSetting;
+            inventoryItem.itemStatus.durability -= durabilityCostPerUse;
+            InventoryManager.instance.SetItemDurarbilityRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.durability);
+            Activate();
+        }
+    }*/
+    
     IEnumerator StartFlash()
     {
         ToggleLightServerRpc();
-        
+        SoundManager.Instance.PlayServerSoundEffect(flashSound,transform.position);
         yield return new WaitForSeconds(0.1f);
         CheckBlindClientRpc();
         yield return new WaitForSeconds(0.2f);
