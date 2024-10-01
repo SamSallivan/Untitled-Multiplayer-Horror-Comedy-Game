@@ -305,7 +305,7 @@ public class UIManager : MonoBehaviour
                currentLine.GetChild(2).GetComponent<TMP_Text>().text =
                    playersRanked[i].GetComponent<PlayerRating>().rating.Value.ToString();
 
-               if (!GameNetworkManager.Instance.steamDisabled)
+               if (!GameNetworkManager.Instance.isSteamDisabled)
                {
                    currentLine.GetChild(3).GetComponent<RawImage>().color = Color.white;
                    currentLine.GetChild(3).GetComponent<RawImage>().texture = playersRanked[i].steamAvatar;
@@ -495,7 +495,7 @@ public class UIManager : MonoBehaviour
 
    public void Invite()
    {
-       if (!GameNetworkManager.Instance.steamDisabled && !GameSessionManager.Instance.gameStarted.Value && GameSessionManager.Instance.connectedPlayerCount < GameNetworkManager.Instance.maxPlayerNumber)
+       if (!GameNetworkManager.Instance.isSteamDisabled && !GameSessionManager.Instance.gameStarted.Value && GameSessionManager.Instance.connectedPlayerCount < GameNetworkManager.Instance.maxPlayerNumber)
        {
            SteamFriends.OpenGameInviteOverlay(GameNetworkManager.Instance.currentSteamLobby.Value.Id);
        }
@@ -563,7 +563,7 @@ public class UIManager : MonoBehaviour
                currentLine.GetChild(1).GetComponent<TMP_Text>().text += " | Score: " + GameSessionManager.Instance.playerControllerList[i].GetComponent<PlayerRating>().score.Value;
                
 
-               if (!GameNetworkManager.Instance.steamDisabled)
+               if (!GameNetworkManager.Instance.isSteamDisabled)
                {
                    currentLine.GetChild(2).GetComponent<RawImage>().color = Color.white;
                    currentLine.GetChild(2).GetComponent<RawImage>().texture = GameSessionManager.Instance.playerControllerList[i].steamAvatar;

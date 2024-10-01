@@ -553,11 +553,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
        }
 
 
-       if (!GameNetworkManager.Instance.steamDisabled)
+       if (!GameNetworkManager.Instance.isSteamDisabled)
        {
            localSteamId.Value = SteamClient.SteamId;
-           GameNetworkManager.Instance.localSteamClientUsername = SteamClient.Name.ToString();
-           playerUsername = GameNetworkManager.Instance.localSteamClientUsername;
+           playerUsername = SteamClient.Name.ToString();
            //UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
            StartCoroutine(UpdatePlayerUsernameCoroutine());
        }

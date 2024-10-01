@@ -269,7 +269,7 @@ public class GameSessionManager : NetworkBehaviour
          playerControllerList[0].TeleportPlayer(playerSpawnTransform.position);
 
 
-         if (!GameNetworkManager.Instance.steamDisabled)
+         if (!GameNetworkManager.Instance.isSteamDisabled)
          {
             GameNetworkManager.Instance.currentSteamLobby.Value.SetJoinable(true);
          }
@@ -468,7 +468,7 @@ public class GameSessionManager : NetworkBehaviour
 
       if (!IsServer && disconnectingPlayerId == 0)
        {
-         if (!GameNetworkManager.Instance.disconnecting)
+         if (!GameNetworkManager.Instance.isDisconnecting)
          {
             Debug.Log("OnClientDisconnectedGameSession: Host disconnected. Returning to Main Menu.");
             GameNetworkManager.Instance.Disconnect("Host Disconnected.");
@@ -584,7 +584,7 @@ public class GameSessionManager : NetworkBehaviour
       UIManager.instance.ratingUI.SetActive(true);
       UIManager.instance.currencyUI.SetActive(false);
      
-      if (!GameNetworkManager.Instance.steamDisabled)
+      if (!GameNetworkManager.Instance.isSteamDisabled)
       {
          SteamFriends.SetRichPresence("steam_player_group", GameNetworkManager.Instance.currentSteamLobbyName);
          SteamFriends.SetRichPresence("steam_player_group_size", connectedPlayerCount.ToString());
@@ -662,7 +662,7 @@ public class GameSessionManager : NetworkBehaviour
       yield return new WaitUntil(() => loaded == true);
 
 
-      if (!GameNetworkManager.Instance.steamDisabled)
+      if (!GameNetworkManager.Instance.isSteamDisabled)
       {
          SteamFriends.SetRichPresence("steam_player_group", GameNetworkManager.Instance.currentSteamLobbyName);
          SteamFriends.SetRichPresence("steam_player_group_size", connectedPlayerCount.ToString());

@@ -1200,16 +1200,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06644f4683ca9a04687049856e4bd958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  steamAppId: 480
   gameVersionNumber: 0
   maxPlayerNumber: 8
-  steamDisabled: 0
-  disconnecting: 0
+  isSteamDisabled: 0
+  isDisconnecting: 0
   localClientJoinRequestPending: 0
   waitingForLobbyDataRefresh: 0
+  networkManagerCallbacksSubscribed: 0
   connectedClientCount: 0
-  disconnectionReasonText: 
-  localSteamClientUsername: 
   currentSteamLobbyName: 
+  disconnectionReasonText: 
 --- !u!1 &716513387
 GameObject:
   m_ObjectHideFlags: 0

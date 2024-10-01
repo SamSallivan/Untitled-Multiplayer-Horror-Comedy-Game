@@ -12,45 +12,45 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Sirenix.OdinInspector;
+using UnityEngine.Serialization;
 
 public class GameNetworkManager : MonoBehaviour
 {
     public static GameNetworkManager Instance { get; private set; } = null;
 
     [Header("Settings")]
+    public uint steamAppId = 480;
+    
     public int gameVersionNumber = 1;
+    
     public int maxPlayerNumber = 4;
 
     [Header("Switches")]
-	[Sirenix.OdinInspector.ReadOnly]
-	public bool steamDisabled;
-	//[Sirenix.OdinInspector.ReadOnly]
-    //public bool gameStarted;
-	[Sirenix.OdinInspector.ReadOnly]
-    public bool disconnecting;
-	[Sirenix.OdinInspector.ReadOnly]
+	public bool isSteamDisabled;
+	
+    public bool isDisconnecting;
+    
     public bool localClientJoinRequestPending;
-	[Sirenix.OdinInspector.ReadOnly]
+    
     public bool waitingForLobbyDataRefresh;
-    private bool networkManagerCallbacksSubscribed;
+    
+    public bool networkManagerCallbacksSubscribed;
 
     [Header("Values")]
-	[Sirenix.OdinInspector.ReadOnly]
 	public int connectedClientCount;
-	[Sirenix.OdinInspector.ReadOnly]
+	
+	public string currentSteamLobbyName;
+	
 	public string disconnectionReasonText;
-	[Sirenix.OdinInspector.ReadOnly]
-	public string localSteamClientUsername;
-	[Sirenix.OdinInspector.ReadOnly]
-    public LobbySettings lobbySettings;
+	
+    public List<SteamId> steamIdsInCurrentSteamLobby = new List<SteamId>();
 	
     [Header("References")]
-	private Coroutine lobbyRefreshTimeOutCoroutine;
-	[Sirenix.OdinInspector.ReadOnly]
-	public string currentSteamLobbyName;
-	public Lobby? currentSteamLobby { get; private set; }
-	[Sirenix.OdinInspector.ReadOnly]
-	public List<SteamId> steamIdsInCurrentSteamLobby = new List<SteamId>();
+    public LobbySettings lobbySettings;
+	
+    public Lobby? currentSteamLobby { get; private set; }
+    
+    public Coroutine lobbyRefreshTimeOutCoroutine;
 
 	private void Awake()
 	{
@@ -64,9 +64,14 @@ public class GameNetworkManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
+	}
+
+	private void Start()
+	{	
+		GetComponent<NetworkManager>().NetworkConfig.ProtocolVersion = (ushort)gameVersionNumber;
 
 		//Add Transport component to Network Manager
-		if(!steamDisabled)
+		if(!isSteamDisabled)
 		{
 			if (!NetworkManager.Singleton.GetComponent<FacepunchTransport>())
 			{
@@ -79,42 +84,25 @@ public class GameNetworkManager : MonoBehaviour
 			{
 				NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<UnityTransport>();
 			}
-		}
+		} 
 	}
-    
-	private void GetLocalSteamClientUsername()
+
+	private void OnEnable()
 	{
-		if (!steamDisabled)
-		{
-			string text = SteamClient.Name.ToString();
-			if (text.Length > 18)
-			{
-				text.Remove(15, text.Length - 15);
-				text += "...";
-			}
-			localSteamClientUsername = text;
-		}
+		SubscribeToSteamMatchmakingCallbacks();
 	}
 
-	private void Start()
-    {	
-        GetComponent<NetworkManager>().NetworkConfig.ProtocolVersion = (ushort)gameVersionNumber;
-	}
-
-    private void OnEnable()
-    {
-        SubscribeToSteamMatchmakingCallbacks();
-    }
-
-    private void OnDisable()
+	private void OnDisable()
 	{
-        UnsubscribeToSteamMatchmakingCallbacks();
+		UnsubscribeToSteamMatchmakingCallbacks();
 	}
 
+	#region StartHost
 	public async void StartHost()
 	{
+		MainMenuManager.Instance.SetLoadingScreen(isLoading: true);
 		
-		if(steamDisabled)
+		if(isSteamDisabled)
 		{
 			SwitchToUnityTransport();
 		}
@@ -123,31 +111,28 @@ public class GameNetworkManager : MonoBehaviour
 			SwitchToFacepunchTransport();
 		}
 		
-		MainMenuManager.Instance.SetLoadingScreen(isLoading: true);
-
 		if (currentSteamLobby.HasValue)
 		{
 			LeaveCurrentSteamLobby();
 		}
 
-		if (!steamDisabled)
+		if (!isSteamDisabled)
 		{
 			if(!SteamClient.IsLoggedOn)
 			{
 				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Could not connect to Steam.");
+				return;
 			}
 			currentSteamLobby = await SteamMatchmaking.CreateLobbyAsync(maxPlayerNumber);
 		}
 
         SubscribeToNetworkManagerCallbacks();
-        NetworkManager.Singleton.ConnectionApprovalCallback = NetworkManager_ConnectionApprovalCallback;
 
 		try
 		{
             if (NetworkManager.Singleton.StartHost())
 			{
 				Debug.Log("StartHost: Started host successfully");
-				NetworkManager.Singleton.SceneManager.SetClientSynchronizationMode(LoadSceneMode.Single);
 				StartCoroutine(DelayLoadLobbyScene());
 			}
 			else
@@ -164,34 +149,38 @@ public class GameNetworkManager : MonoBehaviour
 		}
 
 		
-		if (!steamDisabled)
+		if (!isSteamDisabled)
 		{
 			steamIdsInCurrentSteamLobby.Add(SteamClient.SteamId);
 		}
 
 		connectedClientCount = 1;
     }
+	#endregion
 	
 	private IEnumerator DelayLoadLobbyScene()
 	{
+		NetworkManager.Singleton.SceneManager.SetClientSynchronizationMode(LoadSceneMode.Single);
 		yield return new WaitForSeconds(0.1f);
 		NetworkManager.Singleton.SceneManager.LoadScene("Lobby", LoadSceneMode.Single);
 	}
-
-	public void StartClient(SteamId ownerSteamId)
+	
+	#region StartClient
+	public void StartClient(SteamId hostSteamId)
 	{
-		steamDisabled = false;
-		SwitchToFacepunchTransport();
-
 		MainMenuManager.Instance.SetLoadingScreen(isLoading: true);
+		
+		isSteamDisabled = false;
+		SwitchToFacepunchTransport();
+		
         localClientJoinRequestPending = true;
-		GetComponent<FacepunchTransport>().targetSteamId = ownerSteamId;
+		GetComponent<FacepunchTransport>().targetSteamId = hostSteamId;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(Instance.gameVersionNumber + "," + (ulong)SteamClient.SteamId);
 
 		try
 		{
 			if (NetworkManager.Singleton.StartClient()){
-				Debug.Log($"StartClient: Client successfully joined room hosted by {ownerSteamId}");
+				Debug.Log($"StartClient: Client successfully joined room hosted by {hostSteamId}");
 				SubscribeToNetworkManagerCallbacks();
 			}
 			else
@@ -212,10 +201,11 @@ public class GameNetworkManager : MonoBehaviour
 
 	public void StartClientLAN()
     {
-		steamDisabled = true;
+	    MainMenuManager.Instance.SetLoadingScreen(isLoading: true);
+	    
+		isSteamDisabled = true;
 		SwitchToUnityTransport();
-
-		MainMenuManager.Instance.SetLoadingScreen(isLoading: true);
+		
         localClientJoinRequestPending = true;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(gameVersionNumber.ToString());
 
@@ -240,6 +230,8 @@ public class GameNetworkManager : MonoBehaviour
 		
 	}
 
+	#endregion
+
 	public void LeaveCurrentSteamLobby()
 	{
 		Debug.Log("LeaveCurrentSteamLobby");
@@ -259,28 +251,28 @@ public class GameNetworkManager : MonoBehaviour
 		}
 	}
 
-	// private void OnApplicationQuit()
-	// {
-	// 	try
-	// 	{
-	// 		//Disconnect();
-	// 	}
-	// 	catch (Exception arg)
-	// 	{
-	// 		Debug.LogError($"Error while disconnecting: {arg}");
-	// 	}
-	// }
+	private void OnApplicationQuit()
+	{
+		try
+		{ 
+			Disconnect();
+		}
+		catch (Exception arg)
+		{
+			Debug.LogError($"Error while disconnecting: {arg}");
+		}
+	}
 
 	[Button("Disconnect")]
 	public void Disconnect(string message = "")
 	{
-		if (disconnecting) // || !GameSessionManager.Instance)
+		if (isDisconnecting)
 		{
 			return;
 		}
 		Debug.Log("Disconnect: Disconnecting.");
 		
-		disconnecting = true;
+		isDisconnecting = true;
 
 		if(!string.IsNullOrEmpty(message))
 		{
@@ -292,12 +284,12 @@ public class GameNetworkManager : MonoBehaviour
 			GameSessionManager.Instance.Save();
 		}
 
-		if (!steamDisabled)
+		if (!isSteamDisabled)
 		{
 			LeaveCurrentSteamLobby();
 		}
 
-		NetworkObject[] array = UnityEngine.Object.FindObjectsOfType<NetworkObject>(includeInactive: true);
+		NetworkObject[] array = FindObjectsOfType<NetworkObject>(includeInactive: true);
 		for (int i = 0; i < array.Length; i++)
 		{
 			array[i].DontDestroyWithOwner = false;
@@ -332,7 +324,7 @@ public class GameNetworkManager : MonoBehaviour
 	#region Steam Callbacks
 	public void SubscribeToSteamMatchmakingCallbacks()
 	{
-		if (!steamDisabled)
+		if (!isSteamDisabled)
 		{
             SteamMatchmaking.OnLobbyCreated += SteamMatchmaking_OnLobbyCreated;
             //SteamMatchmaking.OnLobbyEntered += SteamMatchmaking_OnLobbyEntered;
@@ -346,7 +338,7 @@ public class GameNetworkManager : MonoBehaviour
 
 	public void UnsubscribeToSteamMatchmakingCallbacks()
 	{
-		if (!steamDisabled)
+		if (!isSteamDisabled)
 		{
             SteamMatchmaking.OnLobbyCreated -= SteamMatchmaking_OnLobbyCreated;
             //SteamMatchmaking.OnLobbyEntered -= SteamMatchmaking_OnLobbyEntered;
@@ -384,14 +376,9 @@ public class GameNetworkManager : MonoBehaviour
 		}
 
 		MainMenuManager.Instance.SetLoadingScreen(isLoading: true);
-
-        Destroy(NetworkManager.Singleton.GetComponent<UnityTransport>());
-        if (!NetworkManager.Singleton.GetComponent<FacepunchTransport>())
-        {
-            NetworkManager.Singleton.NetworkConfig.NetworkTransport = NetworkManager.Singleton.AddComponent<FacepunchTransport>();
-        }
-
-        SubscribeToSteamMatchmakingCallbacks();
+		
+		isSteamDisabled = false;
+		SwitchToFacepunchTransport();
 
 		SteamMatchmaking.OnLobbyDataChanged += SteamMatchmaking_OnLobbyDataChanged;
 		waitingForLobbyDataRefresh = true;
@@ -601,7 +588,7 @@ public class GameNetworkManager : MonoBehaviour
 			NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
 			NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
             //NetworkManager.Singleton.OnServerStarted += NetworkManager_OnServerStarted;
-            //NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
+            NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
 			networkManagerCallbacksSubscribed = true;
 		}
 	}	
@@ -616,7 +603,7 @@ public class GameNetworkManager : MonoBehaviour
 			NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
 			NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
             //NetworkManager.Singleton.OnServerStarted -= NetworkManager_OnServerStarted;
-            //NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
+            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
             networkManagerCallbacksSubscribed = false;
 		}
 	}
@@ -651,7 +638,7 @@ public class GameNetworkManager : MonoBehaviour
 		string payload = Encoding.ASCII.GetString(request.Payload);
 		string clientGameVersion = payload.Split(",")[0];
 
-        if (disconnecting)
+        if (isDisconnecting)
         {
             response.Reason = "The host was not accepting connections.";
 			flag = false;
@@ -750,7 +737,7 @@ public class GameNetworkManager : MonoBehaviour
 
 	private void ResetNetworkManagerValues()
 	{
-		disconnecting = false;
+		isDisconnecting = false;
 		connectedClientCount = 0;
 		//gameStarted = false;
         UnsubscribeToNetworkManagerCallbacks();
