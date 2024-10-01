@@ -50,7 +50,7 @@ public class SpectateManager : MonoBehaviour
         }
         else
         {
-            if (spectateTargetPlayerController.isPlayerDead.Value || spectateTargetPlayerController.isPlayerExtracted.Value || !spectateTargetPlayerController.controlledByClient)
+            if (spectateTargetPlayerController.isPlayerDead.Value || spectateTargetPlayerController.isPlayerExtracted.Value || !spectateTargetPlayerController.controlledByClient.Value)
             {
                 SpectateNextPlayer();
             }
@@ -96,7 +96,7 @@ public class SpectateManager : MonoBehaviour
             targetPlayerId = (targetPlayerId + 1) % GameSessionManager.Instance.connectedPlayerCount;
             PlayerController targetPlayerController = GameSessionManager.Instance.playerControllerList[targetPlayerId];
             
-            if (targetPlayerController.controlledByClient && !targetPlayerController.isPlayerDead.Value && !targetPlayerController.isPlayerExtracted.Value && targetPlayerController != GameSessionManager.Instance.localPlayerController)
+            if (targetPlayerController.controlledByClient.Value && !targetPlayerController.isPlayerDead.Value && !targetPlayerController.isPlayerExtracted.Value && targetPlayerController != GameSessionManager.Instance.localPlayerController)
             {
                 spectateTargetPlayerController = targetPlayerController;
                 return;

@@ -166,7 +166,7 @@ public class LevelManager : NetworkBehaviour
     {
         foreach (var p in GameSessionManager.Instance.playerControllerList)
         {
-            if (p.controlledByClient && !p.isPlayerDead.Value)
+            if (p.controlledByClient.Value && !p.isPlayerDead.Value)
             {
                 p.Die();
             }
@@ -177,7 +177,7 @@ public class LevelManager : NetworkBehaviour
     {
         foreach (PlayerController pc in GameSessionManager.Instance.playerControllerList)
         {
-            if (pc.controlledByClient)
+            if (pc.controlledByClient.Value)
             {
                 if (!pc.isPlayerDead.Value && !pc.isPlayerExtracted.Value)
                 {

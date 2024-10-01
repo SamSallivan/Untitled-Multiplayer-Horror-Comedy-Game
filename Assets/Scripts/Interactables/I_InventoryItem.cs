@@ -154,7 +154,7 @@ public class I_InventoryItem : Interactable
 	{
         if (owner != null)
         {
-            if (owner.controlledByClient && !owner.isPlayerDead.Value) 
+            if (owner.controlledByClient.Value && !owner.isPlayerDead.Value) 
             {
                 Transform targetTransform = owner.equippedTransform;
                 transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
@@ -163,7 +163,7 @@ public class I_InventoryItem : Interactable
             }
             else if (IsServer)
             {
-                if (!owner.controlledByClient && inStorageBox.Value)
+                if (!owner.controlledByClient.Value && inStorageBox.Value)
                 {
                     InventoryManager.instance.DestoryItemServerRpc(this.NetworkObject);
                 }

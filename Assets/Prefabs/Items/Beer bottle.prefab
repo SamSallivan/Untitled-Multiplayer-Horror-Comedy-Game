@@ -160,7 +160,8 @@ MonoBehaviour:
   highlightTarget: {fileID: 7074802747145682746}
   interactionType: 2
   onceOnly: 0
-  interactedOnce: 0
+  requireHold: 0
+  requireHoldDuration: 0
   examineImage: {fileID: 0}
   hasText: 0
   examineText: 
@@ -171,6 +172,9 @@ MonoBehaviour:
   openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
   activated: 0
+  interactedOnce: 0
+  isHeld: 0
+  heldDuration: 0
   ownerPlayerId:
     m_InternalValue: -1
   owner: {fileID: 0}
@@ -244,7 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
+  UseUnreliableDeltas: 1
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 1
@@ -259,7 +263,7 @@ MonoBehaviour:
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 0
   UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
+  UseHalfFloatPrecision: 1
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0

@@ -331,7 +331,7 @@ public class NightCrawler : NetworkBehaviour, IDamagable
         target = null;
         for (int i = 0; i < GameSessionManager.Instance.playerControllerList.Count; i++)
         {
-            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient&&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead.Value&&!GameSessionManager.Instance.playerControllerList[i].isPlayerGrabbed.Value)
+            if (GameSessionManager.Instance.playerControllerList[i].controlledByClient.Value &&!GameSessionManager.Instance.playerControllerList[i].isPlayerDead.Value&&!GameSessionManager.Instance.playerControllerList[i].isPlayerGrabbed.Value)
             {
                 float dist= Vector3.Distance(transform.position,
                     GameSessionManager.Instance.playerControllerList[i].transform.position);

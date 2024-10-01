@@ -42,8 +42,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
    public AudioSource playerVoiceChatAudioSource;
 
 
-   [FoldoutGroup("Networks")] public string playerUsername = "Player";
+   [FoldoutGroup("Networks")] 
+   public string playerUsername = "Player";
 
+   
    [FoldoutGroup("Networks")]
    public int localPlayerId;
 
@@ -61,7 +63,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
    [FoldoutGroup("Networks")]
-   public bool controlledByClient;
+   public NetworkVariable<bool> controlledByClient = new (writePerm: NetworkVariableWritePermission.Server);
 
 
    [FoldoutGroup("Networks")]
@@ -171,7 +173,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Settings")]
    public NetworkVariable<bool> isPlayerExtracted = new (writePerm: NetworkVariableWritePermission.Owner);
 
-   [FoldoutGroup("Settings")] public NetworkVariable<bool> isPlayerGrabbed = new NetworkVariable<bool>(false);
+   [FoldoutGroup("Settings")] 
+   public NetworkVariable<bool> isPlayerGrabbed = new NetworkVariable<bool>(false);
 
 
    [FoldoutGroup("Settings")]
@@ -373,7 +376,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Emote")]
    public List<EmoteData> emoteDataList = new List<EmoteData>();
 
-   [FoldoutGroup("Emote")] public AudioClip emote1Sound;
+   [FoldoutGroup("Emote")] 
+   public AudioClip emote1Sound;
 
    [FoldoutGroup("Effects")]
    public float damageTimer;
@@ -490,7 +494,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Update()
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            if (awaitInitialization)
            {
@@ -525,7 +529,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void FixedUpdate()
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            MovementUpdate();
        }
@@ -1221,7 +1225,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            Vector3 spawnPosition;
            if (!GameSessionManager.Instance.gameStarted.Value)
            {
-               spawnPosition = GameSessionManager.Instance.playerSpawnTransform.position;
+               spawnPosition = GameSessionManager.Instance.lobbySpawnTransform.position;
            }
            else
            {
@@ -1262,7 +1266,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void InputUpdate()
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            inputDir.x = playerInputActions.Player.Move.ReadValue<Vector2>().x;
            inputDir.y = 0f;
@@ -1281,7 +1285,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void LookUpdate()
    {
-       if (base.IsOwner && controlledByClient & enableLook)
+       if (base.IsOwner && controlledByClient.Value & enableLook)
        {  
            Vector2 mouseInput = playerInputActions.FindAction("Look").ReadValue<Vector2>();
 
@@ -1304,7 +1308,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Sprint_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            if (inputDir.z >= 0 && grounder.grounded.Value)
            {
@@ -1335,7 +1339,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Jump_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            if (enableMovement)
            {
@@ -1351,7 +1355,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Crouch_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            crouching = !crouching;
            crouchingNetworkVariable.Value = crouching;
@@ -1362,7 +1366,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void ActivateItem_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            if (enableMovement)
            {
@@ -1384,7 +1388,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void ActivateItem_canceled(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner && InventoryManager.instance.equippedItem.owner == this)
            {
@@ -1399,7 +1403,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Discard_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {       
            if (!InventoryManager.instance.inventoryOpened)
            {
@@ -1415,7 +1419,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void SwitchItem_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            InventoryManager.instance.SwitchEquipedItem(Math.Sign(context.ReadValue<float>()));
            playerAnimationController.StopEmoteAnimation();
@@ -1424,7 +1428,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    
    private void Interact_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            if (enableMovement && targetInteractable != null)
            {
@@ -1436,7 +1440,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    
    private void Interact_canceled(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            if (enableMovement && targetInteractable != null)
            {
@@ -1447,7 +1451,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Emote1_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            PlayEmote(0);
            SoundManager.Instance.PlayClientSoundEffect(emote1Sound,transform.position);
@@ -1456,7 +1460,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void Emote2_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            PlayEmote(1);
        }
@@ -1464,7 +1468,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void Emote3_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            PlayEmote(2);
        }
@@ -1472,7 +1476,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void Emote4_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            PlayEmote(3);
        }
@@ -1481,7 +1485,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Inventory_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            if (!InventoryManager.instance.inventoryOpened & enableMovement)
            {
@@ -1496,7 +1500,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void ScoreBoard_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            UIManager.instance.scoreBoardUI.SetActive(true);
            UIManager.instance.UpdateScoreBoard();
@@ -1505,7 +1509,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void ScoreBoard_canceled(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            UIManager.instance.scoreBoardUI.SetActive(false);
        }
@@ -1513,7 +1517,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    private void Pause_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient)
+       if (base.IsOwner && controlledByClient.Value)
        {
            if (InventoryManager.instance.inventoryOpened)
            {
@@ -1565,7 +1569,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    public void StopEmote()
    {
-       if (IsOwner && controlledByClient)
+       if (IsOwner && controlledByClient.Value)
        {
            currentEmoteIndex.Value = -1;
        }
@@ -1591,7 +1595,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    public void Extract()
    {
        isPlayerExtracted.Value = true;
-       TeleportPlayer(GameSessionManager.Instance.playerSpawnTransform.position);
+       TeleportPlayer(GameSessionManager.Instance.lobbySpawnTransform.position);
        LockMovement(true);
        ResetCamera();
        SpectateManager.Instance.StartSpectating();

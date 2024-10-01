@@ -81,7 +81,7 @@ namespace Dissonance.Integrations.Unity_NFGO
                 );
             }
 
-			if (base.IsOwner && base.gameObject.GetComponent<PlayerController>().controlledByClient)
+			if (base.IsOwner && base.gameObject.GetComponent<PlayerController>().controlledByClient.Value)
 			{
                 Log.Debug("Tracking `NetworkStart` for local player. Name={0}", _comms.LocalPlayerName);
 

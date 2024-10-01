@@ -32,7 +32,7 @@ public class PlayerRating : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsOwner && playerController.controlledByClient)
+        if (IsOwner && playerController.controlledByClient.Value)
         {
             UIManager.instance.ratingBar.fillAmount = ratingMeter;
             UIManager.instance.scoreText.text = "Score: " + score.Value;
@@ -104,7 +104,7 @@ public class PlayerRating : NetworkBehaviour
     
     public void AddScore(float score, string message = "")
     {
-        if (IsOwner&& playerController.controlledByClient)
+        if (IsOwner&& playerController.controlledByClient.Value)
         {
             score *= GetScoreMultiplier();
             this.score.Value += (int)score;

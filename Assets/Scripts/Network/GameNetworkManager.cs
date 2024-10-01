@@ -89,11 +89,13 @@ public class GameNetworkManager : MonoBehaviour
 
 	private void OnEnable()
 	{
+		SubscribeToNetworkManagerCallbacks();
 		SubscribeToSteamMatchmakingCallbacks();
 	}
 
 	private void OnDisable()
 	{
+		UnsubscribeToNetworkManagerCallbacks();
 		UnsubscribeToSteamMatchmakingCallbacks();
 	}
 
@@ -118,15 +120,8 @@ public class GameNetworkManager : MonoBehaviour
 
 		if (!isSteamDisabled)
 		{
-			if(!SteamClient.IsLoggedOn)
-			{
-				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Could not connect to Steam.");
-				return;
-			}
 			currentSteamLobby = await SteamMatchmaking.CreateLobbyAsync(maxPlayerNumber);
 		}
-
-        SubscribeToNetworkManagerCallbacks();
 
 		try
 		{
@@ -138,14 +133,14 @@ public class GameNetworkManager : MonoBehaviour
 			else
 			{
 				Debug.Log("StartHost: Starting host failed");
-				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start server.");
+				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start host.");
 				return;
 			}
 		}
 		catch (Exception arg)
 		{
 			Debug.Log($"StartHost: Starting host failed: {arg}");
-			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start server.");
+			MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start host.");
 		}
 
 		
@@ -181,15 +176,12 @@ public class GameNetworkManager : MonoBehaviour
 		{
 			if (NetworkManager.Singleton.StartClient()){
 				Debug.Log($"StartClient: Client successfully joined room hosted by {hostSteamId}");
-				SubscribeToNetworkManagerCallbacks();
 			}
 			else
 			{
 				Debug.Log("StartClient: Joined steam lobby successfully, but connection failed");
 				MainMenuManager.Instance.SetLoadingScreen(isLoading: false, "Failed to start client.");
 				LeaveCurrentSteamLobby();
-				ResetNetworkManagerValues();
-				return;
 			}
 		}
 		catch (Exception arg)
@@ -214,7 +206,6 @@ public class GameNetworkManager : MonoBehaviour
 			if (NetworkManager.Singleton.StartClient())
 			{
 				Debug.Log("StartLocalClient: Local client has started!");
-				SubscribeToNetworkManagerCallbacks();
 			}
 			else
 			{
@@ -296,17 +287,6 @@ public class GameNetworkManager : MonoBehaviour
 		}
 		
 		StartCoroutine(ReturnToMainMenuCoroutine());
-
-		// if (NetworkManager.Singleton == null)
-		// {
-		// 	Debug.Log("Server is not active; quitting to main menu");
-		// 	ResetGameValues();
-		// 	SceneManager.LoadScene("MainMenu");
-		// }
-		// else
-		// {
-		// 	StartCoroutine(ReturnToMainMenuCoroutine());
-		// }
 	}
 
 	private IEnumerator ReturnToMainMenuCoroutine()
@@ -739,8 +719,6 @@ public class GameNetworkManager : MonoBehaviour
 	{
 		isDisconnecting = false;
 		connectedClientCount = 0;
-		//gameStarted = false;
-        UnsubscribeToNetworkManagerCallbacks();
 	}
 
     #endregion

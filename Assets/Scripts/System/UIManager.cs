@@ -291,7 +291,7 @@ public class UIManager : MonoBehaviour
            Transform currentLine = scoreBoardUI.transform.GetChild(1).GetChild(i);
 
 
-           if (playersRanked[i].controlledByClient)
+           if (playersRanked[i].controlledByClient.Value)
            {
                currentLine.gameObject.SetActive(true);
 
@@ -546,7 +546,7 @@ public class UIManager : MonoBehaviour
            Transform currentLine = gameSummaryUI.transform.GetChild(1).GetChild(i);
 
 
-           if (GameSessionManager.Instance.playerControllerList[i].controlledByClient)
+           if (GameSessionManager.Instance.playerControllerList[i].controlledByClient.Value)
            {
 
 

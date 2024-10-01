@@ -35,7 +35,7 @@ public class VoiceChatManager : MonoBehaviour
 
     private IEnumerator InitializeVoiceChat()
     {
-        yield return new WaitUntil(() =>  GameSessionManager.Instance.localPlayerController != null && GameSessionManager.Instance.localPlayerController.controlledByClient);
+        yield return new WaitUntil(() =>  GameSessionManager.Instance.localPlayerController != null && GameSessionManager.Instance.localPlayerController.controlledByClient.Value);
 
         foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
         {
@@ -72,7 +72,7 @@ public class VoiceChatManager : MonoBehaviour
 		
 		foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
 		{
-			if (!playerController.controlledByClient || playerController == GameSessionManager.Instance.localPlayerController)
+			if (!playerController.controlledByClient.Value || playerController == GameSessionManager.Instance.localPlayerController)
 			{
 				continue;
 			}
@@ -172,7 +172,7 @@ public class VoiceChatManager : MonoBehaviour
 
 		foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
 		{
-			if (!playerController.controlledByClient && !playerController.isPlayerDead.Value)
+			if (!playerController.controlledByClient.Value && !playerController.isPlayerDead.Value)
 			{
 				continue;
 			}
