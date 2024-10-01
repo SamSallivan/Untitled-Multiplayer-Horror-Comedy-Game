@@ -76,6 +76,13 @@ public abstract class Interactable : NetworkBehaviour
     [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
     public ItemStatus itemStatus;
     
+    /*[FoldoutGroup("Values")]
+    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
+    public int amount;
+    [FoldoutGroup("Values")]
+    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
+    public float durability;*/
+    
     [FoldoutGroup("Settings")]
     [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
     public bool openInventoryOnPickUp;

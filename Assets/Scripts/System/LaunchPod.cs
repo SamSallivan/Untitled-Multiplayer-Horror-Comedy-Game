@@ -15,7 +15,7 @@ public class LaunchPod : NetworkBehaviour
     {
         if (!GameSessionManager.Instance.gameStarted.Value)
         {
-            if (readyPlayerList.Count == GameSessionManager.Instance.connectedPlayerCount)
+            if (readyPlayerList.Count == GameSessionManager.Instance.connectedPlayerCount.Value)
             {
                 if (launchCountdown > 0)
                 {
@@ -34,7 +34,7 @@ public class LaunchPod : NetworkBehaviour
             else
             {
                 launchCountdown = 4f;
-                launchText.text = $"{readyPlayerList.Count}/{GameSessionManager.Instance.connectedPlayerCount} Ready";
+                launchText.text = $"{readyPlayerList.Count}/{GameSessionManager.Instance.connectedPlayerCount.Value} Ready";
             }
         }
     }

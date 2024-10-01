@@ -495,7 +495,7 @@ public class UIManager : MonoBehaviour
 
    public void Invite()
    {
-       if (!GameNetworkManager.Instance.isSteamDisabled && !GameSessionManager.Instance.gameStarted.Value && GameSessionManager.Instance.connectedPlayerCount < GameNetworkManager.Instance.maxPlayerNumber)
+       if (!GameNetworkManager.Instance.isSteamDisabled && !GameSessionManager.Instance.gameStarted.Value && GameSessionManager.Instance.connectedPlayerCount.Value < GameNetworkManager.Instance.maxPlayerNumber)
        {
            SteamFriends.OpenGameInviteOverlay(GameNetworkManager.Instance.currentSteamLobby.Value.Id);
        }

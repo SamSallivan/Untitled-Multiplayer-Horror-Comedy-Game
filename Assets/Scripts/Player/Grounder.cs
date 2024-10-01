@@ -272,7 +272,7 @@ public class Grounder : NetworkBehaviour
 			groundPosition = Vector3.zero;
 			//regroundCooldown = regroundCooldownSetting;
 
-			if (playerController.JumpCooldownNetworkVariable.Value >= playerController.jumpCooldownSetting - 0.5f)
+			if (playerController.jumpCooldownNetworkVariable.Value >= playerController.jumpCooldownSetting - 0.5f)
 			{
 				JumpRpc();
 			}

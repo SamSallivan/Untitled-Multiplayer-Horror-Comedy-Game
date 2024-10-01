@@ -51,7 +51,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
    [FoldoutGroup("Networks")]
-   public ulong localClientId;
+   public NetworkVariable<ulong>  localClientId = new (writePerm: NetworkVariableWritePermission.Server);
 
 
    [FoldoutGroup("Networks")]
@@ -59,11 +59,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
    [FoldoutGroup("Networks")]
-   public Texture2D steamAvatar;
+   public NetworkVariable<bool> controlledByClient = new (writePerm: NetworkVariableWritePermission.Server);
 
 
    [FoldoutGroup("Networks")]
-   public NetworkVariable<bool> controlledByClient = new (writePerm: NetworkVariableWritePermission.Server);
+   public Texture2D steamAvatar;
 
 
    [FoldoutGroup("Networks")]
@@ -173,6 +173,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Settings")]
    public NetworkVariable<bool> isPlayerExtracted = new (writePerm: NetworkVariableWritePermission.Owner);
 
+   
    [FoldoutGroup("Settings")] 
    public NetworkVariable<bool> isPlayerGrabbed = new NetworkVariable<bool>(false);
 
@@ -266,7 +267,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    
    [FoldoutGroup("Physics Based Movements")]
-   public NetworkVariable<float> JumpCooldownNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
+   public NetworkVariable<float> jumpCooldownNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
   
    
    [FoldoutGroup("Physics Based Movements")]
@@ -376,9 +377,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [FoldoutGroup("Emote")]
    public List<EmoteData> emoteDataList = new List<EmoteData>();
 
+   
    [FoldoutGroup("Emote")] 
    public AudioClip emote1Sound;
 
+   
    [FoldoutGroup("Effects")]
    public float damageTimer;
   
@@ -392,7 +395,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    
    [FoldoutGroup("Model")]
-   public NetworkVariable<int> currentCharacterModelIndex = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Owner);
+   public NetworkVariable<int> currentCharacterModelIndex = new (writePerm: NetworkVariableWritePermission.Owner);
    
    
 
@@ -548,8 +551,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    public void ConnectClientToPlayerObject()
    {
-       localClientId = NetworkManager.Singleton.LocalClientId;
-
 
        if (GameSessionManager.Instance != null)
        {
@@ -561,9 +562,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            localSteamId.Value = SteamClient.SteamId;
            playerUsername = SteamClient.Name.ToString();
-           //UpdatePlayerSteamIdServerRpc(SteamClient.SteamId);
            StartCoroutine(UpdatePlayerUsernameCoroutine());
        }
+       
+       playerUsernameText.text = string.Empty;
 
 
        //GameSessionManager.Instance.spectateCamera.enabled = false;
@@ -587,6 +589,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
        Respawn();
+         
+       GameSessionManager.Instance.StartCoroutine(GameSessionManager.Instance.LoadCoroutine());
+       TeleportPlayer(GameSessionManager.Instance.lobbySpawnTransform.position);
 
 
        awaitInitialization = false;
@@ -616,12 +621,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
            string playerName = new Friend(playerController.localSteamId.Value).Name;
            playerController.playerUsername = playerName;
            playerController.playerUsernameText.text = playerName;
-
-
-           if (playerController == GameSessionManager.Instance.localPlayerController)
-           {
-               playerController.playerUsernameText.text = string.Empty;
-           }
        }
    }
    
@@ -748,7 +747,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        //rb.velocity = new Vector3(0, 0, 0);
       
        jumpCooldown = jumpCooldownSetting;
-       JumpCooldownNetworkVariable.Value = jumpCooldown;
+       jumpCooldownNetworkVariable.Value = jumpCooldown;
       
        rb.AddForce(jumpForce * multiplier, ForceMode.Impulse);
 
@@ -874,7 +873,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            if (jumpCooldown > 0f)
            {
                jumpCooldown -= Time.fixedDeltaTime;
-               JumpCooldownNetworkVariable.Value = jumpCooldown;
+               jumpCooldownNetworkVariable.Value = jumpCooldown;
            }
 
 
