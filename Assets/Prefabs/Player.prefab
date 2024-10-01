@@ -283,9 +283,9 @@ MonoBehaviour:
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
+  PositionThreshold: 0.1
+  RotAngleThreshold: 0.1
+  ScaleThreshold: 0.1
   UseQuaternionSynchronization: 0
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
@@ -303,7 +303,6 @@ GameObject:
   - component: {fileID: 6073712297157185591}
   - component: {fileID: 4298293823478139824}
   - component: {fileID: 985594061636798841}
-  - component: {fileID: 8469150785865484790}
   m_Layer: 0
   m_Name: Visor
   m_TagString: Untagged
@@ -376,37 +375,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8469150785865484790
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2685188269002877208}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &2963472502827668688
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,7 +531,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6846631672693702911}
-  - component: {fileID: 6242103900773005055}
   m_Layer: 0
   m_Name: Left Arm IK Target
   m_TagString: Untagged
@@ -587,37 +554,6 @@ Transform:
   - {fileID: 8659537618746816414}
   m_Father: {fileID: 1739742256914026636}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &6242103900773005055
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3721818994465158156}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &3887340477232464754
 GameObject:
   m_ObjectHideFlags: 0
@@ -1370,11 +1306,13 @@ MonoBehaviour:
   playerVoiceChatAudioSource: {fileID: 0}
   playerUsername: Player
   localPlayerId: 0
-  localClientId: 0
+  localClientId:
+    m_InternalValue: 0
   localSteamId:
     m_InternalValue: 0
+  controlledByClient:
+    m_InternalValue: 0
   steamAvatar: {fileID: 0}
-  controlledByClient: 0
   awaitInitialization: 0
   playerUsernameCanvasTransform: {fileID: 15498366079930494}
   playerUsernameText: {fileID: 234470645503231130}
@@ -1440,7 +1378,7 @@ MonoBehaviour:
   airMovementControlTarget: 0.75
   jumpForce: {x: 0, y: 8, z: 0}
   jumpCooldown: 0
-  JumpCooldownNetworkVariable:
+  jumpCooldownNetworkVariable:
     m_InternalValue: 0
   jumpCooldownSetting: 1
   gravity: -25
@@ -1561,12 +1499,12 @@ MonoBehaviour:
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.1
+  RotAngleThreshold: 0.1
+  ScaleThreshold: 0.1
   UseQuaternionSynchronization: 0
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
@@ -1945,9 +1883,9 @@ MonoBehaviour:
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
+  PositionThreshold: 0.1
+  RotAngleThreshold: 0.1
+  ScaleThreshold: 0.1
   UseQuaternionSynchronization: 0
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
@@ -1963,7 +1901,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2944472136624858675}
-  - component: {fileID: 2854428292607952708}
   m_Layer: 0
   m_Name: Equip Target Transform
   m_TagString: Untagged
@@ -1986,37 +1923,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5056117056695494540}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2854428292607952708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7504456460518960923}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &7568488197368888305
 GameObject:
   m_ObjectHideFlags: 0
@@ -2026,7 +1932,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5056117056695494540}
-  - component: {fileID: 1496267956876472972}
   m_Layer: 0
   m_Name: Right Arm IK Target
   m_TagString: Untagged
@@ -2053,37 +1958,6 @@ Transform:
   - {fileID: 2944472136624858675}
   m_Father: {fileID: 1739742256914026636}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
---- !u!114 &1496267956876472972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7568488197368888305}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!1 &7628769733669441098
 GameObject:
   m_ObjectHideFlags: 0

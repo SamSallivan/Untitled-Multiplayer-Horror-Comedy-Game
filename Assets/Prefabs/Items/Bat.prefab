@@ -259,9 +259,9 @@ MonoBehaviour:
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
-  PositionThreshold: 0.0025
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
+  PositionThreshold: 0.1
+  RotAngleThreshold: 0.1
+  ScaleThreshold: 0.1
   UseQuaternionSynchronization: 0
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 1
@@ -298,7 +298,7 @@ MonoBehaviour:
   minHeldTime: 0.25
   cooldown: 0
   cooldownSetting: 1.5
-  damage: 20
+  damage: 25
   attackMask:
     serializedVersion: 2
     m_Bits: 385
