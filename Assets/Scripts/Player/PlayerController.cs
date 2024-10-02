@@ -216,10 +216,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    [FoldoutGroup("Physics Based Movements")]
    public Vector3 vel;
-  
-   
-   [FoldoutGroup("Physics Based Movements")]
-   public NetworkVariable<Vector3> velNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
 
    [FoldoutGroup("Physics Based Movements")]
@@ -264,10 +260,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    [FoldoutGroup("Physics Based Movements")]
    public float jumpCooldown;
-  
-   
-   [FoldoutGroup("Physics Based Movements")]
-   public NetworkVariable<float> jumpCooldownNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
   
    
    [FoldoutGroup("Physics Based Movements")]
@@ -618,6 +610,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
    {
        foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
        {
+           if (playerController == this)
+           {
+               return;
+           }
            string playerName = new Friend(playerController.localSteamId.Value).Name;
            playerController.playerUsername = playerName;
            playerController.playerUsernameText.text = playerName;
@@ -682,7 +678,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        //if grounded, or just ungrouned, or just finished climbing
        //jump
        if (grounder.grounded.Value
-           || grounder.airTime.Value < 0.2f
+           || grounder.airTime < 0.2f
            || (climbState == 2 && climbTimer > 0.8f)
            || waterObject.IsTouchingWater())
        {
@@ -747,7 +743,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
        //rb.velocity = new Vector3(0, 0, 0);
       
        jumpCooldown = jumpCooldownSetting;
-       jumpCooldownNetworkVariable.Value = jumpCooldown;
       
        rb.AddForce(jumpForce * multiplier, ForceMode.Impulse);
 
@@ -762,8 +757,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
        stamina -= staminaCostPerJump;
        staminaReplenishCooldown = 0.5f;
        //playerAudio.PlayJumpSound();
+       
+       JumpRpc();
    }
-
+   
+   [Rpc(SendTo.Everyone)]
+   public void JumpRpc()
+   {
+       animator.SetTrigger("Jump");
+   }
 
    private void Climb(Vector3 targetPos)
    {  
@@ -830,7 +832,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
        if (!isNonPhysics)
        {
            vel = rb.velocity;
-           velNetworkVariable.Value = vel;
        }
 
 
@@ -873,7 +874,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
            if (jumpCooldown > 0f)
            {
                jumpCooldown -= Time.fixedDeltaTime;
-               jumpCooldownNetworkVariable.Value = jumpCooldown;
            }
 
 

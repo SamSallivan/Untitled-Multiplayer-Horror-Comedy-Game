@@ -61,6 +61,7 @@ public class PlayerAnimationController : MonoBehaviour
 
     private Quaternion targetBodyRotation;
     private float turnBodyCooldown;
+    private Vector3 previousPosition;
 
     [Header("Emotes")] 
     public EmoteData emoteData;
@@ -208,9 +209,10 @@ public class PlayerAnimationController : MonoBehaviour
         float inputX = (playerController.inputDirNetworkVariable.Value.x == 0) ? 0 : 1;
         float inputZ = (playerController.inputDirNetworkVariable.Value.z == 0) ? 0 : 1;
         float sprint = playerController.sprintingNetworkVariable.Value ? 1 : 0.5f;
-        Vector3 velocity = playerController.transform.GetChild(0).InverseTransformDirection(playerController.velNetworkVariable.Value);
+        Vector3 velocity = (playerController.transform.position - previousPosition) / Time.deltaTime;
+        velocity = playerController.transform.GetChild(0).InverseTransformDirection(velocity);
         Vector3 velocityNormalized = velocity.normalized;
-        //velocity = new Vector3(velocity.x, 0, velocity.z);
+        previousPosition = playerController.transform.position;
 
         float tempX = velocityNormalized.x * inputX * sprint;
         float tempZ = velocityNormalized.z * inputZ * sprint;
@@ -240,7 +242,7 @@ public class PlayerAnimationController : MonoBehaviour
         {
             Vector2 mouseInput = playerController.playerInputActions.FindAction("Look").ReadValue<Vector2>();
             float leanX = mouseInput.x * playerController.mouseLookX.sensitivityX;
-            leanX *= playerController.transform.GetChild(0).InverseTransformDirection(playerController.velNetworkVariable.Value).z / 50;
+            leanX *= velocity.z / 50;
             bodyAnimator.SetFloat("LeanX", Mathf.Lerp(bodyAnimator.GetFloat("LeanX"), leanX, Time.deltaTime * 2f));
         }
         else
@@ -307,8 +309,10 @@ public class PlayerAnimationController : MonoBehaviour
         if (!lockLookRotation)
         {
             //Upper Body Rotation Constraint Weight
-            if (playerController.grounder.groundTime.Value > 0.5f)
+            //if (playerController.grounder.groundTime.Value > 0.5f)
+            if (playerController.grounder.groundTime >= 0.5f)
             {
+                //headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
                 headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
                 headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
                 shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.25f, Time.deltaTime * 5f);
@@ -316,13 +320,14 @@ public class PlayerAnimationController : MonoBehaviour
             }
             else
             {
+                //headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
                 headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
                 headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
                 shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
                 chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
             }
 
-            headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0.75f, Time.deltaTime * 5f);
+            headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
         }
         else
         {
@@ -406,7 +411,6 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void StartEmoteAnimation(int index)
     {
-        Debug.Log(index);
         emoteData = playerController.emoteDataList[index];
         if (emoteData.fullBodyAnimation)
         {

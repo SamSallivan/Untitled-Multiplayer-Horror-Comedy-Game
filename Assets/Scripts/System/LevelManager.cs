@@ -82,14 +82,23 @@ public class LevelManager : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        /*I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
-        foreach (I_InventoryItem inventoryItem in inventoryItems)
+        if (IsServer)
         {
-            if (inventoryItem.owner == null)
+            I_InventoryItem[] inventoryItems = FindObjectsOfType<I_InventoryItem>();
+            foreach (I_InventoryItem inventoryItem in inventoryItems)
             {
-                inventoryItem.NetworkObject.Despawn();
+                if (inventoryItem.owner == null)
+                {
+                    inventoryItem.NetworkObject.Despawn();
+                }
             }
-        }*/
+            
+            NightCrawler[] nightCrawlers = FindObjectsOfType<NightCrawler>();
+            foreach (NightCrawler nightCrawler in nightCrawlers)
+            {
+                nightCrawler.NetworkObject.Despawn();
+            }
+        }
     }
 
     // Start is called before the first frame update

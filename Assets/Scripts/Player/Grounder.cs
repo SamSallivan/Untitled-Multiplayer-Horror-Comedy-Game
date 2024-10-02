@@ -47,9 +47,9 @@ public class Grounder : NetworkBehaviour
 
 	public float minGroundNormal;
 
-	public NetworkVariable<float> airTime = new (0, writePerm: NetworkVariableWritePermission.Owner);
+	public float airTime;
 	
-	public NetworkVariable<float> groundTime = new (0, writePerm: NetworkVariableWritePermission.Owner);
+	public float groundTime;
 
     public float regroundCooldown;
 
@@ -57,7 +57,7 @@ public class Grounder : NetworkBehaviour
 
 	public float highestPoint;
 
-	public NetworkVariable<float>  fallDistance = new (0, writePerm: NetworkVariableWritePermission.Owner);
+	public float  fallDistance;
 
 	public int groundContactCount;
 
@@ -87,7 +87,7 @@ public class Grounder : NetworkBehaviour
         playerController = GetComponent<PlayerController>();
 		groundNormal = Vector3.up;
 		highestPoint = transform.position.y;
-		fallDistance.Value = 0f;
+		fallDistance = 0f;
 		minGroundNormal = Mathf.Cos(maxGroundAngle * ((float)Mathf.PI / 180f)); //translates a 0-90 angle to a 1-0 normal value.
     }	
 
@@ -95,29 +95,37 @@ public class Grounder : NetworkBehaviour
     {
 		if (!grounded.Value)
 		{
+			//calculates the time player has been in air.
+			airTime += Time.fixedDeltaTime;
+			groundTime = 0;
+			
+			//updates the highestpoint during an unground.
+			if (transform.position.y > highestPoint)// || pc.waterObject.IsTouchingWater())
+			{
+				highestPoint = transform.position.y;
+			}
+			
+			//calculates how high the player has fell.
+			fallDistance = highestPoint - transform.position.y;
+			
+			
 			if (IsOwner)
 			{
-	            //updates the highestpoint during an unground.
-			    if (transform.position.y > highestPoint)// || pc.waterObject.IsTouchingWater())
-			    {
-				    highestPoint = transform.position.y;
-			    }
-			    //calculates how high the player has fell.
-			    fallDistance.Value = highestPoint - transform.position.y;
-			    //calculates the time player has been in air.
-			    airTime.Value += Time.fixedDeltaTime;
+			    //if airtime >= fallAirTimeThreshold
+			    // set animator trigger Fall
 		    }
-
-		    playerController.animator.SetFloat("FallDistance", fallDistance.Value);
-			playerController.animator.SetFloat("AirTime", airTime.Value);
 
 		}
 
 		if (grounded.Value)
 		{
+			groundTime += Time.fixedDeltaTime;
+			airTime = 0;
+			
+			highestPoint = transform.position.y;
+			
 			if (IsOwner)
 			{
-				groundTime.Value += Time.fixedDeltaTime;
 			}
 		}
     }
@@ -174,7 +182,7 @@ public class Grounder : NetworkBehaviour
 		//if player was ungrounded not long ago, and the normal of the ground below it still meets the minimal ground normal, ground the player.
 		//for smoother control on bumpy surfaces.
 		//if (pc.isNonPhysics || stepSinceUngrounded < 5 && CheckWithRaycast(minGroundNormal)) 
-		else if (playerController.isNonPhysics || (airTime.Value < 0.2f && CheckWithRaycast(minGroundNormal)))
+		else if (playerController.isNonPhysics || (airTime < 0.2f && CheckWithRaycast(minGroundNormal)))
 		{
 			Ground();
 
@@ -213,10 +221,9 @@ public class Grounder : NetworkBehaviour
 		if(!grounded.Value)
 		{
 			grounded.Value = true;
-			airTime.Value = 0;
 			
-			playerController.headPosition.Bounce((0f - fallDistance.Value) / 12f);
-			if (fallDistance.Value > fallDistanceThreshold)
+			playerController.headPosition.Bounce((0f - fallDistance) / 12f);
+			if (fallDistance > fallDistanceThreshold)
 			{
 				playerController.groundMovementControlCoolDown = movementCooldownOnLanding; 
 				HardLandRpc();
@@ -225,7 +232,7 @@ public class Grounder : NetworkBehaviour
 			{
 				SoftLandRpc();
 			}
-			if (fallDistance.Value > lethalFallDistance)
+			if (fallDistance > lethalFallDistance)
 			{
 				//playerController.Die();
 			}
@@ -263,19 +270,12 @@ public class Grounder : NetworkBehaviour
 		if (grounded.Value)
 		{
 			grounded.Value = false;
-			groundTime.Value = 0;
 			groundContactCount = 0;
-			highestPoint = transform.position.y;
 			tempGroundNormal = Vector3.zero;
 			groundNormal = Vector3.up;
 			tempGroundPosition = Vector3.zero;
 			groundPosition = Vector3.zero;
 			//regroundCooldown = regroundCooldownSetting;
-
-			if (playerController.jumpCooldownNetworkVariable.Value >= playerController.jumpCooldownSetting - 0.5f)
-			{
-				JumpRpc();
-			}
 			
 			//sets a timeframe that allows player to jump after ungrounding
 
@@ -288,12 +288,6 @@ public class Grounder : NetworkBehaviour
 				OnUnground();
         }
 		
-	}
-
-	[Rpc(SendTo.Everyone)]
-	public void JumpRpc()
-	{
-		playerController.animator.SetTrigger("Jump");
 	}
 
 

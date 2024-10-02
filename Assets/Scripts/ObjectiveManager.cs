@@ -33,6 +33,13 @@ public class ObjectiveManager : NetworkBehaviour
         }
     }
 
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        
+        
+    }
+
     public virtual IEnumerator AssignInitialObjectiveCoroutine()
     {
         yield return new WaitForSeconds(2.5f);
@@ -43,7 +50,7 @@ public class ObjectiveManager : NetworkBehaviour
     [Button]
     public void AssignObjective(Objective objective)
     {
-        Objective newObjective = Instantiate(objective).GetComponent<Objective>();
+        Objective newObjective = Instantiate(objective, gameObject.transform).GetComponent<Objective>();
         newObjective.NetworkObject.Spawn();
         AssignObjectiveClientRpc(newObjective.NetworkObject);
     }
