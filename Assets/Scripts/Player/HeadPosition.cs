@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 //Same Script from 3D Platformer.
@@ -67,7 +68,10 @@ public class HeadPosition : MonoBehaviour
 
 		//applies head y position;
 		transform.localPosition = headPos;
+	}
 
+	public void Update()
+	{
 		if (targetPositionTransform)
 		{
 			transform.position = targetPositionTransform.TransformPoint(targetPositionOffset);

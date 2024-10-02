@@ -479,14 +479,20 @@ public class PlayerAnimationController : MonoBehaviour
                 
                 if (bodyAnimator.GetBool("isMoving") || armAnimator.GetBool("Held") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
                 {
-                    StopEmoteAnimation();
+                    if (playerController.IsOwner)
+                    {
+                        playerController.StopEmoteRpc();
+                    }
                 }
             }
             else
             {
                 if (armAnimator.GetBool("Held") || playerController.isPlayerDead.Value)
                 {
-                    StopEmoteAnimation(); 
+                    if (playerController.IsOwner)
+                    {
+                        playerController.StopEmoteRpc();
+                    }
                 }
             }
         }

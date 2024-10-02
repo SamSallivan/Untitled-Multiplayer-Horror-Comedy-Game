@@ -1421,7 +1421,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
        if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            InventoryManager.instance.SwitchEquipedItem(Math.Sign(context.ReadValue<float>()));
-           playerAnimationController.StopEmoteAnimation();
        }
    }
    
@@ -1432,7 +1431,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            if (enableMovement && targetInteractable != null)
            {
                targetInteractable.PerformInteract();
-               playerAnimationController.StopEmoteAnimation();
+               StopEmoteRpc();
            }
        }
    }
