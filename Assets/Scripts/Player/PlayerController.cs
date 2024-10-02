@@ -195,7 +195,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
    [FoldoutGroup("Physics Based Movements")]
-   public float dynamicSpeed = 1f;
+   public float dynamicTargetSpeed = 1f;
+
+
+   [FoldoutGroup("Physics Based Movements")]
+   public float dynamicWalkSpeed = 1.5f;
+
+
+   [FoldoutGroup("Physics Based Movements")]
+   public float dynamicSprintSpeed = 2.5f;
   
    
    [FoldoutGroup("Physics Based Movements")]
@@ -857,7 +865,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
                {
                    sprinting = false;
                    sprintingNetworkVariable.Value = false;
-                   dynamicSpeed = 2.5f;
+                   dynamicTargetSpeed = dynamicWalkSpeed;
                }
            }
 
@@ -884,7 +892,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            {
                if (inputDir.sqrMagnitude > 0.25f && groundMovementControlCoolDown <= 0f)
                {
-                   rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * groundMovementControl);
+                   rb.AddForce((gDir * 100f - gVel * 10f * dynamicTargetSpeed) * groundMovementControl);
                }
                //if not fast, accelerates the slowing down process
                else if (gVel.sqrMagnitude != 0f)
@@ -895,7 +903,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            }
            else
            {
-               rb.AddForce((gDir * 100f - gVel * 10f * dynamicSpeed) * airMovementControl);
+               rb.AddForce((gDir * 100f - gVel * 10f * dynamicTargetSpeed) * airMovementControl);
                //rb.AddForce(-gVel * 5f);
            }
 
@@ -1311,17 +1319,17 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            if (inputDir.z >= 0 && grounder.grounded.Value)
            {
-               if (dynamicSpeed == 1.5f)
+               if (dynamicTargetSpeed == dynamicSprintSpeed)
                {
                    sprinting = false;
                    sprintingNetworkVariable.Value = false;
-                   dynamicSpeed = 2.5f;
+                   dynamicTargetSpeed = dynamicWalkSpeed;
                }
-               else if (dynamicSpeed == 2.5f)
+               else if (dynamicTargetSpeed == dynamicWalkSpeed)
                {
                    sprinting = true;
                    sprintingNetworkVariable.Value = true;
-                   dynamicSpeed = 1.5f;
+                   dynamicTargetSpeed = dynamicSprintSpeed;
                    crouching = false;
                    crouchingNetworkVariable.Value = crouching;
                }
@@ -1330,7 +1338,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            {
                sprinting = false;
                sprintingNetworkVariable.Value = false;
-               dynamicSpeed = 2.5f;
+               dynamicTargetSpeed = dynamicWalkSpeed;
            }
        }
    }

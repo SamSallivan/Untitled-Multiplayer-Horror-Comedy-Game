@@ -1278,7 +1278,9 @@ MonoBehaviour:
   enableLook: 1
   enableJump: 1
   isNonPhysics: 0
-  dynamicSpeed: 2.5
+  dynamicTargetSpeed: 4
+  dynamicWalkSpeed: 4
+  dynamicSprintSpeed: 2
   sprinting: 0
   sprintingNetworkVariable:
     m_InternalValue: 0

@@ -160,7 +160,7 @@ public class CameraBob : MonoBehaviour
         {
             if (GameSessionManager.Instance.localPlayerController.gVel.sqrMagnitude > 1f)
             {
-                Bob(GameSessionManager.Instance.localPlayerController.dynamicSpeed);
+                Bob(GameSessionManager.Instance.localPlayerController.dynamicTargetSpeed);
             }
             else
             {
