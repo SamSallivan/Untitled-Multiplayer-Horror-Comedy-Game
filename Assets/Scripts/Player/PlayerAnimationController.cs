@@ -206,8 +206,8 @@ public class PlayerAnimationController : MonoBehaviour
 
     void UpdateWalkAnimation()
     {
-        float inputX = (playerController.inputDirNetworkVariable.Value.x == 0) ? 0 : 1;
-        float inputZ = (playerController.inputDirNetworkVariable.Value.z == 0) ? 0 : 1;
+        float inputX = (playerController.inputDirX.Value == 0) ? 0 : 1;
+        float inputZ = (playerController.inputDirZ.Value == 0) ? 0 : 1;
         float sprint = playerController.sprintingNetworkVariable.Value ? 1 : 0.5f;
         Vector3 velocity = (playerController.transform.position - previousPosition) / Time.deltaTime;
         velocity = playerController.transform.GetChild(0).InverseTransformDirection(velocity);

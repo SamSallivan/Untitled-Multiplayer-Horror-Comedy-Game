@@ -38,7 +38,7 @@ public class CameraItemController : ItemController
         {
             cooldown = cooldownSetting;
             inventoryItem.itemStatus.durability -= durabilityCostPerUse;
-            InventoryManager.instance.SetItemDurarbilityRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.durability);
+            inventoryItem.SetItemDurarbilityRpc(inventoryItem.itemStatus.durability);
             Activate();
         }
     }

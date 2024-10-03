@@ -11,6 +11,7 @@ using Dissonance;
 using Sirenix.OdinInspector;
 using Enviro;
 using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
@@ -163,7 +164,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    
    [FoldoutGroup("Inputs")]
-   public NetworkVariable<Vector3> inputDirNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
+   public NetworkVariable<float> inputDirX = new (writePerm: NetworkVariableWritePermission.Owner);
+  
+   
+   [FoldoutGroup("Inputs")]
+   public NetworkVariable<float> inputDirZ = new (writePerm: NetworkVariableWritePermission.Owner);
+  
+   
+   //[FoldoutGroup("Inputs")]
+   //public NetworkVariable<Vector3> inputDirNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
 
    [FoldoutGroup("Settings")]
@@ -436,6 +445,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
        isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
        OnCurrentCharacterModelIndexChanged(0, currentCharacterModelIndex.Value);
        currentCharacterModelIndex.OnValueChanged += OnCurrentCharacterModelIndexChanged;
+       
+       /*if (currentEquippedItem != null)
+       {
+           playerAnimationController.armAnimator.SetBool("Equipped", true);
+           playerAnimationController.armAnimator.SetTrigger("SwitchItem");
+           playerAnimationController.armAnimator.SetBool(currentEquippedItem.itemData.equipAnimatorParameter, true);
+       }
+           
+       if (currentEmoteIndex.Value != -1)
+       {
+           playerAnimationController.StartEmoteAnimation(currentEmoteIndex.Value);
+       }*/
    }
 
 
@@ -1204,6 +1225,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, transform.GetChild(0).rotation);
        ragdoll.GetComponent<NetworkObject>().Spawn();
        InstantiateRagdollClientRPC(ragdoll.GetComponent<NetworkObject>());
+       InstantiateRagdollClientRPC(ragdoll.GetComponent<NetworkObject>());
    }
    
    [Rpc(SendTo.Everyone)]
@@ -1285,8 +1307,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
            inputDir = Vector3.zero;
        }
 
-
-       inputDirNetworkVariable.Value = inputDir;
+       if (inputDirX.Value != inputDir.x)
+       {
+           inputDirX.Value = inputDir.x;
+       }
+       if (inputDirZ.Value != inputDir.z)
+       {
+           inputDirZ.Value = inputDir.z;
+       }
+       //inputDirNetworkVariable.Value = inputDir;
    }
 
 
@@ -1439,7 +1468,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
            if (enableMovement && targetInteractable != null)
            {
                targetInteractable.PerformInteract();
-               StopEmoteRpc();
+               if (currentEmoteIndex.Value != -1)
+               {
+                   StopEmoteRpc();
+               }
            }
        }
    }

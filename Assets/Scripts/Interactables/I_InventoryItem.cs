@@ -5,6 +5,7 @@ using System;
 using Steamworks;
 using Unity.Netcode;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class I_InventoryItem : Interactable
 {
@@ -13,6 +14,8 @@ public class I_InventoryItem : Interactable
     public NetworkVariable<int> ownerPlayerId = new(-1, writePerm: NetworkVariableWritePermission.Owner);
 
     public PlayerController owner;
+
+    public PlayerController previousOwner;
 
     private InventorySlot _inventorySlot;
 
@@ -61,10 +64,12 @@ public class I_InventoryItem : Interactable
             SyncItemStateServerRpc();
         }
 
+        OnOwnerPlayerIdChanged(-1, ownerPlayerId.Value);
+        //OnIsCurrentlyEquippedChanged(false, isCurrentlyEquipped.Value);
         OnEnableItemMeshesChanged(false, enableItemMeshes.Value);
         OnEnableItemPhysicsChanged(false, enableItemPhysics.Value);
-        OnOwnerPlayerIdChanged(-1, ownerPlayerId.Value);
         
+        //isCurrentlyEquipped.OnValueChanged += OnIsCurrentlyEquippedChanged;
         enableItemMeshes.OnValueChanged += OnEnableItemMeshesChanged;
         enableItemPhysics.OnValueChanged += OnEnableItemPhysicsChanged;
         ownerPlayerId.OnValueChanged += OnOwnerPlayerIdChanged;
@@ -74,11 +79,40 @@ public class I_InventoryItem : Interactable
     {
         base.OnNetworkDespawn();
         
+        //isCurrentlyEquipped.OnValueChanged -= OnIsCurrentlyEquippedChanged;
         enableItemMeshes.OnValueChanged -= OnEnableItemMeshesChanged;
         enableItemPhysics.OnValueChanged -= OnEnableItemPhysicsChanged;
         ownerPlayerId.OnValueChanged -= OnOwnerPlayerIdChanged;
     }
+    
+    /*public void OnIsCurrentlyEquippedChanged(bool prevValue, bool newValue)
+    {
+        if (!isCurrentlyEquipped.Value)
+        {
+            if (owner != null)
+            {
+                Debug.Log(gameObject.name + " unequipped");
+                owner.currentEquippedItem = null;
+                owner.playerAnimationController.armAnimator.SetBool("Equipped", false);
+                owner.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
+                owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
+            }
 
+            if (TryGetComponent<ItemController>(out var itemController) && itemController.buttonHeld)
+            {
+                itemController.Cancel();
+            }
+        }
+        else 
+        {
+            Debug.Log(gameObject.name + " equipped");
+            owner.currentEquippedItem = this;
+            owner.playerAnimationController.armAnimator.SetBool("Equipped", true);
+            owner.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
+            owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
+        }
+    }*/
+    
     public void OnEnableItemMeshesChanged(bool prevValue, bool newValue)
     {
         MeshRenderer[] meshRenderers = base.gameObject.GetComponentsInChildren<MeshRenderer>();
@@ -117,32 +151,37 @@ public class I_InventoryItem : Interactable
         }
     }
 
-    public void OnEquip()
+
+    [Rpc(SendTo.Everyone)]
+    public void EquipItemRpc(int playerId)
     {
         if (IsServer)
         {
             isCurrentlyEquipped.Value = true;
             enableItemMeshes.Value = true;
         }
-
-        /*if (ownerPlayerId.Value != -1 && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
-        {
-            owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
-        }*/
+        
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        playerController.currentEquippedItem = this;
+        playerController.playerAnimationController.armAnimator.SetBool("Equipped", true);
+        playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
+        playerController.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
     }
     
-    public void OnUnequip()
+    [Rpc(SendTo.Everyone)]
+    public void UnequipItemRpc(int playerId)
     {
         if (IsServer)
         {
             isCurrentlyEquipped.Value = false;
             enableItemMeshes.Value = false;
         }
-
-        /*if (owner && !string.IsNullOrEmpty(itemData.equipAnimatorParameter))
-        {
-            owner.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
-        }*/
+        
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        playerController.currentEquippedItem = null;
+        playerController.playerAnimationController.armAnimator.SetBool("Equipped", false);
+        playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
+        playerController.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
 
         if (TryGetComponent<ItemController>(out var itemController) && itemController.buttonHeld)
         {
@@ -169,7 +208,7 @@ public class I_InventoryItem : Interactable
                 }
                 else if (!inStorageBox.Value)
                 {
-                    InventoryManager.instance.UnpocketItemRpc(this.NetworkObject);
+                    UnpocketItemRpc();
                 }
             }
         }
@@ -204,42 +243,6 @@ public class I_InventoryItem : Interactable
     {
         firstPickup.Value = false;
     }
-
-	/*public void EnableItemMeshes(bool enable)
-	{
-        if (IsServer)
-        {
-            enableItemMeshes.Value = enable;
-        }
-
-        MeshRenderer[] meshRenderers = base.gameObject.GetComponentsInChildren<MeshRenderer>();
-		for (int i = 0; i < meshRenderers.Length; i++)
-		{
-            meshRenderers[i].enabled = enable;
-		}
-
-		SkinnedMeshRenderer[] skinnedMeshRenderers = base.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
-		for (int j = 0; j < skinnedMeshRenderers.Length; j++)
-		{
-			skinnedMeshRenderers[j].enabled = enable;
-			Debug.Log("DISABLING/ENABLING SKINNEDMESH: " + skinnedMeshRenderers[j].gameObject.name);
-		}
-	}
-    
-	public void EnableItemPhysics(bool enable)
-	{
-        if (IsServer)
-        {
-            enableItemPhysics.Value = enable;
-        }
-
-        base.gameObject.GetComponent<Rigidbody>().isKinematic = !enable;
-        Collider[] colliders = base.gameObject.GetComponentsInChildren<Collider>();
-		for (int i = 0; i < colliders.Length; i++)
-		{
-            colliders[i].enabled = enable;
-		}
-    }*/
 
     public override void Target()
     {
@@ -295,5 +298,46 @@ public class I_InventoryItem : Interactable
     public void SetInStorageBoxRpc(bool value)
     {
         inStorageBox.Value = value;
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void SetItemAmountRpc(int amount)
+    { 
+        itemStatus.amount = amount;
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void SetItemDurarbilityRpc(float durability)
+    {
+        itemStatus.durability = durability;
+    }
+    
+    [Rpc(SendTo.Server)]
+    public void PocketItemRpc(int playerId)
+    {
+        ownerPlayerId.Value = playerId;
+        enableItemMeshes.Value = false;
+        enableItemPhysics.Value = false;
+
+        if (GameSessionManager.Instance.gameStarted.Value)
+        {
+            SceneManager.MoveGameObjectToScene(gameObject,SceneManager.GetSceneAt(0));
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    public void UnpocketItemRpc()
+    {
+        transform.position = owner.headTransform.transform.position + owner.headTransform.transform.forward * 0.5f;
+        transform.rotation = owner.headTransform.transform.rotation;
+        
+        ownerPlayerId.Value = -1;
+        enableItemMeshes.Value = true;
+        enableItemPhysics.Value = true;
+
+        if (GameSessionManager.Instance.gameStarted.Value)
+        {
+            SceneManager.MoveGameObjectToScene(gameObject,SceneManager.GetSceneAt(1));
+        }
     }
 }

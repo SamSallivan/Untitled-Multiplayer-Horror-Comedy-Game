@@ -58,7 +58,7 @@ public class BeerController : ItemController
         cooldown = cooldownSetting;
                     
         inventoryItem.itemStatus.durability -= 1 / totalDrinkCount;
-        InventoryManager.instance.SetItemDurarbilityRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.durability);
+        inventoryItem.SetItemDurarbilityRpc(inventoryItem.itemStatus.durability);
 
         if (inventoryItem.owner.health.Value < inventoryItem.owner.maxHp)
         {

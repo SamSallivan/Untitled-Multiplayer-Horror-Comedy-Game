@@ -20,15 +20,18 @@ public class FlashlightController : ItemController
     }
 
     public override void ItemUpdate()
-    {   
-        if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner && GetComponent<I_InventoryItem>().owner == GameSessionManager.Instance.localPlayerController)
+    {
+        if (IsServer)
         {
-            if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped.Value & activated.Value) 
+            if (GetComponent<I_InventoryItem>() && GetComponent<I_InventoryItem>().owner)
             {
-                ToggleLightServerRpc();
+                if (!GetComponent<I_InventoryItem>().isCurrentlyEquipped.Value & activated.Value)
+                {
+                    activated.Value = false;
+                }
             }
         }
-        
+
         if (activated.Value) 
         {
             if (inventoryItem.itemStatus.durability <= 0)
@@ -38,7 +41,7 @@ public class FlashlightController : ItemController
             else
             {
                 inventoryItem.itemStatus.durability -= durabilityCostPerSecond * Time.deltaTime;
-                InventoryManager.instance.SetItemDurarbilityRpc(inventoryItem.NetworkObject, inventoryItem.itemStatus.durability);
+                inventoryItem.SetItemDurarbilityRpc(inventoryItem.itemStatus.durability);
             }
         }
     }

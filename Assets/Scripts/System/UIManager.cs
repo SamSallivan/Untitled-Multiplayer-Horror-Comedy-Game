@@ -283,7 +283,7 @@ public class UIManager : MonoBehaviour
 
    public async void UpdateScoreBoard()
    {
-       List<PlayerController> playersRanked = GameSessionManager.Instance.playerControllerList;
+       List<PlayerController> playersRanked = new List<PlayerController>(GameSessionManager.Instance.playerControllerList);
        playersRanked.Sort(SortByScore);
       
        for (int i = 0; i < playersRanked.Count; i++)
@@ -534,7 +534,7 @@ public class UIManager : MonoBehaviour
        Cursor.lockState = CursorLockMode.Confined;
        Cursor.visible = true;
       
-       List<PlayerController> playersRanked = GameSessionManager.Instance.playerControllerList;
+       List<PlayerController> playersRanked = new List<PlayerController>(GameSessionManager.Instance.playerControllerList);
        playersRanked.Sort(SortByScore);
        /*foreach (PlayerController player in playersRanked)
        {

@@ -162,7 +162,7 @@ public class GameSessionManager : NetworkBehaviour
       {
          if(list[i].index != -1)
          {
-            InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, list[i].durability, i, localPlayerController.NetworkObject);
+            InventoryManager.instance.InstantiatePocketedItemServerRpc(list[i].index, list[i].amount, list[i].durability, i, localPlayerController.localPlayerId);
          }
       }
       
@@ -261,7 +261,7 @@ public class GameSessionManager : NetworkBehaviour
          playerController.controlledByClient.Value = true;
          ClientIdToPlayerIdDictionary.Add(clientId, targetPlayerId);
          connectedPlayerCount.Value = ClientIdToPlayerIdDictionary.Count;
-         OnClientConnectedGameSessionClientRpc(clientId, targetPlayerId, ClientIdToPlayerIdDictionary.Keys.ToArray(), ClientIdToPlayerIdDictionary.Values.ToArray());
+         OnClientConnectedGameSessionClientRpc(clientId, targetPlayerId);//, ClientIdToPlayerIdDictionary.Keys.ToArray(), ClientIdToPlayerIdDictionary.Values.ToArray());
 
 
          Debug.Log($"OnClientConnectedGameSession: New client {clientId} assigned PlayerController: {playerController}");
@@ -279,7 +279,7 @@ public class GameSessionManager : NetworkBehaviour
 
 
    [Rpc(SendTo.Everyone)]
-   private void OnClientConnectedGameSessionClientRpc(ulong clientId, int connectingPlayerId, ulong[] connectedClientIds, int[] connectedPlayerIds)
+   private void OnClientConnectedGameSessionClientRpc(ulong clientId, int connectingPlayerId)//, ulong[] connectedClientIds, int[] connectedPlayerIds)
    {
       try
       {
@@ -293,14 +293,14 @@ public class GameSessionManager : NetworkBehaviour
 
 
          //Reconstructing ClientIdToPlayerIdDictionary on all clients
-         if (!base.IsServer)
+         /*if (!base.IsServer)
          {
             ClientIdToPlayerIdDictionary.Clear();
             for (int i = 0; i < connectedClientIds.Length; i++)
             {
                ClientIdToPlayerIdDictionary.Add(connectedClientIds[i], connectedPlayerIds[i]);
             }
-         }
+         }*/
 
 
          PlayerController playerController = playerControllerList[connectingPlayerId];
@@ -317,13 +317,13 @@ public class GameSessionManager : NetworkBehaviour
          
          if (NetworkManager.Singleton.LocalClientId == clientId)
          { 
+            
          }
          else
          {
             if (localPlayerController.currentEquippedItem != null)
             {
-               InventoryManager.instance.EquipItemRpc(
-                  localPlayerController.currentEquippedItem.NetworkObject, localPlayerController.NetworkObject);
+               localPlayerController.currentEquippedItem.EquipItemRpc(localPlayerController.localPlayerId);
             }
            
             if (localPlayerController.currentEmoteIndex.Value != -1)
@@ -386,7 +386,7 @@ public class GameSessionManager : NetworkBehaviour
        ClientIdToPlayerIdDictionary.Remove(clientId);
        connectedPlayerCount.Value = ClientIdToPlayerIdDictionary.Count;
        
-       OnClientDisconnectedGameSessionClientRpc(clientId, disconnectingPlayerId, ClientIdToPlayerIdDictionary.Keys.ToArray(), ClientIdToPlayerIdDictionary.Values.ToArray());
+       OnClientDisconnectedGameSessionClientRpc(clientId, disconnectingPlayerId);//, ClientIdToPlayerIdDictionary.Keys.ToArray(), ClientIdToPlayerIdDictionary.Values.ToArray());
        
         //if (loadedClientIdList.Contains(clientId))
         //{
@@ -396,7 +396,7 @@ public class GameSessionManager : NetworkBehaviour
 
 
    [Rpc(SendTo.Everyone)]
-   public void OnClientDisconnectedGameSessionClientRpc(ulong clientId, int disconnectingPlayerId, ulong[] connectedClientIds, int[] connectedPlayerIds)
+   public void OnClientDisconnectedGameSessionClientRpc(ulong clientId, int disconnectingPlayerId)//, ulong[] connectedClientIds, int[] connectedPlayerIds)
    {
       /*if (!ClientIdToPlayerIdDictionary.ContainsKey(clientId))
       {
@@ -416,14 +416,14 @@ public class GameSessionManager : NetworkBehaviour
 
       
       //Reconstructing ClientIdToPlayerIdDictionary on all clients
-      if (!base.IsServer)
+      /*if (!base.IsServer)
       {
          ClientIdToPlayerIdDictionary.Clear();
          for (int i = 0; i < connectedClientIds.Length; i++)
          {
             ClientIdToPlayerIdDictionary.Add(connectedClientIds[i], connectedPlayerIds[i]);
          }
-      }
+      }*/
 
 
       //Reset PlayerController values
