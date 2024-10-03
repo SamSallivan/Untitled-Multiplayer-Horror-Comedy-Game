@@ -25,9 +25,6 @@ public class InventoryManager : NetworkBehaviour
     public int equippedSlotIndex;
     public I_InventoryItem equippedItem = null;
 
-    public bool requireItemType;
-    public List<I_InventoryItem> requireItemList;
-
     private I_InventoryItem detailObject;
     private bool detailRotationFix;
     public bool detailObjectDrag;
@@ -40,11 +37,6 @@ public class InventoryManager : NetworkBehaviour
     public PlayerController playerController;
     public List<InventorySlot> inventorySlotList;
     public List<InventorySlot> storageSlotList;
-    
-    public static event Action<ItemData> OnPickUp = delegate{};
-    public static event Action<I_InventoryItem> OnReturnRequiredType = delegate { };
-
-
 
     void Awake()
     {
@@ -78,20 +70,14 @@ public class InventoryManager : NetworkBehaviour
             inputDelay += Time.fixedDeltaTime;
         }
         
-        if (!inventoryOpened && GameSessionManager.Instance.localPlayerController)
+        if (inventoryOpened)
         {
-            if (GameSessionManager.Instance.localPlayerController.enableMovement && Input.GetKeyDown(KeyCode.B))
-            {
-                OpenInventory();
-            }
+            RotateDetailObject();
+            UpdateDraggedItem();
         }
-        else if (inventoryOpened)
+        
+        /*if (inventoryOpened)
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.B))
-            {
-                CloseInventory();
-            }
-
             // if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.W))
             // {
             //     selectedPosition.x += Input.GetKeyDown(KeyCode.D) ? 1 : 0;
@@ -128,27 +114,8 @@ public class InventoryManager : NetworkBehaviour
             //     inventorySlotList[GetGridIndex(selectedPosition)].background.color = new UnityEngine.Color(0.85f, 0.85f, 0.85f, 0.5f);
 
             // }
-
-            if (detailObject != null)
-            {
-                RotateDetailObject();
-            }
-
-            if (draggedItem != null)
-            {
-                UpdateDraggedItem();
-            }
-        }
+        }*/
     }
-
-    public void UpdateDraggedItem()
-    {
-        Vector2 pos;
-        Canvas myCanvas = UIManager.instance.gameplayUI.transform.parent.GetComponent<Canvas>();
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(myCanvas.transform as RectTransform, Input.mousePosition, myCanvas.worldCamera, out pos);
-        UIManager.instance.draggedItemDisplay.transform.position = myCanvas.transform.TransformPoint(pos);
-    }
-
     public void OpenInventory()
     {
         //playerController.inventoryAudio.PlayInventoryOpen();
@@ -167,7 +134,8 @@ public class InventoryManager : NetworkBehaviour
         UIManager.instance.inventorySlotGrid.SetActive(true);
         UIManager.instance.inventoryUI.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "Inventory";
 
-        LockCursor(false);
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
 
         selectedSlot = inventorySlotList[0];
         UpdateSelection();
@@ -193,7 +161,8 @@ public class InventoryManager : NetworkBehaviour
         UIManager.instance.inventoryUI.SetActive(false);
         UIManager.instance.gameplayUI.SetActive(true);
 
-        LockCursor(true);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         
         UIManager.instance.inventorySlotGrid.SetActive(false);
     }
@@ -261,7 +230,6 @@ public class InventoryManager : NetworkBehaviour
                 inventoryItem.inventorySlot = slot;
 
                 slot.inventoryItem = inventoryItem;
-                slot.UpdateInventorySlotDisplay();
                 
                 if (slot.GetIndex() <= 3)
                 {
@@ -472,7 +440,6 @@ public class InventoryManager : NetworkBehaviour
         if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerId == GameSessionManager.Instance.localPlayerController.localPlayerId)
         {
             storageSlotList[storageSlotIndex].inventoryItem = inventoryItemObject.GetComponent<I_InventoryItem>();
-            storageSlotList[storageSlotIndex].UpdateInventorySlotDisplay();
             inventoryItemObject.GetComponent<I_InventoryItem>().inventorySlot = storageSlotList[storageSlotIndex];
         }
     }
@@ -573,7 +540,7 @@ public class InventoryManager : NetworkBehaviour
         return null;
     }*/
 
-    public void UpdateSelection(bool deleteOnUnselect = true)
+    public void UpdateSelection()
     {
 
         foreach (InventorySlot slot in inventorySlotList)
@@ -603,7 +570,7 @@ public class InventoryManager : NetworkBehaviour
         {
             CreateDetailObject();
         }
-        else if(deleteOnUnselect)
+        else
         {
             DeleteDetailObject();
         }
@@ -662,6 +629,11 @@ public class InventoryManager : NetworkBehaviour
 
     public void RotateDetailObject()
     {
+        if (detailObject == null)
+        {
+            return;
+        }
+
         Vector2 lookVector = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         Vector2 rotateValue = new Vector2();
 
@@ -702,28 +674,17 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
-    /*public int2 GetGridPosition(int index)
+    public void UpdateDraggedItem()
     {
-        return (new int2(index % slotPerRow, index / slotPerRow));
-    }
-
-    public int GetGridIndex(int2 position)
-    {
-        return ((position.y) * slotPerRow + position.x);
-    }*/
-
-    public void LockCursor(bool lockCursor)
-    {
-        if (lockCursor)
+        if (draggedItem == null)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            return;
         }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-            Cursor.visible = true;
-        }
+
+        Vector2 pos;
+        Canvas myCanvas = UIManager.instance.gameplayUI.transform.parent.GetComponent<Canvas>();
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(myCanvas.transform as RectTransform, Input.mousePosition, myCanvas.worldCamera, out pos);
+        UIManager.instance.draggedItemDisplay.transform.position = myCanvas.transform.TransformPoint(pos);
     }
 
     public void DiscardEquippedItem()

@@ -10,11 +10,14 @@ using TMPro;
 using Dissonance;
 using Sirenix.OdinInspector;
 using Enviro;
+using Steamworks.Data;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
+using System.Threading.Tasks;
+using Image = UnityEngine.UIElements.Image;
 
 
 public class PlayerController : NetworkBehaviour, IDamagable
@@ -553,7 +556,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            localSteamId.Value = SteamClient.SteamId;
            playerUsername = SteamClient.Name.ToString();
-           StartCoroutine(UpdatePlayerUsernameCoroutine());
+           SyncPlayerSteamInfoClientRpc();
        }
        playerUsernameText.text = string.Empty;
        
@@ -582,57 +585,37 @@ public class PlayerController : NetworkBehaviour, IDamagable
    }*/
   
    
-   IEnumerator UpdatePlayerUsernameCoroutine()
-   {
-       yield return new WaitForSeconds(0.1f);
-       UpdatePlayerUsernameClientRpc();
-       UpdatePlayerAvatarRpc();
-   }
-  
-   
    [Rpc(SendTo.Everyone)]
-   private void UpdatePlayerUsernameClientRpc()
+   private void SyncPlayerSteamInfoClientRpc()
    {
-       foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
+       string playerName = new Friend(localSteamId.Value).Name;
+       playerUsername = playerName;
+       if (!IsOwner)
        {
-           if (playerController == this)
-           {
-               return;
-           }
-           string playerName = new Friend(playerController.localSteamId.Value).Name;
-           playerController.playerUsername = playerName;
-           playerController.playerUsernameText.text = playerName;
+           playerUsernameText.text = playerName;
        }
+
+       SyncPlayerSteamAvatar();
+   }
+   
+   private async void SyncPlayerSteamAvatar()
+   {
+       var image = await SteamFriends.GetLargeAvatarAsync(localSteamId.Value);
+       steamAvatar = GetTextureFromImage(image.Value);
    }
    
    
-   [Rpc(SendTo.Everyone)]
-   private  void UpdatePlayerAvatarRpc()
+   public static Texture2D GetTextureFromImage(Steamworks.Data.Image image)
    {
-       UpdatePlayerAvatar();
-   }
-   
-   
-   private async void UpdatePlayerAvatar()
-   {
-       foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
-       {
-           steamAvatar = GetTextureFromImage(await SteamFriends.GetSmallAvatarAsync(playerController.localSteamId.Value));
-       }
-   }
-   
-   
-   public static Texture2D GetTextureFromImage(Steamworks.Data.Image? image)
-   {
-       Texture2D texture2D = new Texture2D((int)image.Value.Width, (int)image.Value.Height);
+       Texture2D texture2D = new Texture2D((int)image.Width, (int)image.Height);
        texture2D.filterMode = FilterMode.Point;
       
-       for (int i = 0; i < image.Value.Width; i++)
+       for (int x = 0; x < image.Width; x++)
        {
-           for (int j = 0; j < image.Value.Height; j++)
+           for (int y = 0; y < image.Height; y++)
            {
-               Steamworks.Data.Color pixel = image.Value.GetPixel(i, j);
-               texture2D.SetPixel(i, (int)image.Value.Height - j, new UnityEngine.Color((float)(int)pixel.r / 255f, (float)(int)pixel.g / 255f, (float)(int)pixel.b / 255f, (float)(int)pixel.a / 255f));
+               var pixel = image.GetPixel(x, y);
+               texture2D.SetPixel(x, (int)image.Height - y, new UnityEngine.Color(pixel.r / 255f, pixel.g / 255f, pixel.b / 255f, pixel.a / 255f));
            }
        }
        texture2D.Apply();
@@ -1163,7 +1146,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
    {
        GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, transform.GetChild(0).rotation);
        ragdoll.GetComponent<NetworkObject>().Spawn();
-       InstantiateRagdollClientRPC(ragdoll.GetComponent<NetworkObject>());
        InstantiateRagdollClientRPC(ragdoll.GetComponent<NetworkObject>());
    }
    

@@ -773,6 +773,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""e435d76c-616c-4d0b-ba5e-e9353f60d077"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""3528e684-981c-48f4-a7ad-7bb5f1d6a8a1"",
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",

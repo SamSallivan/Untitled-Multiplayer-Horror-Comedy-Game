@@ -99,7 +99,6 @@ GameObject:
   - component: {fileID: 6796858063129461121}
   - component: {fileID: 7265940260572851070}
   - component: {fileID: 7059845337750071585}
-  - component: {fileID: 3502016561025223200}
   m_Layer: 7
   m_Name: Bat
   m_TagString: Untagged
@@ -183,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1071830708
+  GlobalObjectIdHash: 1167910990
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -228,6 +227,7 @@ MonoBehaviour:
   ownerPlayerId:
     m_InternalValue: -1
   owner: {fileID: 0}
+  previousOwner: {fileID: 0}
   isCurrentlyEquipped:
     m_InternalValue: 0
   enableItemMeshes:
@@ -305,24 +305,3 @@ MonoBehaviour:
     m_Bits: 385
   swingSound: {fileID: 8300000, guid: 024c5313d521a4442b8a49bf71daf75b, type: 3}
   hitSound: {fileID: 8300000, guid: f06ad26081cbbda4e83e52904513a0dd, type: 3}
---- !u!114 &3502016561025223200
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7596440031121015847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17737e0516da2445b9b0077ae2bd9b4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Visible: 1
-  m_MaxRefreshRate: 30
-  <CustomStyleSheet>k__BackingField: {fileID: 0}
-  <PanelSettingsOverride>k__BackingField: {fileID: 0}
-  <Position>k__BackingField:
-    <OverridePosition>k__BackingField: 1
-    m_PositionLeftToRight: 0
-    m_PositionTopToBottom: 0
-  <Configuration>k__BackingField: {fileID: 11400000, guid: 8f1b4e3792d8446399527749cfb591a2, type: 2}

@@ -10,8 +10,6 @@ using UnityEngine.UI;
 public class 
 InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
 {
-    public event Action<I_InventoryItem> OnReturnRequiredType = delegate { };
-
     public TMP_Text amount;
     public Image image;
     public Image durabilityFill;
@@ -99,26 +97,6 @@ InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPoint
             InventoryManager.instance.selectedSlot = this;
 
             InventoryManager.instance.UpdateSelection();
-
-            if (InventoryManager.instance.requireItemType)
-            {
-                if (inventoryItem != null)
-                {
-                    OnReturnRequiredType?.Invoke(InventoryManager.instance.requireItemList[GetIndex()]);
-                    print(InventoryManager.instance.requireItemList[GetIndex()].itemData.title);
-                    InventoryManager.instance.CloseInventory();
-                }
-                return;
-            }
-
-            else
-            {
-                if (inventoryItem != null)
-                {
-                    //I_InventoryItem item = InventoryManager.instance.inventoryItemList[GetIndex()];
-                    //InventoryManager.instance.EquipItem(inventoryItem);
-                }
-            }
         }
     }
 
@@ -179,9 +157,6 @@ InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPoint
                         }
                     }
 
-                    UpdateInventorySlotDisplay();
-                    targetSlot.UpdateInventorySlotDisplay();
-
                     InventoryManager.instance.selectedSlot = targetSlot;
 
                     InventoryManager.instance.UpdateSelection();
@@ -192,10 +167,5 @@ InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPoint
         }
         InventoryManager.instance.draggedItem = null;
         UIManager.instance.draggedImage.enabled = false;
-    }
-
-    public void ClearDelegate()
-    {
-        OnReturnRequiredType = null;
     }
 }
