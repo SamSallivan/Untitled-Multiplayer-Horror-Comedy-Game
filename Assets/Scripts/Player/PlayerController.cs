@@ -556,7 +556,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            localSteamId.Value = SteamClient.SteamId;
            playerUsername = SteamClient.Name.ToString();
-           SyncPlayerSteamInfoClientRpc();
+           StartCoroutine(SyncPlayerSteamInfoCoroutine());
        }
        playerUsernameText.text = string.Empty;
        
@@ -582,7 +582,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
        Cursor.visible = true;
       
        playerControllerInitialized = false;
-   }*/
+   }*/   
+   
+   IEnumerator SyncPlayerSteamInfoCoroutine()
+   {
+       yield return new WaitForSeconds(1f);
+       SyncPlayerSteamInfoClientRpc();
+   }
   
    
    [Rpc(SendTo.Everyone)]
@@ -1477,7 +1483,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
        if (base.IsOwner && controlledByClient.Value)
        {
            UIManager.instance.scoreBoardUI.SetActive(true);
-           UIManager.instance.UpdateScoreBoard();
        }
    }
   
