@@ -244,7 +244,7 @@ public class InventoryManager : NetworkBehaviour
 
                         if (temp <= 0)
                         {
-                            DestoryItemServerRpc(inventoryItem.NetworkObject);
+                            inventoryItem.DestoryItemServerRpc();
                             return item;
                         }
                     }
@@ -498,32 +498,19 @@ public class InventoryManager : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void InstantiateReplaceItemServerRpc(int itemIndex, NetworkObjectReference playerController)
+    public void InstantiateReplaceItemServerRpc(int itemIndex, int playerId)
     {
-        if (playerController.TryGet(out NetworkObject playerControllerObject))
-        {
-            var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
-            gameObject.GetComponent<NetworkObject>().Spawn();
-            InstantiateReplaceItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerControllerObject);
-        }
+        var gameObject = Instantiate(GameSessionManager.Instance.itemList.itemDataList[itemIndex].dropObject);
+        gameObject.GetComponent<NetworkObject>().Spawn();
+        InstantiateReplaceItemClientRpc(gameObject.GetComponent<NetworkObject>(), playerId);
     }
     
     [Rpc(SendTo.Everyone)]
-    public void InstantiateReplaceItemClientRpc(NetworkObjectReference inventoryItem, NetworkObjectReference playerController)
+    public void InstantiateReplaceItemClientRpc(NetworkObjectReference inventoryItem, int playerId)
     {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerController.TryGet(out NetworkObject playerControllerObject) && playerControllerObject.GetComponent<PlayerController>() == GameSessionManager.Instance.localPlayerController)
+        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject) && playerId == GameSessionManager.Instance.localPlayerController.localPlayerId)
         {
             AddItemToInventory(inventoryItemObject.GetComponent<I_InventoryItem>());
-        }
-    }
-
-    [Rpc(SendTo.Server)]
-    public void DestoryItemServerRpc(NetworkObjectReference inventoryItem)
-    {
-        if (inventoryItem.TryGet(out NetworkObject inventoryItemObject))
-        {
-            inventoryItemObject.Despawn();
-            Destroy(inventoryItemObject.gameObject);
         }
     }
 

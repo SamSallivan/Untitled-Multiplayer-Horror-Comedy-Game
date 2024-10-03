@@ -158,7 +158,7 @@ InventorySlot : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPoint
 
                         if (inventoryItem.itemStatus.amount <= 0)
                         {
-                            InventoryManager.instance.DestoryItemServerRpc(inventoryItem.NetworkObject);
+                            inventoryItem.DestoryItemServerRpc();
                             inventoryItem = null;
                         }
                         // else

@@ -204,7 +204,7 @@ public class I_InventoryItem : Interactable
             {
                 if (!owner.controlledByClient.Value && inStorageBox.Value)
                 {
-                    InventoryManager.instance.DestoryItemServerRpc(this.NetworkObject);
+                    DestoryItemServerRpc();
                 }
                 else if (!inStorageBox.Value)
                 {
@@ -328,9 +328,12 @@ public class I_InventoryItem : Interactable
     [Rpc(SendTo.Server)]
     public void UnpocketItemRpc()
     {
-        transform.position = owner.headTransform.transform.position + owner.headTransform.transform.forward * 0.5f;
-        transform.rotation = owner.headTransform.transform.rotation;
-        
+        if (owner)
+        {
+            transform.position = owner.headTransform.transform.position + owner.headTransform.transform.forward * 0.5f;
+            transform.rotation = owner.headTransform.transform.rotation;
+        }
+
         ownerPlayerId.Value = -1;
         enableItemMeshes.Value = true;
         enableItemPhysics.Value = true;
@@ -339,5 +342,12 @@ public class I_InventoryItem : Interactable
         {
             SceneManager.MoveGameObjectToScene(gameObject,SceneManager.GetSceneAt(1));
         }
+    }
+    
+    [Rpc(SendTo.Server)]
+    public void DestoryItemServerRpc()
+    {
+        NetworkObject.Despawn();
+        Destroy(gameObject);
     }
 }

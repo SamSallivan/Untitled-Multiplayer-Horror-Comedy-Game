@@ -93,7 +93,7 @@ public class BeerController : ItemController
     {
         PlayerController playerController = inventoryItem.owner;
         InventoryManager.instance.DiscardEquippedItem();
-        InventoryManager.instance.InstantiateReplaceItemServerRpc(beerBottleItemDataListIndex, playerController.NetworkObject);
-        InventoryManager.instance.DestoryItemServerRpc(inventoryItem.NetworkObject); 
+        InventoryManager.instance.InstantiateReplaceItemServerRpc(beerBottleItemDataListIndex, playerController.localPlayerId);
+        inventoryItem.DestoryItemServerRpc(); 
     }
 }

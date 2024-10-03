@@ -445,18 +445,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
        isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
        OnCurrentCharacterModelIndexChanged(0, currentCharacterModelIndex.Value);
        currentCharacterModelIndex.OnValueChanged += OnCurrentCharacterModelIndexChanged;
-       
-       /*if (currentEquippedItem != null)
-       {
-           playerAnimationController.armAnimator.SetBool("Equipped", true);
-           playerAnimationController.armAnimator.SetTrigger("SwitchItem");
-           playerAnimationController.armAnimator.SetBool(currentEquippedItem.itemData.equipAnimatorParameter, true);
-       }
-           
-       if (currentEmoteIndex.Value != -1)
-       {
-           playerAnimationController.StartEmoteAnimation(currentEmoteIndex.Value);
-       }*/
    }
 
 
@@ -1470,7 +1458,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
                targetInteractable.PerformInteract();
                if (currentEmoteIndex.Value != -1)
                {
-                   StopEmoteRpc();
+                   StopEmote();
                }
            }
        }
@@ -1492,7 +1480,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            PlayEmote(0);
-           SoundManager.Instance.PlayClientSoundEffect(emote1Sound,transform.position);
+           //SoundManager.Instance.PlayClientSoundEffect(emote1Sound,transform.position);
        }
    }
   
@@ -1585,14 +1573,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        if (currentEmoteIndex.Value != -1 && index == currentEmoteIndex.Value)
        {
            currentEmoteIndex.Value = -1;
-           StopEmoteRpc();
            return;
-       }
-      
-       else if (currentEmoteIndex.Value != -1 && index != currentEmoteIndex.Value)
-       {
-           currentEmoteIndex.Value = -1;
-           StopEmoteRpc();
        }
           
        if (emoteDataList[index].fullBodyAnimation)
@@ -1602,29 +1583,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
        }
           
        currentEmoteIndex.Value = index;
-       PlayEmoteRpc(index);
    }
-  
+   
    public void StopEmote()
    {
-       if (IsOwner && controlledByClient.Value)
-       {
-           currentEmoteIndex.Value = -1;
-       }
-   }
-
-
-   [Rpc(SendTo.Everyone)]
-   public void PlayEmoteRpc(int index)
-   {
-       playerAnimationController.StartEmoteAnimation(index);
-   }
-
-
-   [Rpc(SendTo.Everyone)]
-   public void StopEmoteRpc()
-   {
-       playerAnimationController.StopEmoteAnimation();
+       currentEmoteIndex.Value = -1;
    }
   
    #endregion

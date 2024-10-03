@@ -414,6 +414,7 @@ public class PlayerAnimationController : MonoBehaviour
         emoteData = playerController.emoteDataList[index];
         if (emoteData.fullBodyAnimation)
         {
+            Debug.Log("Hey!");
             bodyAnimator.SetTrigger(emoteData.animatorTrigger);
             bodyAnimator.applyRootMotion = true;
             lockLookRotation = emoteData.lockLookRotation;
@@ -459,11 +460,25 @@ public class PlayerAnimationController : MonoBehaviour
         leftArmAnimation = false;
         rightArmAnimation = false;
         emoteData = null;
-        playerController.StopEmote();
+        //playerController.StopEmote();
     }
 
     void UpdateEmoteAnimation()
     {
+        if (Time.timeSinceLevelLoad < 1)
+        {
+            return;
+        }
+        if (playerController.currentEmoteIndex.Value != -1 && (emoteData == null || emoteData != playerController.emoteDataList[playerController.currentEmoteIndex.Value]))
+        {
+            StopEmoteAnimation();
+            StartEmoteAnimation(playerController.currentEmoteIndex.Value);
+        }
+        else if (playerController.currentEmoteIndex.Value == -1 && emoteData != null)
+        {
+            StopEmoteAnimation();
+        }
+        
         if (emoteData)
         {
             if (emoteData.fullBodyAnimation)
@@ -477,21 +492,21 @@ public class PlayerAnimationController : MonoBehaviour
                     rightArmIKTarget.rotation = rightArmTransform.rotation;
                 }
                 
-                if (bodyAnimator.GetBool("isMoving") || armAnimator.GetBool("Held") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
+                if (playerController.IsOwner)
                 {
-                    if (playerController.IsOwner)
+                    if (bodyAnimator.GetBool("isMoving") || armAnimator.GetBool("Held") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
                     {
-                        playerController.StopEmoteRpc();
+                        playerController.StopEmote();
                     }
                 }
             }
             else
             {
-                if (armAnimator.GetBool("Held") || playerController.isPlayerDead.Value)
+                if (playerController.IsOwner)
                 {
-                    if (playerController.IsOwner)
+                    if (armAnimator.GetBool("Held") || playerController.isPlayerDead.Value)
                     {
-                        playerController.StopEmoteRpc();
+                        playerController.StopEmote();
                     }
                 }
             }
