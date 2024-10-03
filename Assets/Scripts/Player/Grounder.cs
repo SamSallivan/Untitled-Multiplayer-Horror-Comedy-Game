@@ -279,10 +279,10 @@ public class Grounder : NetworkBehaviour
 			
 			//sets a timeframe that allows player to jump after ungrounding
 
-			if (playerController.isNonPhysics)
+			/*if (playerController.isNonPhysics)
 			{
 				playerController.DetachFromBoat();
-			}
+			}*/
 
 			if (OnUnground != null)
 				OnUnground();

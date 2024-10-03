@@ -33,8 +33,8 @@ public class InventoryManager : NetworkBehaviour
     public bool detailObjectDrag;
     public float inputDelay;
 
-    public int slotPerRow = 8;
-    public int slotPerColumn = 4;
+    /*public int slotPerRow = 8;
+    public int slotPerColumn = 4;*/
 
     [Header("References")]
     public PlayerController playerController;
@@ -92,14 +92,6 @@ public class InventoryManager : NetworkBehaviour
                 CloseInventory();
             }
 
-            if (selectedItem != null && selectedItem.itemData != null)
-            {
-                // if (Input.GetKeyDown(KeyCode.G) && inputDelay >= 0.1f)
-                // {
-                //     DropItemFromInventory(selectedItem, 1);
-                // }
-            }
-
             // if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.W))
             // {
             //     selectedPosition.x += Input.GetKeyDown(KeyCode.D) ? 1 : 0;
@@ -155,18 +147,6 @@ public class InventoryManager : NetworkBehaviour
         Canvas myCanvas = UIManager.instance.gameplayUI.transform.parent.GetComponent<Canvas>();
         RectTransformUtility.ScreenPointToLocalPointInRectangle(myCanvas.transform as RectTransform, Input.mousePosition, myCanvas.worldCamera, out pos);
         UIManager.instance.draggedItemDisplay.transform.position = myCanvas.transform.TransformPoint(pos);
-    }
-
-    public void UpdateEquippedItem()
-    {
-        if (inventorySlotList[equippedSlotIndex].inventoryItem)
-        {
-            EquipItem(inventorySlotList[equippedSlotIndex].inventoryItem);
-        }
-        else
-        {
-            UnequipItem();
-        }
     }
 
     public void OpenInventory()
@@ -383,7 +363,7 @@ public class InventoryManager : NetworkBehaviour
         UpdateSelection();
     }
 
-    public void DropItemFromInventory(ItemData itemData, int amount)
+    /*public void DropItemFromInventory(ItemData itemData, int amount)
     {
         //materialCount -= x;
 
@@ -463,7 +443,7 @@ public class InventoryManager : NetworkBehaviour
         }
 
         UpdateSelection();
-    }
+    }*/
 
     [Rpc(SendTo.Server)]
     public void InstantiateUnpocketedItemServerRpc(int itemIndex, int amount, int playerId)
@@ -527,7 +507,19 @@ public class InventoryManager : NetworkBehaviour
         slot.amount.text = "";
         slot.durabilityFill.fillAmount = 0;
     }
-
+    
+    public void UpdateEquippedItem()
+    {
+        if (inventorySlotList[equippedSlotIndex].inventoryItem)
+        {
+            EquipItem(inventorySlotList[equippedSlotIndex].inventoryItem);
+        }
+        else
+        {
+            UnequipItem();
+        }
+    }
+    
     public void EquipItem(I_InventoryItem inventoryItem)
     {
         if (!inventoryItem)
@@ -548,6 +540,7 @@ public class InventoryManager : NetworkBehaviour
             playerController.targetInteractable.Target();
         }
     }
+    
     public void UnequipItem()
     {
         //playerController.inventoryAudio.PlayItemUnequip();
@@ -567,7 +560,7 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
-    public I_InventoryItem FindInventoryItem(string name)
+    /*public I_InventoryItem FindInventoryItem(string name)
     {
         foreach (InventorySlot slot in inventorySlotList)
         {
@@ -578,7 +571,7 @@ public class InventoryManager : NetworkBehaviour
         }
 
         return null;
-    }
+    }*/
 
     public void UpdateSelection(bool deleteOnUnselect = true)
     {
@@ -709,7 +702,7 @@ public class InventoryManager : NetworkBehaviour
         }
     }
 
-    public int2 GetGridPosition(int index)
+    /*public int2 GetGridPosition(int index)
     {
         return (new int2(index % slotPerRow, index / slotPerRow));
     }
@@ -717,7 +710,7 @@ public class InventoryManager : NetworkBehaviour
     public int GetGridIndex(int2 position)
     {
         return ((position.y) * slotPerRow + position.x);
-    }
+    }*/
 
     public void LockCursor(bool lockCursor)
     {

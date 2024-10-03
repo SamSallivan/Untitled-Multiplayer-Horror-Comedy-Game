@@ -638,7 +638,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5057215787637170088}
   - component: {fileID: 7730752769217158101}
-  - component: {fileID: 2244940734057340135}
   - component: {fileID: 2466022676466610438}
   m_Layer: 5
   m_Name: UI Camera
@@ -713,14 +712,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &2244940734057340135
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4393038100937110496}
-  m_Enabled: 0
 --- !u!114 &2466022676466610438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1197,7 +1188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 88465425
+  GlobalObjectIdHash: 733293365
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -1230,21 +1221,22 @@ MonoBehaviour:
   controlledByClient:
     m_InternalValue: 0
   steamAvatar: {fileID: 0}
-  awaitInitialization: 0
+  playerControllerInitialized: 0
   playerUsernameCanvasTransform: {fileID: 15498366079930494}
   playerUsernameText: {fileID: 234470645503231130}
-  cameraList: []
-  headTransform: {fileID: 0}
+  gameplayCamera: {fileID: 5244890628544616440}
+  UICamera: {fileID: 7730752769217158101}
+  headTransform: {fileID: 953704681069039082}
   equippedTransform: {fileID: 2944472136624858675}
-  rb: {fileID: 0}
-  animator: {fileID: 0}
-  playerAnimationController: {fileID: 0}
-  playerCollider: {fileID: 0}
-  grounder: {fileID: 0}
-  mouseLookX: {fileID: 0}
-  mouseLookY: {fileID: 0}
-  cameraBob: {fileID: 0}
-  headPosition: {fileID: 0}
+  rb: {fileID: 6976647817256820284}
+  animator: {fileID: 7422018340954777515}
+  playerAnimationController: {fileID: 3482652699434817081}
+  playerCollider: {fileID: 4325224212754620475}
+  grounder: {fileID: 8793975911923707449}
+  mouseLookX: {fileID: 3737053616140787160}
+  mouseLookY: {fileID: 2805623632368853437}
+  cameraBob: {fileID: 5299517612864186040}
+  headPosition: {fileID: 4680189524970998394}
   playerMeshRendererList:
   - {fileID: 221613541788831206}
   - {fileID: 7151276337529302977}
@@ -1263,11 +1255,13 @@ MonoBehaviour:
   - {fileID: 5175153983695925497}
   - {fileID: 2626047370276552046}
   - {fileID: 1267987174301079432}
-  waterObject: {fileID: 0}
+  waterObject: {fileID: 5878151708228256078}
   playerInput: {fileID: 0}
   inputDir: {x: 0, y: 0, z: 0}
-  inputDirNetworkVariable:
-    m_InternalValue: {x: 0, y: 0, z: 0}
+  inputDirX:
+    m_InternalValue: 0
+  inputDirZ:
+    m_InternalValue: 0
   isPlayerDead:
     m_InternalValue: 0
   isPlayerExtracted:
@@ -2120,6 +2114,17 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5149167462998366662, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
   m_PrefabInstance: {fileID: 7128047569051894053}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3482652699434817081 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5962545260724934428, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
+  m_PrefabInstance: {fileID: 7128047569051894053}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35135905dab718c48b665e8c66bd9afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &3593980869170626001 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5984030394731347188, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
@@ -2168,6 +2173,11 @@ SkinnedMeshRenderer:
 --- !u!137 &7151276337529302977 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 132159716615515876, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
+  m_PrefabInstance: {fileID: 7128047569051894053}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7422018340954777515 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 426618366911309454, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
   m_PrefabInstance: {fileID: 7128047569051894053}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7461603081360502610 stripped

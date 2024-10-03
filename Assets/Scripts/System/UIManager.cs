@@ -181,7 +181,7 @@ public class UIManager : MonoBehaviour
        
        if (!gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera)
        {
-           gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera = GameSessionManager.Instance.localPlayerController.cameraList[1];
+           gameplayUI.transform.parent.GetComponent<Canvas>().worldCamera = GameSessionManager.Instance.localPlayerController.UICamera;
        }
       
        if (GameSessionManager.Instance.localPlayerController)

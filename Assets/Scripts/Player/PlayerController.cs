@@ -68,7 +68,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
    [FoldoutGroup("Networks")]
-   public bool awaitInitialization;
+   public bool playerControllerInitialized;
 
 
    [FoldoutGroup("References")]
@@ -80,7 +80,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
    [FoldoutGroup("References")]
-   public List<Camera> cameraList = new List<Camera>();
+   public Camera gameplayCamera;
+
+
+   [FoldoutGroup("References")]
+   public Camera UICamera;
 
 
    [FoldoutGroup("References")]
@@ -169,10 +173,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
    
    [FoldoutGroup("Inputs")]
    public NetworkVariable<float> inputDirZ = new (writePerm: NetworkVariableWritePermission.Owner);
-  
-   
-   //[FoldoutGroup("Inputs")]
-   //public NetworkVariable<Vector3> inputDirNetworkVariable = new (writePerm: NetworkVariableWritePermission.Owner);
 
 
    [FoldoutGroup("Settings")]
@@ -410,30 +410,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Awake()
    {
-       awaitInitialization = true;
        playerInputActions = new PlayerInputActions();
+   }
 
-
-       rb = GetComponent<Rigidbody>();
-       grounder = GetComponent<Grounder>();
-       playerCollider = GetComponent<CapsuleCollider>();
-       headTransform = transform.GetChild(0).Find("Head Position").transform;
-       animator = transform.Find("Character").GetComponent<Animator>();
-       playerAnimationController = transform.Find("Character").GetComponent<PlayerAnimationController>();
-      
-       cameraBob = headTransform.GetComponentInChildren<CameraBob>();
-       headPosition = headTransform.GetComponentInChildren<HeadPosition>();
-       waterObject = GetComponentInChildren<WaterObject>(true);
-
-
-       mouseLookX = transform.GetChild(0).GetComponent<MouseLook>();
-       mouseLookY = headTransform.GetComponent<MouseLook>();
-
-
+   
+   public void Start()
+   {
        playerUsername = $"Player #{localPlayerId}";
-       playerUsernameText.text = playerUsername.ToString();
-
-
+       playerUsernameText.text = playerUsername;
    }
 
 
@@ -442,8 +426,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
        base.OnNetworkSpawn();
       
        OnIsPlayerDeadChanged(false, isPlayerDead.Value);
-       isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
        OnCurrentCharacterModelIndexChanged(0, currentCharacterModelIndex.Value);
+       
+       isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
        currentCharacterModelIndex.OnValueChanged += OnCurrentCharacterModelIndexChanged;
    }
 
@@ -452,13 +437,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
    {
        base.OnNetworkDespawn();
       
-       isPlayerDead.OnValueChanged += OnIsPlayerDeadChanged;
+       isPlayerDead.OnValueChanged -= OnIsPlayerDeadChanged;
+       currentCharacterModelIndex.OnValueChanged -= OnCurrentCharacterModelIndexChanged;
    }
 
 
    private void OnEnable()
    {
        playerInputActions.Enable();
+       
        playerInputActions.FindAction("Sprint").performed += Sprint_performed;
        playerInputActions.FindAction("Jump").performed += Jump_performed;
        playerInputActions.FindAction("Crouch").performed += Crouch_performed;
@@ -482,6 +469,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void OnDisable()
    {
+       playerInputActions.Disable();
+       
        playerInputActions.FindAction("Sprint").performed -= Sprint_performed;
        playerInputActions.FindAction("Jump").performed -= Jump_performed;
        playerInputActions.FindAction("Crouch").performed -= Crouch_performed;
@@ -500,19 +489,17 @@ public class PlayerController : NetworkBehaviour, IDamagable
        playerInputActions.FindAction("ScoreBoard").performed -= ScoreBoard_performed;
        playerInputActions.FindAction("ScoreBoard").canceled -= ScoreBoard_canceled;
        playerInputActions.FindAction("Pause").performed -= Pause_performed;
-       //playerInputActions.Disable();
    }
 
-
+   
    private void Update()
    {
-       if (base.IsOwner && controlledByClient.Value)
+       if (IsOwner && controlledByClient.Value)
        {
-           if (awaitInitialization)
+           if (!playerControllerInitialized)
            {
                ConnectClientToPlayerObject();
            }
-
 
            InputUpdate();
            LookUpdate();
@@ -529,13 +516,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
        }
-       else
+       /*else
        {
-           if (!awaitInitialization)
+           if (playerControllerInitialized)
            {
                DisconnectClientFromPlayerObject();
            }
-       }
+       }*/
    }
 
 
@@ -553,68 +540,48 @@ public class PlayerController : NetworkBehaviour, IDamagable
        //Rotate Username Canvas facing local player's camera
        if (!base.IsOwner && GameSessionManager.Instance.localPlayerController != null)
        {
-           playerUsernameCanvasTransform.LookAt(GameSessionManager.Instance.localPlayerController.cameraList[0].transform);
+           playerUsernameCanvasTransform.LookAt(GameSessionManager.Instance.localPlayerController.gameplayCamera.transform);
        }
    }
 
 
    public void ConnectClientToPlayerObject()
    {
-
-       if (GameSessionManager.Instance != null)
-       {
-           GameSessionManager.Instance.localPlayerController = this;
-       }
-
-
+       GameSessionManager.Instance.localPlayerController = this;
+       
        if (!GameNetworkManager.Instance.isSteamDisabled)
        {
            localSteamId.Value = SteamClient.SteamId;
            playerUsername = SteamClient.Name.ToString();
            StartCoroutine(UpdatePlayerUsernameCoroutine());
        }
-       
        playerUsernameText.text = string.Empty;
-
-
-       //GameSessionManager.Instance.spectateCamera.enabled = false;
-
-
-       cameraList = GetComponentsInChildren<Camera>(true).ToList<Camera>();
-       cameraList[0].tag = "MainCamera";
-       EnviroManager.instance.Camera = cameraList[0];
-       foreach (Camera cam in cameraList)
-       {
-           cam.enabled = true;
-       }
-
-
-       GameSessionManager.Instance.audioListener = GetComponentInChildren<AudioListener>(true);
-       GameSessionManager.Instance.audioListener.enabled = true;
-
+       
+       TeleportPlayer(GameSessionManager.Instance.lobbySpawnTransform.position);
+       
+       gameplayCamera.enabled = true;
+       UICamera.enabled = true;
+       gameplayCamera.tag = "MainCamera";
+       EnviroManager.instance.Camera = gameplayCamera;
+       gameplayCamera.GetComponent<AudioListener>().enabled = true;
+       GameSessionManager.Instance.audioListener = gameplayCamera.GetComponent<AudioListener>();
 
        Cursor.lockState = CursorLockMode.Locked;
        Cursor.visible = false;
 
-
-       Respawn();
-         
-       GameSessionManager.Instance.StartCoroutine(GameSessionManager.Instance.LoadCoroutine());
-       TeleportPlayer(GameSessionManager.Instance.lobbySpawnTransform.position);
-
-
-       awaitInitialization = false;
+       playerControllerInitialized = true;
    }
-
-
-   public void DisconnectClientFromPlayerObject()
+   
+   
+   /*public void DisconnectClientFromPlayerObject()
    {
        Cursor.lockState = CursorLockMode.Confined;
        Cursor.visible = true;
       
-       awaitInitialization = true;
-   }
+       playerControllerInitialized = false;
+   }*/
   
+   
    IEnumerator UpdatePlayerUsernameCoroutine()
    {
        yield return new WaitForSeconds(0.1f);
@@ -622,6 +589,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        UpdatePlayerAvatarRpc();
    }
   
+   
    [Rpc(SendTo.Everyone)]
    private void UpdatePlayerUsernameClientRpc()
    {
@@ -637,11 +605,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
        }
    }
    
+   
    [Rpc(SendTo.Everyone)]
    private  void UpdatePlayerAvatarRpc()
    {
        UpdatePlayerAvatar();
    }
+   
    
    private async void UpdatePlayerAvatar()
    {
@@ -650,6 +620,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            steamAvatar = GetTextureFromImage(await SteamFriends.GetSmallAvatarAsync(playerController.localSteamId.Value));
        }
    }
+   
    
    public static Texture2D GetTextureFromImage(Steamworks.Data.Image? image)
    {
@@ -725,9 +696,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
            {
                return;
            }
-
-
-           Climb(hit.point + hit.normal);
+           
+           //sets target position and start climbing
+           climbTargetPos = hit.point + hit.normal;
+           climbState = 3;
        }
    }
 
@@ -743,21 +715,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            return;
        }
 
-
-       //if jumping on top of props, push props away
-       // if ((bool)grounder.groundCollider && grounder.groundCollider.gameObject.layer == 14)
-       // {
-       //     Rigidbody attachedRigidbody = grounder.groundCollider.attachedRigidbody;
-       //     if ((bool)attachedRigidbody)
-       //     {
-       //         attachedRigidbody.AddForce(Vector3.up * (7f * attachedRigidbody.mass), ForceMode.Impulse);
-       //         attachedRigidbody.AddTorque(tHead.forward * 90f, ForceMode.Impulse);
-       //     }
-       // }
-
-
        //ungrounds and jumps
-       //rb.velocity = new Vector3(0, 0, 0);
       
        jumpCooldown = jumpCooldownSetting;
       
@@ -778,20 +736,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
        JumpRpc();
    }
    
+   
    [Rpc(SendTo.Everyone)]
    public void JumpRpc()
    {
        animator.SetTrigger("Jump");
    }
 
-   private void Climb(Vector3 targetPos)
-   {  
-       //sets target position and start climbing
-       climbTargetPos = targetPos;
-       climbState = 3;
-   }
-
-
+   
    private void ClimbingUpdate()
    {
        if (climbState < 1)
@@ -923,7 +875,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
            {
                //lerp from current position to target ground position
                Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
-               //Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y - grounder.transform.localPosition.y, rb.position.z);
                targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 15f);
                rb.MovePosition(targetGroundPosition);
                rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
@@ -1009,7 +960,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    public void InteractionUpdate()
    {
-       if (Physics.Raycast(cameraList[0].ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
+       if (Physics.Raycast(gameplayCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
        {
            if (targetInteractable == null || targetInteractable != hitInfo.collider.GetComponent<Interactable>()) // || targetInteractable.triggerZone)
            {
@@ -1085,7 +1036,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    }
 
 
-   public void SetCameraClamp(float x1, float x2, float y1, float y2)
+   /*public void SetCameraClamp(float x1, float x2, float y1, float y2)
    {
        GetComponent<MouseLook>().SetClamp(x1, x2, y1, y2);
 
@@ -1094,10 +1045,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            look.SetClamp(x1, x2, y1, y2);
        }
-   }
+   }*/
 
 
-   public void AttachToBoat(Transform playerParent)
+   /*public void AttachToBoat(Transform playerParent)
    {
        // transform.SetParent(playerParent.gameObject.transform, true);
        // isNonPhysics = true;
@@ -1116,10 +1067,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
        // UIManager.instance.boatUI.SetActive(true);
-   }
+   }*/
 
 
-   public void DetachFromBoat()
+   /*public void DetachFromBoat()
    {
        // if (rb == null)
        // {
@@ -1151,7 +1102,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
        //     UIManager.instance.boatUI.SetActive(false);
        // }
-   }
+   }*/
 
 
    // private void OnDrawGizmosSelected()
@@ -1237,18 +1188,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            LockMovement(false);
            ResetCamera();
            animator.enabled = true;
-
-
-           Vector3 spawnPosition;
-           if (!GameSessionManager.Instance.gameStarted.Value)
-           {
-               spawnPosition = GameSessionManager.Instance.lobbySpawnTransform.position;
-           }
-           else
-           {
-               spawnPosition = LevelManager.Instance.playerSpawnTransform.position;
-           }
-           TeleportPlayer(spawnPosition);
+           
            SpectateManager.Instance.StopSpectating();
            GetComponent<PlayerRating>().rating.Value = PlayerRating.Rating.B;
            GetComponent<PlayerRating>().ratingMeter = 0.5f;
@@ -1303,7 +1243,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            inputDirZ.Value = inputDir.z;
        }
-       //inputDirNetworkVariable.Value = inputDir;
    }
 
 
@@ -1372,6 +1311,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
            else if (isPlayerDead.Value)
            {
                Respawn();
+               
+               Vector3 spawnPosition;
+               
+               if (!GameSessionManager.Instance.gameStarted.Value)
+               {
+                   spawnPosition = GameSessionManager.Instance.lobbySpawnTransform.position;
+               }
+               else
+               {
+                   spawnPosition = LevelManager.Instance.playerSpawnTransform.position;
+               }
+               TeleportPlayer(spawnPosition);
            }
        }
    }
