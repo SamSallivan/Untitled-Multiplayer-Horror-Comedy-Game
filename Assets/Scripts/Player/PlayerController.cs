@@ -588,11 +588,18 @@ public class PlayerController : NetworkBehaviour, IDamagable
    [Rpc(SendTo.Everyone)]
    private void SyncPlayerSteamInfoClientRpc()
    {
-       string playerName = new Friend(localSteamId.Value).Name;
-       playerUsername = playerName;
-       if (!IsOwner)
+       foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
        {
-           playerUsernameText.text = playerName;
+           if (!playerController.controlledByClient.Value)
+           {
+               break;
+           }
+           string playerName = new Friend(playerController.localSteamId.Value).Name;
+           playerController.playerUsername = playerName;
+           if (playerController != this)
+           {
+               playerController.playerUsernameText.text = playerName;
+           }
        }
 
        SyncPlayerSteamAvatar();
@@ -600,8 +607,16 @@ public class PlayerController : NetworkBehaviour, IDamagable
    
    private async void SyncPlayerSteamAvatar()
    {
-       var image = await SteamFriends.GetLargeAvatarAsync(localSteamId.Value);
-       steamAvatar = GetTextureFromImage(image.Value);
+       foreach (PlayerController playerController in GameSessionManager.Instance.playerControllerList)
+       {
+           if (!playerController.controlledByClient.Value)
+           {
+               break;
+           }
+
+           var image = await SteamFriends.GetLargeAvatarAsync(playerController.localSteamId.Value);
+           playerController.steamAvatar = GetTextureFromImage(image.Value);
+       }
    }
    
    
