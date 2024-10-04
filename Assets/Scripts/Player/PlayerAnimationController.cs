@@ -409,12 +409,11 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    public void StartEmoteAnimation(int index)
+    public void StartEmoteAnimation(EmoteData data)
     {
-        emoteData = playerController.emoteDataList[index];
+        emoteData = data;
         if (emoteData.fullBodyAnimation)
         {
-            Debug.Log("Hey!");
             bodyAnimator.SetTrigger(emoteData.animatorTrigger);
             bodyAnimator.applyRootMotion = true;
             lockLookRotation = emoteData.lockLookRotation;
@@ -469,16 +468,24 @@ public class PlayerAnimationController : MonoBehaviour
         {
             return;
         }
-        if (playerController.currentEmoteIndex.Value != -1 && (emoteData == null || emoteData != playerController.emoteDataList[playerController.currentEmoteIndex.Value]))
+
+        if (playerController.inSpecialAnimation.Value)
         {
-            StopEmoteAnimation();
-            StartEmoteAnimation(playerController.currentEmoteIndex.Value);
+            
         }
-        else if (playerController.currentEmoteIndex.Value == -1 && emoteData != null)
+        else
         {
-            StopEmoteAnimation();
+            if (playerController.currentEmoteIndex.Value != -1 && (emoteData == null || emoteData != playerController.emoteDataList[playerController.currentEmoteIndex.Value]))
+            {
+                StopEmoteAnimation();
+                StartEmoteAnimation(playerController.emoteDataList[playerController.currentEmoteIndex.Value]);
+            }
+            else if (playerController.currentEmoteIndex.Value == -1 && emoteData != null)
+            {
+                StopEmoteAnimation();
+            }
         }
-        
+
         if (emoteData)
         {
             if (emoteData.fullBodyAnimation)
@@ -494,7 +501,7 @@ public class PlayerAnimationController : MonoBehaviour
                 
                 if (playerController.IsOwner)
                 {
-                    if (bodyAnimator.GetBool("isMoving") || armAnimator.GetBool("Held") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
+                    if (bodyAnimator.GetBool("isMoving") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
                     {
                         playerController.StopEmote();
                     }
@@ -504,7 +511,7 @@ public class PlayerAnimationController : MonoBehaviour
             {
                 if (playerController.IsOwner)
                 {
-                    if (armAnimator.GetBool("Held") || playerController.isPlayerDead.Value)
+                    if (playerController.isPlayerDead.Value)
                     {
                         playerController.StopEmote();
                     }

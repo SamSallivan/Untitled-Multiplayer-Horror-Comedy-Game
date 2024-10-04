@@ -528,8 +528,9 @@ public class GameSessionManager : NetworkBehaviour
       UIManager.instance.ratingUI.SetActive(false);
       UIManager.instance.currencyUI.SetActive(true);
      
-      yield return new WaitForSeconds(1f);
+      localPlayerController.TeleportPlayer(GameSessionManager.Instance.lobbySummaryPlayerTransformList[GameSessionManager.Instance.localPlayerController.localPlayerId].position);
      
+      yield return new WaitForSeconds(1f);
       if (localPlayerController.isPlayerDead.Value)
       {
          localPlayerController.Respawn();
@@ -546,7 +547,6 @@ public class GameSessionManager : NetworkBehaviour
      
       //GameSessionManager.Instance.localPlayerController.LockMovement(true);
       //GameSessionManager.Instance.localPlayerController.LockCamera(true);
-      localPlayerController.TeleportPlayer(GameSessionManager.Instance.lobbySummaryPlayerTransformList[GameSessionManager.Instance.localPlayerController.localPlayerId].position);
       localPlayerController.ResetCamera();
       UIManager.instance.OpenSummary();
      

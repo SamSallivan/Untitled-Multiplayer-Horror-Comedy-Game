@@ -259,7 +259,7 @@ MonoBehaviour:
   rotArrayX: []
   rotAverageX: 0
   rotArrayY: []
-  rotAverageY: -8.499961
+  rotAverageY: 0
   framesOfSmoothing: 5
 --- !u!114 &749386978981623756
 MonoBehaviour:
@@ -1258,6 +1258,7 @@ MonoBehaviour:
   waterObject: {fileID: 5878151708228256078}
   playerInput: {fileID: 0}
   inputDir: {x: 0, y: 0, z: 0}
+  mouseInput: {x: 0, y: 0}
   inputDirX:
     m_InternalValue: 0
   inputDirZ:
@@ -1333,6 +1334,8 @@ MonoBehaviour:
   ragdollPrefab: {fileID: 7884753425393965448, guid: dca4d5f6b2102364fa1f096610003861, type: 3}
   currentEmoteIndex:
     m_InternalValue: -1
+  inSpecialAnimation:
+    m_InternalValue: 0
   emoteDataList:
   - {fileID: 11400000, guid: 1bcea3a96d4ecc54489e6c0d3a2617b5, type: 2}
   - {fileID: 11400000, guid: c7f03c1437ca48044ab7d459a1551ee4, type: 2}

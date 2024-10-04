@@ -168,6 +168,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    [FoldoutGroup("Inputs")]
    public Vector3 inputDir;
+
+
+   [FoldoutGroup("Inputs")]
+   public Vector2 mouseInput;
   
    
    [FoldoutGroup("Inputs")]
@@ -386,6 +390,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
    public NetworkVariable<int> currentEmoteIndex =  new(-1, writePerm: NetworkVariableWritePermission.Owner);
 
 
+   [FoldoutGroup("Emote")]
+   public NetworkVariable<bool> inSpecialAnimation =  new(writePerm: NetworkVariableWritePermission.Owner);
+   
    [FoldoutGroup("Emote")]
    public List<EmoteData> emoteDataList = new List<EmoteData>();
 
@@ -1037,6 +1044,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
    {
        mouseLookX.Reset();
        mouseLookY.Reset();
+       mouseLookX.transform.localRotation = Quaternion.identity;
+       mouseLookY.transform.localRotation = Quaternion.identity;
    }
 
 
@@ -1246,16 +1255,22 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            inputDirZ.Value = inputDir.z;
        }
+       
+       if (base.IsOwner && controlledByClient.Value & enableLook)
+       {
+           mouseInput = playerInputActions.FindAction("Look").ReadValue<Vector2>();
+       }
+       else
+       {
+           mouseInput = Vector2.zero;
+       }
    }
 
 
    private void LookUpdate()
    {
-       if (base.IsOwner && controlledByClient.Value & enableLook)
+       if (base.IsOwner && controlledByClient.Value)
        {  
-           Vector2 mouseInput = playerInputActions.FindAction("Look").ReadValue<Vector2>();
-
-
            if (mouseLookX.enabled)
            {
                mouseLookX.UpdateCameraRotation(mouseInput.x);
@@ -1354,6 +1369,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
                    if (InventoryManager.instance.equippedItem.GetComponent<ItemController>())
                    {
                        InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(true);
+                       if (currentEmoteIndex.Value != -1)
+                       {
+                           StopEmote();
+                       }
                    }
                }
            }
@@ -1400,6 +1419,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
        if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
            InventoryManager.instance.SwitchEquipedItem(Math.Sign(context.ReadValue<float>()));
+           if (currentEmoteIndex.Value != -1)
+           {
+               StopEmote();
+           }
        }
    }
    
@@ -1424,7 +1447,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            if (enableMovement && targetInteractable != null)
            {
-               targetInteractable.CancelInteract();
+               targetInteractable.ResetInteract();
            }
        }
    }
@@ -1536,6 +1559,15 @@ public class PlayerController : NetworkBehaviour, IDamagable
        }
           
        currentEmoteIndex.Value = index;
+       
+       if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner &&
+           InventoryManager.instance.equippedItem.owner == this)
+       {
+           if (InventoryManager.instance.equippedItem.GetComponent<ItemController>())
+           {
+               InventoryManager.instance.equippedItem.GetComponent<ItemController>().Cancel();
+           }
+       }
    }
    
    public void StopEmote()

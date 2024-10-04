@@ -9,9 +9,12 @@ public class ObjectiveManager : NetworkBehaviour
 {
     public static ObjectiveManager instance;
     
-    public Objective initialObjective;
+    public List<Objective> initialObjective = new List<Objective>();
     
     public List<Objective> objectiveList = new List<Objective>();
+    
+    //public Objective objectivePrefab;
+    //public List<ObjectiveData> initialObjectiveData = new List<ObjectiveData>();
     
     private void Awake()
     {
@@ -25,11 +28,9 @@ public class ObjectiveManager : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         
-        if(IsServer){
-            if (initialObjective)
-            {
-                StartCoroutine(AssignInitialObjectiveCoroutine());
-            }
+        if(IsServer)
+        {
+            StartCoroutine(AssignInitialObjectiveCoroutine());
         }
     }
 
@@ -43,7 +44,11 @@ public class ObjectiveManager : NetworkBehaviour
     public virtual IEnumerator AssignInitialObjectiveCoroutine()
     {
         yield return new WaitForSeconds(2.5f);
-        instance.AssignObjective(initialObjective);
+        
+        foreach (Objective objective in initialObjective)
+        {
+            AssignObjective(objective);
+        }
     }
 
     
@@ -62,9 +67,15 @@ public class ObjectiveManager : NetworkBehaviour
         {
             objectiveList.Add(objective.GetComponent<Objective>());
             UpdateObjectiveUI();
+
+            if (objective.GetComponent<Objective>().showNotification)
+            {
+                UIManager.instance.objectiveNotificationTitle.text = "NEW OBJECTIVE";
+                UIManager.instance.objectiveNotificationText.text = objective.GetComponent<Objective>().objectiveName;
+                UIManager.instance.FadeInOut(UIManager.instance.objectiveNotificationUI, 1f, 2f, 1f);
+            }
+
             UIManager.instance.objectiveTextList[objectiveList.IndexOf(objective.GetComponent<Objective>())].DOFade(1, 1f);
-            UIManager.instance.objectiveNotificationText.text = objective.GetComponent<Objective>().objectiveName;
-            UIManager.instance.FadeInOut(UIManager.instance.objectiveNotificationUI, 1f, 2f, 1f);
         }
     }
     
@@ -81,9 +92,9 @@ public class ObjectiveManager : NetworkBehaviour
     }
     
     [Button]
-    public void CompleteObjective(Objective objective)
+    public void CompleteObjective(Objective completedObjective)
     {
-        CompleteObjectiveClientRpc(objective.NetworkObject);
+        CompleteObjectiveClientRpc(completedObjective.NetworkObject);
     }
     
     [Rpc(SendTo.Everyone)]
@@ -91,12 +102,20 @@ public class ObjectiveManager : NetworkBehaviour
     {
         if (objectiveReference.TryGet(out NetworkObject objective))
         {
+            if (objective.GetComponent<Objective>().showNotification)
+            {
+                UIManager.instance.objectiveNotificationTitle.text = "OBJECTIVE COMPLETED";
+                UIManager.instance.objectiveNotificationText.text = objective.GetComponent<Objective>().objectiveName;
+                UIManager.instance.FadeInOut(UIManager.instance.objectiveNotificationUI, 1f, 2f, 1f);
+            }
+
             UIManager.instance.objectiveTextList[objectiveList.IndexOf(objective.GetComponent<Objective>())].DOFade(0, 1f).OnComplete(() =>
             {
                 objectiveList.Remove(objective.GetComponent<Objective>());
                 UpdateObjectiveUI();
             }
             );
+            
             RatingManager.instance.AddScore(objective.gameObject.GetComponent<Objective>().score);
         }
     }
@@ -107,7 +126,7 @@ public class ObjectiveManager : NetworkBehaviour
         {
             if (i < objectiveList.Count)
             {
-                string text = "\u2748" + objectiveList[i].objectiveName;
+                string text = "\u2748 " + objectiveList[i].objectiveText;
                 if (objectiveList[i].requiredValue > 1)
                 {
                     text += $" ({objectiveList[i].completedValue.Value}/{objectiveList[i].requiredValue})";

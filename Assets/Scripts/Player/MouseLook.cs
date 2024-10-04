@@ -40,15 +40,8 @@ public class MouseLook : NetworkBehaviour
  
 	public float framesOfSmoothing = 5;
 
+	Quaternion originalRotation;
     Quaternion originalLocalRotation;
-
-    Quaternion originalRotation;
-
-
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-    }
     
     void Start ()
 	{			
@@ -57,8 +50,6 @@ public class MouseLook : NetworkBehaviour
 			GetComponent<Rigidbody>().freezeRotation = true;
 		}
 		
-		//originalRotation = transform.rotation;
-        //originalLocalRotation = transform.localRotation;
         originalRotation = Quaternion.identity;
         originalLocalRotation = Quaternion.identity;
 
@@ -69,8 +60,13 @@ public class MouseLook : NetworkBehaviour
         switch(axes)
         {
             case RotationAxes.MouseX:
-
-                rotationX += input * sensitivityX * Time.timeScale;
+	            
+	            rotationX = input * sensitivityX;
+                
+	            Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
+	            transform.localRotation *= xQuaternion;
+	            
+                /*rotationX += input * sensitivityX * Time.timeScale;
                 rotArrayX.Add(rotationX); 
 
                 if (minimumX != -360 && maximumX != 360)
@@ -97,8 +93,7 @@ public class MouseLook : NetworkBehaviour
                 else
                 {
                     transform.localRotation = originalLocalRotation * xQuaternion;
-                }
-                //ApplyServerRpc(rotAverageX);
+                }*/
 
                 break;
 
@@ -125,39 +120,11 @@ public class MouseLook : NetworkBehaviour
 
                 Quaternion yQuaternion = Quaternion.AngleAxis (rotAverageY, Vector3.left);
                 transform.localRotation = originalLocalRotation * yQuaternion;
-                //ApplyServerRpc(rotAverageY);
 
                 break;
         }
     }
 
-/*    [ServerRpc(RequireOwnership = false)]
-    public void ApplyServerRpc(float rotAverage)
-    {
-		    if (axes == RotationAxes.MouseX)
-		    {
-			    Quaternion xQuaternion = Quaternion.AngleAxis (rotAverage, Vector3.up);
-                if (PlayerController.instance.transform.parent == null)
-                {
-                    transform.rotation = originalRotation * xQuaternion;
-                }
-                else
-                {
-                    transform.localRotation = originalLocalRotation * xQuaternion;
-                }
-            }
-		    else
-		    {
-			    Quaternion yQuaternion = Quaternion.AngleAxis (rotAverage, Vector3.left);
-			    transform.localRotation = originalLocalRotation * yQuaternion;
-            }
-    }*/
-	
-	public void SetSensitivity(float s)
-	{
-		sensitivityX = s;
-		sensitivityY = s;
-	}
  
 	public static float ClampAngle (float angle, float min, float max)
 	{
@@ -173,8 +140,6 @@ public class MouseLook : NetworkBehaviour
         rotationY = 0f;
         rotAverageX = 0f;
         rotAverageY = 0f;
-        /*originalRotation = transform.rotation;
-        originalLocalRotation = transform.localRotation;*/
     }
 
     [Button]
@@ -183,22 +148,12 @@ public class MouseLook : NetworkBehaviour
 	    switch (axes)
 	    {
 		    case RotationAxes.MouseX:
-			    rotationX = rotation;
+			    transform.localEulerAngles = new Vector3(0f, rotation, 0f);
 			    break;
 		    
 		    case RotationAxes.MouseY:
 			    rotationY = rotation;
 			    break;
 	    }
-	    /*originalRotation = transform.rotation;
-	    originalLocalRotation = transform.localRotation;*/
-    }
-
-    public void SetClamp(float x1, float x2, float y1, float y2)
-    {
-		minimumX = x1;
-        maximumX = x2;
-        minimumY = y1;
-        maximumY = y2;
     }
 }

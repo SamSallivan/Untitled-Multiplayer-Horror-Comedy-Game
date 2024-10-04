@@ -51,6 +51,9 @@ public class UIManager : MonoBehaviour
    public GameObject objectiveNotificationUI;
 
    [FoldoutGroup("Objective")]
+   public TMP_Text objectiveNotificationTitle;
+
+   [FoldoutGroup("Objective")]
    public TMP_Text objectiveNotificationText;
 
    [FoldoutGroup("Score & Rating")]
@@ -223,8 +226,7 @@ public class UIManager : MonoBehaviour
 
    public IEnumerator CoFadeInOutUI(GameObject UI, float inTime, float duration, float outTime)
    {
-       //UI.SetActive(true);
-
+       
        foreach (Image image in UI.transform.GetComponentsInChildren<Image>())
        {
            image.DOFade(1, inTime);
@@ -246,41 +248,10 @@ public class UIManager : MonoBehaviour
        {
            text.DOFade(0, outTime);
        }
-
-
-       //UI.SetActive(false);
+       
    }
-
-
-   /*public void Examine(string text, Sprite image)
-   {
-       GameSessionManager.Instance.localPlayerController.LockMovement(true);
-       GameSessionManager.Instance.localPlayerController.LockCamera(true);
-
-
-       examineUI.SetActive(true);
-       gameplayUI.SetActive(false);
-       examineText.text = text;
-       if(image != null){
-           examineImage.enabled = true;
-           examineImage.sprite = image;
-       }
-   }
-
-
-   public void Unexamine()
-   {
-       GameSessionManager.Instance.localPlayerController.LockMovement(false);
-       GameSessionManager.Instance.localPlayerController.LockCamera(false);
-
-
-       examineUI.SetActive(false);
-       gameplayUI.SetActive(true);
-       examineText.text = "";
-       examineImage.enabled = false;
-   }*/
-
-
+   
+   
    public async void UpdateScoreBoard()
    {
        List<PlayerController> playersRanked = new List<PlayerController>(GameSessionManager.Instance.playerControllerList);
@@ -322,6 +293,8 @@ public class UIManager : MonoBehaviour
        }
       
    }
+   
+   
    public async void UpdateExtractionTimer()
    {
        if (LevelManager.Instance)

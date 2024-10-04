@@ -292,9 +292,12 @@ public class GameNetworkManager : MonoBehaviour
 	private IEnumerator ReturnToMainMenuCoroutine()
 	{
 		Debug.Log($"Disconnect: Shutting down and disconnecting from server.");
-		NetworkManager.Singleton.Shutdown();
 
-		yield return new WaitUntil(() => !NetworkManager.Singleton.ShutdownInProgress);
+		if (NetworkManager.Singleton)
+		{
+			NetworkManager.Singleton.Shutdown();
+			yield return new WaitUntil(() => !NetworkManager.Singleton.ShutdownInProgress);
+		}
 
 		ResetNetworkManagerValues();
 		SceneManager.LoadScene("MainMenu");

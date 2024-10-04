@@ -6,6 +6,7 @@ using System;
 using TMPro;
 using Unity.Netcode;
 using Sirenix.OdinInspector;
+using UnityEngine.Serialization;
 
 public enum InteractionType
 {
@@ -50,22 +51,23 @@ public abstract class Interactable : NetworkBehaviour
 
     [FoldoutGroup("Settings")]
     [ShowIf("requireHold")]
-    public float requireHoldDuration = 1f;
-    
-    [FoldoutGroup("Settings")]
-    [ShowIf(nameof(interactionType), InteractionType.Examine)]
-    public Sprite examineImage;
+    public float requiredHoldDuration = 1f;
 
     [FoldoutGroup("Settings")]
-    
-    [ShowIf(nameof(interactionType), InteractionType.Examine)]
-    public bool hasText;
-    
-    [FoldoutGroup("Settings")]
+    public bool requireItem;
 
-    [ShowIf(nameof(hasText))]
-    [TextArea(10, 10)]
-    public string examineText;
+    [FoldoutGroup("Settings")]
+    [ShowIf("requireItem")]
+    public ItemData requiredItemData;
+
+    [FoldoutGroup("Settings")]
+    public EmoteData specialAnimation;
+
+    [FoldoutGroup("Settings")]
+    public Transform playerPositionTargetTransform;
+
+    [FoldoutGroup("Settings")]
+    public Transform playerLookAtTargetTransform;
     
     [FoldoutGroup("Settings")]
 
@@ -76,19 +78,9 @@ public abstract class Interactable : NetworkBehaviour
     [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
     public ItemStatus itemStatus;
     
-    /*[FoldoutGroup("Values")]
-    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
-    public int amount;
-    [FoldoutGroup("Values")]
-    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
-    public float durability;*/
-    
     [FoldoutGroup("Settings")]
     [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
     public bool openInventoryOnPickUp;
-
-    //[ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
-    //public bool equipOnPickUp;
     
     [FoldoutGroup("Settings")]
     [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
@@ -121,19 +113,59 @@ public abstract class Interactable : NetworkBehaviour
     {
         if (isHeld)
         {
-            heldDuration += Time.deltaTime;
-            UIManager.instance.interactionHoldBar.fillAmount = heldDuration / requireHoldDuration;
+            if (!CustomRequirement())
+            {
+                ResetInteract();
+                UIManager.instance.Notify(requiredItemData.name + " required");
+                return;
+            }
             
-            if (heldDuration >= requireHoldDuration)
+            heldDuration += Time.deltaTime;
+            UIManager.instance.interactionHoldBar.fillAmount = heldDuration / requiredHoldDuration;
+            
+            if (heldDuration >= requiredHoldDuration)
             {
                 Interact();
-                CancelInteract();
+            }
+        }
+
+        InteractableUpdate();
+    }
+
+    public void LateUpdate()
+    {
+        if (isHeld)
+        {
+            PlayerController playerController = GameSessionManager.Instance.localPlayerController;
+
+            if (playerPositionTargetTransform)
+            {
+                Vector3 targetPosition = playerPositionTargetTransform.position;
+                targetPosition.y = playerController.transform.position.y;
+                playerController.rb.position = Vector3.Lerp(playerController.rb.position, targetPosition, Time.deltaTime * 5f);
+            }
+
+            if (playerLookAtTargetTransform)
+            {
+                float angleY = Quaternion.LookRotation(playerLookAtTargetTransform.position - playerController.mouseLookY.transform.position).eulerAngles.x;
+                playerController.mouseLookY.SetRotation(Mathf.Lerp(playerController.mouseLookY.rotationY, -angleY, Time.deltaTime * 5));
+                
+                Quaternion angleX = Quaternion.LookRotation(playerLookAtTargetTransform.position - playerController.mouseLookX.transform.position);
+                angleX.eulerAngles = new Vector3(0, angleX.eulerAngles.y, 0);
+                playerController.mouseLookX.transform.rotation = Quaternion.Lerp(playerController.mouseLookX.transform.rotation, angleX, Time.deltaTime * 5);                 
+                
             }
         }
     }
 
     public void PerformInteract()
     {
+        if (!CustomRequirement())
+        {
+            UIManager.instance.Notify(requiredItemData.name + " required");
+            return;
+        }
+        
         if (!requireHold)
         {
             Interact();
@@ -142,48 +174,47 @@ public abstract class Interactable : NetworkBehaviour
         {
             isHeld = true;
         }
+
+        if (specialAnimation)
+        {
+            GameSessionManager.Instance.localPlayerController.inSpecialAnimation .Value = true;
+            StartSpecialAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+        }
     }
 
-    public void CancelInteract()
+    public void ResetInteract()
     {
-        if (!requireHold)
+        isHeld = false;
+        heldDuration = 0;
+        UIManager.instance.interactionHoldBar.fillAmount = 0;
+        
+
+        if (specialAnimation)
         {
-            return;
+            GameSessionManager.Instance.localPlayerController.inSpecialAnimation .Value = false;
+            StopSpecialAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
         }
-        else
-        {
-            isHeld = false;
-            heldDuration = 0;
-            UIManager.instance.interactionHoldBar.fillAmount = 0;
-        }
+    }
+
+
+    [Rpc(SendTo.Everyone)]
+    public void StartSpecialAnimationRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        playerController.playerAnimationController.StartEmoteAnimation(specialAnimation);
+    }
+    
+    [Rpc(SendTo.Everyone)]
+    public void StopSpecialAnimationRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        playerController.playerAnimationController.StopEmoteAnimation();
     }
     
     public void Interact()
     {
-
         if (!interactedOnce)
         {
-            /*switch (interactionType)
-            {
-                case InteractionType.None:
-                    break;
-
-                case InteractionType.Examine:
-                    StartCoroutine(InteractionEvent());
-                    break;
-
-                case InteractionType.InventoryItem:
-                    StartCoroutine(InteractionEvent());
-                    break;
-
-                case InteractionType.Custom:
-                    StartCoroutine(InteractionEvent());
-                    break;
-
-                case InteractionType.CustomToggle:
-                    StartCoroutine(InteractionEvent());
-                    break;
-            }*/
             
             StartCoroutine(InteractionEvent());
             
@@ -206,6 +237,8 @@ public abstract class Interactable : NetworkBehaviour
             //     DialogueManager.instance.OverrideDialogue(dialogueOnInteraction);
             // }
         }
+        
+        ResetInteract();
     }
 
     public virtual IEnumerator InteractionEvent()
@@ -237,6 +270,11 @@ public abstract class Interactable : NetworkBehaviour
         {
             UIManager.instance.interactionHoldBarBackground.enabled = true;
         }
+
+        if (!CustomRequirement())
+        {
+            UIManager.instance.Notify(requiredItemData.name + " required");
+        }
     }
 
     public void UnTarget()
@@ -254,8 +292,31 @@ public abstract class Interactable : NetworkBehaviour
         {
             UIManager.instance.interactionHoldBarBackground.enabled = false;
         }
+
+        //ResetInteract();
         
-        CancelInteract();
+        if (!specialAnimation)
+        {
+            ResetInteract();
+        }
     }
 
+    public virtual bool CustomRequirement()
+    {
+        if (requireItem && requiredItemData != null)
+        {
+            if (GameSessionManager.Instance.localPlayerController.currentEquippedItem == null || GameSessionManager.Instance.localPlayerController.currentEquippedItem.itemData != requiredItemData)
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+
+    public virtual void InteractableUpdate()
+    {
+    }
+    
 }
