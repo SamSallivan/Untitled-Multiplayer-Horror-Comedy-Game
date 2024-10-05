@@ -6,10 +6,12 @@ using UnityEngine;
 
 public class I_Door : Interactable
 {
-    private NetworkVariable<bool> open = new NetworkVariable<bool>();
+    public NetworkVariable<bool> open = new NetworkVariable<bool>();
+    public Transform doorTransform;
     public Vector3 openRotation;
     public Vector3 closedRotation;
     public float doorRotationInterpolationSpeed = 5f;
+    public float delay = 0f;
     
     public override void OnNetworkSpawn()
     {
@@ -30,9 +32,9 @@ public class I_Door : Interactable
 
     public override IEnumerator InteractionEvent()
     {
-        ToggleDoorServerRPC();
+        yield return new WaitForSeconds(delay);
         
-        yield return null; 
+        ToggleDoorServerRPC();
     }
 
     [Rpc(SendTo.Server)]
@@ -48,24 +50,36 @@ public class I_Door : Interactable
         {
             
             activated = true;
-            //transform.localEulerAngles = openRotation;
         }
         else
         {
             activated = false;
-            //transform.localEulerAngles = closedRotation;
         }
     }
 
-    public void Update()
+    public override void InteractableUpdate()
     {
         if (open.Value)
         {
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(openRotation), Time.deltaTime * doorRotationInterpolationSpeed);
+            if (doorTransform != null)
+            {
+                doorTransform.localRotation = Quaternion.Lerp(doorTransform.localRotation, Quaternion.Euler(openRotation), Time.deltaTime * doorRotationInterpolationSpeed);
+            }
+            else
+            {
+                transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(openRotation), Time.deltaTime * doorRotationInterpolationSpeed);
+            }
         }
         else
         {
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(closedRotation), Time.deltaTime * doorRotationInterpolationSpeed);
+            if (doorTransform != null)
+            {
+                doorTransform.localRotation = Quaternion.Lerp(doorTransform.localRotation, Quaternion.Euler(closedRotation), Time.deltaTime * doorRotationInterpolationSpeed);
+            }
+            else
+            {
+                transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(closedRotation), Time.deltaTime * doorRotationInterpolationSpeed);
+            }
         }
     }
 }

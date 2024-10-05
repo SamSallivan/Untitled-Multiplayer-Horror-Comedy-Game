@@ -138,6 +138,51 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &628978634879019660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5441373471567685095}
+  - component: {fileID: 8919017218723405566}
+  m_Layer: 0
+  m_Name: Equip Target Transform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5441373471567685095
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628978634879019660}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3449606922991330802}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8919017218723405566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628978634879019660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ae9a461d8a15644d9dcd5ebae3962ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 2944472136624858675}
 --- !u!1 &1436209200208314497
 GameObject:
   m_ObjectHideFlags: 0
@@ -1227,7 +1272,7 @@ MonoBehaviour:
   gameplayCamera: {fileID: 5244890628544616440}
   UICamera: {fileID: 7730752769217158101}
   headTransform: {fileID: 953704681069039082}
-  equippedTransform: {fileID: 2944472136624858675}
+  equippedTransform: {fileID: 5441373471567685095}
   rb: {fileID: 6976647817256820284}
   animator: {fileID: 7422018340954777515}
   playerAnimationController: {fileID: 3482652699434817081}
@@ -1319,7 +1364,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   targetInteractable: {fileID: 0}
   exclusiveInteractable: {fileID: 0}
-  interactDistance: 3.5
+  interactDistance: 1.75
   interactableLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -2089,7 +2134,10 @@ PrefabInstance:
       objectReference: {fileID: 6846631672693702911}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5563245468643534039, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5441373471567685095}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
 --- !u!137 &221613541788831206 stripped
@@ -2115,6 +2163,11 @@ SkinnedMeshRenderer:
 --- !u!137 &2710724945400862947 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5149167462998366662, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
+  m_PrefabInstance: {fileID: 7128047569051894053}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3449606922991330802 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5563245468643534039, guid: 3f9ef649ace816847b7699db4a71b1ec, type: 3}
   m_PrefabInstance: {fileID: 7128047569051894053}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &3482652699434817081 stripped

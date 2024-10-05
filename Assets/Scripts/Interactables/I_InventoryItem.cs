@@ -6,17 +6,27 @@ using Steamworks;
 using Unity.Netcode;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using Sirenix.OdinInspector;
 
 public class I_InventoryItem : Interactable
 {
-    public event Action OnPickUp = delegate { };
+    
+    [FoldoutGroup("Inventory Item")]
+    public ItemData itemData;
+    
+    [FoldoutGroup("Inventory Item")]
+    public ItemStatus itemStatus;
+    
+    [FoldoutGroup("Inventory Item")]
+    public bool openInventoryOnPickUp;
 
+    [FoldoutGroup("Inventory Item")]
     public NetworkVariable<int> ownerPlayerId = new(-1, writePerm: NetworkVariableWritePermission.Owner);
 
+    [FoldoutGroup("Inventory Item")]
     public PlayerController owner;
 
-    public PlayerController previousOwner;
-
+    [FoldoutGroup("Inventory Item")]
     private InventorySlot _inventorySlot;
 
     public InventorySlot inventorySlot
@@ -32,15 +42,23 @@ public class I_InventoryItem : Interactable
         }
     }
 
+    [FoldoutGroup("Inventory Item")]
     public NetworkVariable<bool> isCurrentlyEquipped = new(writePerm: NetworkVariableWritePermission.Owner);
 
+    [FoldoutGroup("Inventory Item")]
     public NetworkVariable<bool> enableItemMeshes = new(true, writePerm: NetworkVariableWritePermission.Owner);
 
+    [FoldoutGroup("Inventory Item")]
     public NetworkVariable<bool> enableItemPhysics = new(true, writePerm: NetworkVariableWritePermission.Owner);
 
+    [FoldoutGroup("Inventory Item")]
     public NetworkVariable<bool> inStorageBox = new(writePerm: NetworkVariableWritePermission.Owner);
     
+    [FoldoutGroup("Inventory Item")]
     public NetworkVariable<bool> firstPickup = new(true, writePerm: NetworkVariableWritePermission.Owner);
+    
+    [FoldoutGroup("Inventory Item")]
+    public float pickupDelay = 0.25f;
     
     void Start()
     {
@@ -199,6 +217,10 @@ public class I_InventoryItem : Interactable
                 transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
                 transform.rotation = targetTransform.rotation;
                 transform.Rotate(itemData.equipRotation);
+                /*Transform targetTransform = owner.playerAnimationController.rightArmTransform;
+                transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
+                transform.rotation = owner.equippedTransform.rotation;
+                transform.Rotate(itemData.equipRotation);*/
             }
             else if (IsServer)
             {
@@ -216,6 +238,8 @@ public class I_InventoryItem : Interactable
 
     public override IEnumerator InteractionEvent()
     {
+        yield return new WaitForSeconds(pickupDelay);
+
         if(itemData != null)
         {
             if ( firstPickup.Value)
@@ -224,7 +248,6 @@ public class I_InventoryItem : Interactable
                 RatingManager.instance.AddScore(itemData.discoverScore,"Found a " + textName + "!");
             }
             I_InventoryItem item = InventoryManager.instance.AddItemToInventory(this);
-            OnPickUp?.Invoke();
             if (item != null)
             {
                 if (openInventoryOnPickUp)
@@ -312,20 +335,28 @@ public class I_InventoryItem : Interactable
         itemStatus.durability = durability;
     }
     
-    [Rpc(SendTo.Server)]
+    [Rpc(SendTo.Everyone)]
     public void PocketItemRpc(int playerId)
     {
-        ownerPlayerId.Value = playerId;
-        enableItemMeshes.Value = false;
-        enableItemPhysics.Value = false;
-
-        if (GameSessionManager.Instance.gameStarted.Value)
+        if (IsServer)
         {
-            SceneManager.MoveGameObjectToScene(gameObject,SceneManager.GetSceneAt(0));
+            ownerPlayerId.Value = playerId;
+            enableItemMeshes.Value = false;
+            enableItemPhysics.Value = false;
+        }
+
+        transform.parent = GameSessionManager.Instance.playerControllerList[playerId].equippedTransform;
+
+        if (IsServer)
+        {
+            if (GameSessionManager.Instance.gameStarted.Value)
+            {
+                SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneAt(0));
+            }
         }
     }
 
-    [Rpc(SendTo.Server)]
+    [Rpc(SendTo.Everyone)]
     public void UnpocketItemRpc()
     {
         if (owner)
@@ -334,13 +365,21 @@ public class I_InventoryItem : Interactable
             transform.rotation = owner.headTransform.transform.rotation;
         }
 
-        ownerPlayerId.Value = -1;
-        enableItemMeshes.Value = true;
-        enableItemPhysics.Value = true;
-
-        if (GameSessionManager.Instance.gameStarted.Value)
+        if (IsServer)
         {
-            SceneManager.MoveGameObjectToScene(gameObject,SceneManager.GetSceneAt(1));
+            ownerPlayerId.Value = -1;
+            enableItemMeshes.Value = true;
+            enableItemPhysics.Value = true;
+        }
+
+        transform.parent = null;
+
+        if (IsServer)
+        {
+            if (GameSessionManager.Instance.gameStarted.Value)
+            {
+                SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneAt(1));
+            }
         }
     }
     

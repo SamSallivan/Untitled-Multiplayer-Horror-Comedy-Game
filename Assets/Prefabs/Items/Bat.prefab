@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1167910990
+  GlobalObjectIdHash: 1071830708
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -210,24 +210,29 @@ MonoBehaviour:
   interactionType: 2
   onceOnly: 0
   requireHold: 0
-  requireHoldDuration: 1
-  examineImage: {fileID: 0}
-  hasText: 0
-  examineText: 
+  requiredHoldDuration: 1
+  requireItem: 0
+  requiredItemData: {fileID: 0}
+  playerPositionTargetTransform: {fileID: 0}
+  playerLookAtTargetTransform: {fileID: 0}
+  excludeOtherInteraction: 0
+  animationOnInteract: 0
+  interactAnimation: {fileID: 0}
+  animationOnInteractComplete: 1
+  animationOnInteractCompleteDuration: 0.25
+  interactCompleteAnimation: {fileID: 11400000, guid: 468899952e672d24eb7cfbee1ca89259, type: 2}
+  activated: 0
+  interactedOnce: 0
+  isHeld: 0
+  heldDuration: 0
   itemData: {fileID: 11400000, guid: c86eff4c726b63b4593f294ebe2730ee, type: 2}
   itemStatus:
     amount: 1
     durability: 1
   openInventoryOnPickUp: 0
-  excludeOtherInteraction: 0
-  activated: 0
-  interactedOnce: 0
-  isHeld: 0
-  heldDuration: 0
   ownerPlayerId:
     m_InternalValue: -1
   owner: {fileID: 0}
-  previousOwner: {fileID: 0}
   isCurrentlyEquipped:
     m_InternalValue: 0
   enableItemMeshes:

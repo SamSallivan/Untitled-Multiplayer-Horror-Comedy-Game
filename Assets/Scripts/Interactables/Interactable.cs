@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using RootMotion.FinalIK;
 using TMPro;
 using Unity.Netcode;
 using Sirenix.OdinInspector;
@@ -11,16 +12,22 @@ using UnityEngine.Serialization;
 public enum InteractionType
 {
     None = 0,
-    Examine = 1,
     InventoryItem = 2,
     Custom = 3,
     CustomToggle = 4
 }
 
 [Serializable]
+public struct IkAnimation
+{
+    public FullBodyBipedEffector effector;
+    public InteractionObject interactionObject;
+}
+
+[Serializable]
 public class MyEvent : UnityEvent<string, GameObject> { }
 
-public abstract class Interactable : NetworkBehaviour
+public class Interactable : NetworkBehaviour
 {
 
     [FoldoutGroup("Base Info")]
@@ -39,12 +46,18 @@ public abstract class Interactable : NetworkBehaviour
 
     //[FoldoutGroup("Base Info")]
     //public DialogueData dialogueOnInteraction;
+    
 
     [FoldoutGroup("Settings")]
     public InteractionType interactionType;
 
     [FoldoutGroup("Settings")]
+    [ShowIf(nameof(interactionType), InteractionType.Custom)]
     public bool onceOnly;
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
+    public bool excludeOtherInteraction;
 
     [FoldoutGroup("Settings")]
     public bool requireHold;
@@ -52,70 +65,129 @@ public abstract class Interactable : NetworkBehaviour
     [FoldoutGroup("Settings")]
     [ShowIf("requireHold")]
     public float requiredHoldDuration = 1f;
-
+    
     [FoldoutGroup("Settings")]
     public bool requireItem;
 
     [FoldoutGroup("Settings")]
     [ShowIf("requireItem")]
     public ItemData requiredItemData;
+    
 
     [FoldoutGroup("Settings")]
-    public EmoteData specialAnimation;
-
+    public bool forcePlayerTransform;
+    
     [FoldoutGroup("Settings")]
+    [ShowIf("forcePlayerTransform")]
     public Transform playerPositionTargetTransform;
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf("forcePlayerTransform")]
+    public float playerPositionInterpolationSpeed = 10f;
 
     [FoldoutGroup("Settings")]
+    [ShowIf("forcePlayerTransform")]
     public Transform playerLookAtTargetTransform;
     
     [FoldoutGroup("Settings")]
+    [ShowIf("forcePlayerTransform")]
+    public float playerRotationInterpolationSpeed = 10f;
 
-    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
-    public ItemData itemData;
-    
     [FoldoutGroup("Settings")]
-    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
-    public ItemStatus itemStatus;
+    [ShowIf("forcePlayerTransform")]
+    public float forcePlayerTransformExtendDuration;
     
-    [FoldoutGroup("Settings")]
-    [ShowIf(nameof(interactionType), InteractionType.InventoryItem)]
-    public bool openInventoryOnPickUp;
-    
-    [FoldoutGroup("Settings")]
-    [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
-    public bool excludeOtherInteraction;
+    private float forcePlayerTransformExtendDurationTimer;
     
     //[FoldoutGroup("Settings")]
     //public Trigger triggerZone;
+    
+
+    [FoldoutGroup("Animation")]
+    public bool animationOnInteract;
+
+    [FoldoutGroup("Animation")]
+    [ShowIf("animationOnInteract")]
+    public float animationOnInteractExtendedDuration;
+
+    [FoldoutGroup("Animation")]
+    [ShowIf("animationOnInteract")]
+    public EmoteData interactAnimation;
+    
+    [FoldoutGroup("Animation")]
+    [ShowIf("animationOnInteract")]
+    public List<IkAnimation> ikAnimationsOnInteract = new List<IkAnimation>();
+    
+
+    [FoldoutGroup("Animation")]
+    public bool animationOnInteractComplete;
+
+    [FoldoutGroup("Animation")]
+    [ShowIf("animationOnInteractComplete")]
+    public float animationOnInteractCompleteDuration;
+
+    [FoldoutGroup("Animation")]
+    [ShowIf("animationOnInteractComplete")]
+    public EmoteData interactCompleteAnimation;
+    
+    [FoldoutGroup("Animation")]
+    [ShowIf("animationOnInteractComplete")]
+    public List<IkAnimation> ikAnimationsOnInteractComplete = new List<IkAnimation>();
 
     [FoldoutGroup("Values")]
     [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
-    [ReadOnly]
     public bool activated;
     
     [FoldoutGroup("Values")]
     [ShowIf(nameof(onceOnly))]
-    [ReadOnly]
     public bool interactedOnce;
 
     [FoldoutGroup("Values")]
     [ShowIf("requireHold")]
-    [ReadOnly]
     public bool isHeld;
 
     [FoldoutGroup("Values")]
     [ShowIf("requireHold")]
-    [ReadOnly]
     public float heldDuration;
+    
+    
+    public void PerformInteract()
+    {
+        if (!CustomRequirement())
+        {
+            UIManager.instance.Notify(requiredItemData.name + " required");
+            return;
+        }
 
+        if (animationOnInteract)
+        {
+            if (interactAnimation != null)
+            {
+                GameSessionManager.Instance.localPlayerController.inSpecialAnimation.Value = true;
+                StartInteractAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+            }
+
+            StartInteractIkAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+        }
+        
+        if (!requireHold)
+        {
+            Interact();
+        }
+        else
+        {
+            isHeld = true;
+        }
+    }
+    
+    
     public void Update()
     {
         if (isHeld)
         {
             if (!CustomRequirement())
             {
-                ResetInteract();
+                StartCoroutine(ResetInteract());
                 UIManager.instance.Notify(requiredItemData.name + " required");
                 return;
             }
@@ -132,9 +204,15 @@ public abstract class Interactable : NetworkBehaviour
         InteractableUpdate();
     }
 
+    
     public void LateUpdate()
     {
-        if (isHeld)
+        if(forcePlayerTransformExtendDurationTimer > 0)
+        {
+            forcePlayerTransformExtendDurationTimer -= Time.deltaTime;
+        }
+        
+        if (isHeld || forcePlayerTransformExtendDurationTimer > 0)
         {
             PlayerController playerController = GameSessionManager.Instance.localPlayerController;
 
@@ -148,61 +226,107 @@ public abstract class Interactable : NetworkBehaviour
             if (playerLookAtTargetTransform)
             {
                 float angleY = Quaternion.LookRotation(playerLookAtTargetTransform.position - playerController.mouseLookY.transform.position).eulerAngles.x;
-                playerController.mouseLookY.SetRotation(Mathf.Lerp(playerController.mouseLookY.rotationY, -angleY, Time.deltaTime * 5));
+                if (angleY > 180f)
+                {
+                    angleY -= 360f;
+                }
+                playerController.mouseLookY.SetRotation(Mathf.Lerp(playerController.mouseLookY.rotationY, -angleY, Time.deltaTime * playerPositionInterpolationSpeed));
+                Debug.Log(angleY);
                 
                 Quaternion angleX = Quaternion.LookRotation(playerLookAtTargetTransform.position - playerController.mouseLookX.transform.position);
                 angleX.eulerAngles = new Vector3(0, angleX.eulerAngles.y, 0);
-                playerController.mouseLookX.transform.rotation = Quaternion.Lerp(playerController.mouseLookX.transform.rotation, angleX, Time.deltaTime * 5);                 
+                playerController.mouseLookX.transform.rotation = Quaternion.Lerp(playerController.mouseLookX.transform.rotation, angleX, Time.deltaTime * playerRotationInterpolationSpeed);                 
                 
             }
         }
     }
 
-    public void PerformInteract()
-    {
-        if (!CustomRequirement())
-        {
-            UIManager.instance.Notify(requiredItemData.name + " required");
-            return;
-        }
-        
-        if (!requireHold)
-        {
-            Interact();
-        }
-        else
-        {
-            isHeld = true;
-        }
-
-        if (specialAnimation)
-        {
-            GameSessionManager.Instance.localPlayerController.inSpecialAnimation .Value = true;
-            StartSpecialAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
-        }
-    }
-
-    public void ResetInteract()
+    public IEnumerator ResetInteract(bool completeInteract = false)
     {
         isHeld = false;
         heldDuration = 0;
         UIManager.instance.interactionHoldBar.fillAmount = 0;
-        
 
-        if (specialAnimation)
+        
+        if (animationOnInteract)
         {
+            if (completeInteract)
+            {
+                yield return new WaitForSeconds(animationOnInteractExtendedDuration);
+            }
+            
             GameSessionManager.Instance.localPlayerController.inSpecialAnimation .Value = false;
             StopSpecialAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+
+            StopInteractIkAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+        }
+
+        if (!completeInteract)
+        {
+            yield break;
+        }
+        
+        if (animationOnInteractComplete)
+        {
+            if (interactCompleteAnimation != null)
+            {
+                GameSessionManager.Instance.localPlayerController.inSpecialAnimation.Value = true;
+                StartInteractCompleteAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+            }
+
+            StartInteractCompleteIkAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+            
+            yield return new WaitForSeconds(animationOnInteractCompleteDuration);
+
+            if (interactCompleteAnimation != null)
+            {
+                GameSessionManager.Instance.localPlayerController.inSpecialAnimation.Value = false;
+                StopSpecialAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+            }
+            
+            StopInteractCompleteIkAnimationRpc(GameSessionManager.Instance.localPlayerController.localPlayerId);
+        }
+
+    }
+
+
+    [Rpc(SendTo.Everyone)]
+    public void StartInteractAnimationRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        playerController.playerAnimationController.StartEmoteAnimation(interactAnimation);
+    }
+
+
+    [Rpc(SendTo.Everyone)]
+    public void StartInteractIkAnimationRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        foreach (IkAnimation ikAnimation in ikAnimationsOnInteract)
+        {
+            playerController.playerAnimationController.GetComponent<InteractionSystem>().StartInteraction(ikAnimation.effector, ikAnimation.interactionObject, true);
         }
     }
 
 
     [Rpc(SendTo.Everyone)]
-    public void StartSpecialAnimationRpc(int playerId)
+    public void StartInteractCompleteAnimationRpc(int playerId)
     {
         PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
-        playerController.playerAnimationController.StartEmoteAnimation(specialAnimation);
+        playerController.playerAnimationController.StartEmoteAnimation(interactCompleteAnimation);
     }
+
+
+    [Rpc(SendTo.Everyone)]
+    public void StartInteractCompleteIkAnimationRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        foreach (IkAnimation ikAnimation in ikAnimationsOnInteractComplete)
+        {
+            playerController.playerAnimationController.GetComponent<InteractionSystem>().StartInteraction(ikAnimation.effector, ikAnimation.interactionObject, true);
+        }
+    }
+    
     
     [Rpc(SendTo.Everyone)]
     public void StopSpecialAnimationRpc(int playerId)
@@ -210,6 +334,29 @@ public abstract class Interactable : NetworkBehaviour
         PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
         playerController.playerAnimationController.StopEmoteAnimation();
     }
+
+
+    [Rpc(SendTo.Everyone)]
+    public void StopInteractIkAnimationRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        foreach (IkAnimation ikAnimation in ikAnimationsOnInteract)
+        {
+            playerController.playerAnimationController.GetComponent<InteractionSystem>().StopInteraction(ikAnimation.effector);
+        }
+    }
+
+
+    [Rpc(SendTo.Everyone)]
+    public void StopInteractCompleteIkAnimationRpc(int playerId)
+    {
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        foreach (IkAnimation ikAnimation in ikAnimationsOnInteractComplete)
+        {
+            playerController.playerAnimationController.GetComponent<InteractionSystem>().StopInteraction(ikAnimation.effector);
+        }
+    }
+    
     
     public void Interact()
     {
@@ -238,7 +385,8 @@ public abstract class Interactable : NetworkBehaviour
             // }
         }
         
-        ResetInteract();
+        StartCoroutine(ResetInteract(completeInteract: true));
+        forcePlayerTransformExtendDurationTimer = forcePlayerTransformExtendDuration;
     }
 
     public virtual IEnumerator InteractionEvent()
@@ -293,12 +441,7 @@ public abstract class Interactable : NetworkBehaviour
             UIManager.instance.interactionHoldBarBackground.enabled = false;
         }
 
-        //ResetInteract();
-        
-        if (!specialAnimation)
-        {
-            ResetInteract();
-        }
+        StartCoroutine(ResetInteract());
     }
 
     public virtual bool CustomRequirement()

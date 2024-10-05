@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
+  GlobalObjectIdHash: 1278950209
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -183,15 +183,14 @@ MonoBehaviour:
   requiredHoldDuration: 1
   requireItem: 1
   requiredItemData: {fileID: 11400000, guid: 5b7f6e7720f5408458c6b895cc64ef81, type: 2}
-  specialAnimation: {fileID: 11400000, guid: c7f03c1437ca48044ab7d459a1551ee4, type: 2}
   playerPositionTargetTransform: {fileID: 6405658277746855050}
   playerLookAtTargetTransform: {fileID: 142191910787316979}
-  itemData: {fileID: 0}
-  itemStatus:
-    amount: 0
-    durability: 0
-  openInventoryOnPickUp: 0
   excludeOtherInteraction: 0
+  animationOnInteract: 1
+  interactAnimation: {fileID: 11400000, guid: c7f03c1437ca48044ab7d459a1551ee4, type: 2}
+  animationOnInteractComplete: 0
+  animationOnInteractCompleteDuration: 0
+  interactCompleteAnimation: {fileID: 0}
   activated: 0
   interactedOnce: 0
   isHeld: 0

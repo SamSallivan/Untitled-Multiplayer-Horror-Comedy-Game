@@ -3657,6 +3657,7 @@ GameObject:
   - component: {fileID: 5962545260724934428}
   - component: {fileID: 973815407374917051}
   - component: {fileID: 389960022948401177}
+  - component: {fileID: 1462269807642096367}
   m_Layer: 8
   m_Name: Character
   m_TagString: Untagged
@@ -4274,7 +4275,7 @@ MonoBehaviour:
     rotateSolver: 0
     pelvisSpeed: 5
     pelvisDamper: 0
-    lowerPelvisWeight: 1
+    lowerPelvisWeight: 0
     liftPelvisWeight: 0
     rootSphereCastRadius: 0.1
     overstepFallsDown: 1
@@ -4283,6 +4284,34 @@ MonoBehaviour:
   spineBend: 2
   spineSpeed: 3
   spine: []
+--- !u!114 &1462269807642096367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6359183128462517838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 537b81dc57e504256a6c74c4bcf6bca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTag: 
+  fadeInTime: 0.3
+  speed: 1
+  resetToDefaultsSpeed: 1
+  characterCollider: {fileID: 0}
+  FPSCamera: {fileID: 0}
+  camRaycastLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  camRaycastDistance: 1
+  fullBody: {fileID: 973815407374917051}
+  lookAt:
+    ik: {fileID: 0}
+    lerpSpeed: 5
+    weightSpeed: 1
+    isPaused: 0
 --- !u!1 &6552557638949761642
 GameObject:
   m_ObjectHideFlags: 0

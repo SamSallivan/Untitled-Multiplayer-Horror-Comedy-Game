@@ -27,14 +27,10 @@ public class PlayerAnimationController : MonoBehaviour
     public Transform leftArmIKTarget;
     public Transform rightArmIKTarget;
 
-    [SerializeField]
-    private Transform leftArmTransform;
-    [SerializeField]
-    private Transform rightArmTransform;
-    [SerializeField]
-    private Transform leftFootTransform;
-    [SerializeField]
-    private Transform rightFootTransform;
+    public Transform leftArmTransform;
+    public Transform rightArmTransform;
+    public Transform leftFootTransform;
+    public Transform rightFootTransform;
 
     [Header("Settings")] 
     public float walkAnimationInterpolationSpeed = 10f;

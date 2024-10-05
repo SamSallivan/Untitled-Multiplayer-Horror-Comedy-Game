@@ -1447,7 +1447,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        {
            if (enableMovement && targetInteractable != null)
            {
-               targetInteractable.ResetInteract();
+               targetInteractable.StartCoroutine(targetInteractable.ResetInteract());
            }
        }
    }

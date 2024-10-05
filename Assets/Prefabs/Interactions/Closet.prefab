@@ -56,7 +56,7 @@ ReflectionProbe:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 257
+    m_Bits: 417
   m_IntensityMultiplier: 1
   m_BlendDistance: 1
   m_HDR: 0
@@ -320,16 +320,16 @@ MonoBehaviour:
   interactionType: 3
   onceOnly: 0
   requireHold: 1
-  requireHoldDuration: 1
-  examineImage: {fileID: 0}
-  hasText: 0
-  examineText: 
-  itemData: {fileID: 0}
-  itemStatus:
-    amount: 0
-    durability: 0
-  openInventoryOnPickUp: 0
+  requiredHoldDuration: 1
+  requireItem: 0
+  requiredItemData: {fileID: 0}
+  playerPositionTargetTransform: {fileID: 0}
+  playerLookAtTargetTransform: {fileID: 0}
   excludeOtherInteraction: 0
+  hasSpecialAnimation: 0
+  interactAnimation: {fileID: 0}
+  extendDurationOnComplete: 0
+  interactCompleteAnimation: {fileID: 0}
   activated: 0
   interactedOnce: 0
   isHeld: 0
