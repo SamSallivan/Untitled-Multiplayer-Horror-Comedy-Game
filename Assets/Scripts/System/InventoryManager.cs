@@ -506,6 +506,12 @@ public class InventoryManager : NetworkBehaviour
         {
             playerController.targetInteractable.Target();
         }
+        
+        if (inventoryItem.itemData.isHeavy)
+        {
+            /*playerController.dynamicWalkSpeed += 1;
+            playerController.dynamicSprintSpeed += 1;*/
+        }
     }
     
     public void UnequipItem()
@@ -523,6 +529,9 @@ public class InventoryManager : NetworkBehaviour
             {
                 DropItemFromInventory(item);
                 UIManager.instance.shortcutSlotHeavyBackground.enabled = false;
+                
+                /*playerController.dynamicWalkSpeed -= 1;
+                playerController.dynamicSprintSpeed -= 1;*/
             }
         }
     }

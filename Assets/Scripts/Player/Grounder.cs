@@ -234,7 +234,7 @@ public class Grounder : NetworkBehaviour
 			}
 			if (fallDistance > lethalFallDistance)
 			{
-				//playerController.Die();
+				playerController.TakeDamage((fallDistance - lethalFallDistance) * 10f, Vector3.zero);
 			}
 
 			//if not climbing
@@ -367,7 +367,7 @@ public class Grounder : NetworkBehaviour
         RaycastHit hit;
         Vector3 raycastFloorPos = transform.TransformPoint(offsetx, 0, offsetz) + detectionOffset;
  
-        if (Physics.Raycast(raycastFloorPos, -Vector3.up, out hit, detectionDistance, groundMask))
+        if (Physics.Raycast(raycastFloorPos, -Vector3.up, out hit, detectionDistance, groundMask, QueryTriggerInteraction.Ignore))
         {
 			Debug.DrawLine(raycastFloorPos, raycastFloorPos + -Vector3.up * detectionDistance, Color.green);
 			hitOut = hit;

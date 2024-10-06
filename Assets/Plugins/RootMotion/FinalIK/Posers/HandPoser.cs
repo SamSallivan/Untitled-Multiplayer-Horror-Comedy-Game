@@ -39,7 +39,7 @@ namespace RootMotion.FinalIK {
 			if (poseRoot == null) return;
 			
 			// Something went wrong
-			if (children.Length != poseChildren.Length) {
+			if (children.Length < poseChildren.Length) {
 				Warning.Log("Number of children does not match with the pose", transform);
 				return;
 			}
@@ -49,7 +49,7 @@ namespace RootMotion.FinalIK {
 			float pW = localPositionWeight * weight;
 			
 			// Lerping the localRotation and the localPosition
-			for (int i = 0; i < children.Length; i++) {
+			for (int i = 0; i < poseChildren.Length; i++) { 
 				if (children[i] != transform) {
 					children[i].localRotation = Quaternion.Lerp(children[i].localRotation, poseChildren[i].localRotation, rW);
 					children[i].localPosition = Vector3.Lerp(children[i].localPosition, poseChildren[i].localPosition, pW);

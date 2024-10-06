@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class I_Door : Interactable
 {
-    public NetworkVariable<bool> open = new NetworkVariable<bool>();
     public Transform doorTransform;
     public Vector3 openRotation;
     public Vector3 closedRotation;
@@ -16,18 +15,11 @@ public class I_Door : Interactable
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        if (IsServer)
-        {
-            open.Value = false;
-        }
-
-        open.OnValueChanged += OnOpenChanged;
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        open.OnValueChanged -= OnOpenChanged;
     }
 
     public override IEnumerator InteractionEvent()
@@ -40,26 +32,12 @@ public class I_Door : Interactable
     [Rpc(SendTo.Server)]
     public void ToggleDoorServerRPC()
     {
-        open.Value = !open.Value;
-    }
-
-    public void OnOpenChanged(bool previous, bool current)
-    {
-        // note: `State.Value` will be equal to `current` here
-        if (open.Value)
-        {
-            
-            activated = true;
-        }
-        else
-        {
-            activated = false;
-        }
+        activated.Value = !activated.Value;
     }
 
     public override void InteractableUpdate()
     {
-        if (open.Value)
+        if (activated.Value)
         {
             if (doorTransform != null)
             {

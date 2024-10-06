@@ -1095,6 +1095,7 @@ GameObject:
   - component: {fileID: 6474330115237772916}
   - component: {fileID: 5510620420523601156}
   - component: {fileID: 2253766003496438379}
+  - component: {fileID: 3445577080838574879}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -1405,7 +1406,7 @@ MonoBehaviour:
   detectGroundUsingFootPosition: 0
   groundMask:
     serializedVersion: 2
-    m_Bits: 129
+    m_Bits: 385
   boatMask:
     serializedVersion: 2
     m_Bits: 0
@@ -1416,7 +1417,7 @@ MonoBehaviour:
   detectionOffset: {x: 0, y: -0.55, z: 0}
   groundedPositionOffset: {x: 0, y: 1, z: 0}
   fallDistanceThreshold: 1
-  lethalFallDistance: 10
+  lethalFallDistance: 3
   movementCooldownOnLanding: 0.25
   grounded:
     m_InternalValue: 0
@@ -1508,6 +1509,27 @@ MonoBehaviour:
   ratingMeter: 0
   scoreTextTimer: 0
   ratingSettings: {fileID: 11400000, guid: 03dfe58e6fda2ce4ea23aeaea686bede, type: 2}
+--- !u!65 &3445577080838574879
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738643314197950141}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.4, y: 0.3, z: 0.4}
+  m_Center: {x: 0, y: -0.85, z: 0}
 --- !u!1 &6867382714877513452
 GameObject:
   m_ObjectHideFlags: 0

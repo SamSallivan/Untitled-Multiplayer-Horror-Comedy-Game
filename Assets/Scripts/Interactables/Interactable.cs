@@ -136,7 +136,7 @@ public class Interactable : NetworkBehaviour
 
     [FoldoutGroup("Values")]
     [ShowIf(nameof(interactionType), InteractionType.CustomToggle)]
-    public bool activated;
+    public NetworkVariable<bool> activated;
     
     [FoldoutGroup("Values")]
     [ShowIf(nameof(onceOnly))]
@@ -155,7 +155,6 @@ public class Interactable : NetworkBehaviour
     {
         if (!CustomRequirement())
         {
-            UIManager.instance.Notify(requiredItemData.name + " required");
             return;
         }
 
@@ -188,7 +187,6 @@ public class Interactable : NetworkBehaviour
             if (!CustomRequirement())
             {
                 StartCoroutine(ResetInteract());
-                UIManager.instance.Notify(requiredItemData.name + " required");
                 return;
             }
             
@@ -220,7 +218,7 @@ public class Interactable : NetworkBehaviour
             {
                 Vector3 targetPosition = playerPositionTargetTransform.position;
                 targetPosition.y = playerController.transform.position.y;
-                playerController.rb.position = Vector3.Lerp(playerController.rb.position, targetPosition, Time.deltaTime * 5f);
+                playerController.rb.position = Vector3.Lerp(playerController.rb.position, targetPosition, Time.deltaTime * playerPositionInterpolationSpeed);
             }
 
             if (playerLookAtTargetTransform)
@@ -230,8 +228,7 @@ public class Interactable : NetworkBehaviour
                 {
                     angleY -= 360f;
                 }
-                playerController.mouseLookY.SetRotation(Mathf.Lerp(playerController.mouseLookY.rotationY, -angleY, Time.deltaTime * playerPositionInterpolationSpeed));
-                Debug.Log(angleY);
+                playerController.mouseLookY.SetRotation(Mathf.Lerp(playerController.mouseLookY.rotationY, -angleY, Time.deltaTime * playerRotationInterpolationSpeed));
                 
                 Quaternion angleX = Quaternion.LookRotation(playerLookAtTargetTransform.position - playerController.mouseLookX.transform.position);
                 angleX.eulerAngles = new Vector3(0, angleX.eulerAngles.y, 0);
@@ -343,6 +340,22 @@ public class Interactable : NetworkBehaviour
         foreach (IkAnimation ikAnimation in ikAnimationsOnInteract)
         {
             playerController.playerAnimationController.GetComponent<InteractionSystem>().StopInteraction(ikAnimation.effector);
+            if (ikAnimation.effector == FullBodyBipedEffector.RightHand)
+            {
+                playerController.playerAnimationController.rightArmTransform.GetComponent<HandPoser>().weight = 0;
+            }
+            if (ikAnimation.effector == FullBodyBipedEffector.LeftHand)
+            {
+                playerController.playerAnimationController.leftArmTransform.GetComponent<HandPoser>().weight = 0;
+            }
+            if (ikAnimation.effector == FullBodyBipedEffector.RightFoot)
+            {
+                playerController.playerAnimationController.rightFootTransform.GetComponent<HandPoser>().weight = 0;
+            }
+            if (ikAnimation.effector == FullBodyBipedEffector.LeftFoot)
+            {
+                playerController.playerAnimationController.leftFootTransform.GetComponent<HandPoser>().weight = 0;
+            }
         }
     }
 
@@ -354,6 +367,22 @@ public class Interactable : NetworkBehaviour
         foreach (IkAnimation ikAnimation in ikAnimationsOnInteractComplete)
         {
             playerController.playerAnimationController.GetComponent<InteractionSystem>().StopInteraction(ikAnimation.effector);
+            if (ikAnimation.effector == FullBodyBipedEffector.RightHand)
+            {
+                playerController.playerAnimationController.rightArmTransform.GetComponent<HandPoser>().weight = 0;
+            }
+            if (ikAnimation.effector == FullBodyBipedEffector.LeftHand)
+            {
+                playerController.playerAnimationController.leftArmTransform.GetComponent<HandPoser>().weight = 0;
+            }
+            if (ikAnimation.effector == FullBodyBipedEffector.RightFoot)
+            {
+                playerController.playerAnimationController.rightFootTransform.GetComponent<HandPoser>().weight = 0;
+            }
+            if (ikAnimation.effector == FullBodyBipedEffector.LeftFoot)
+            {
+                playerController.playerAnimationController.leftFootTransform.GetComponent<HandPoser>().weight = 0;
+            }
         }
     }
     
@@ -365,11 +394,11 @@ public class Interactable : NetworkBehaviour
             
             StartCoroutine(InteractionEvent());
             
-            if(activated && excludeOtherInteraction)
+            if(activated.Value && excludeOtherInteraction)
             {
                 GameSessionManager.Instance.localPlayerController.exclusiveInteractable = this;
             }
-            else if(!activated && excludeOtherInteraction)
+            else if(!activated.Value && excludeOtherInteraction)
             {
                 GameSessionManager.Instance.localPlayerController.exclusiveInteractable = null;
             }
@@ -408,10 +437,29 @@ public class Interactable : NetworkBehaviour
         
         UIManager.instance.interactionName.text = textName;
 
-        if (textPrompt != "" && interactionType != InteractionType.None)
+        if(!activated.Value)
         {
-            UIManager.instance.interactionPrompt.text = "[E] ";
-            UIManager.instance.interactionPrompt.text += activated ? textPromptActivated : textPrompt;
+            if (textPrompt != "")
+            {
+                UIManager.instance.interactionPrompt.text = "[E] ";
+                UIManager.instance.interactionPrompt.text += activated.Value ? textPromptActivated : textPrompt;
+            }
+            else
+            {
+                UIManager.instance.interactionPrompt.text = "";
+            }
+        }
+        else if(activated.Value)
+        {
+            if (textPromptActivated != "")
+            {
+                UIManager.instance.interactionPrompt.text = "[E] ";
+                UIManager.instance.interactionPrompt.text += textPromptActivated;
+            }
+            else
+            {
+                UIManager.instance.interactionPrompt.text = "";
+            }
         }
 
         if (requireHold)
@@ -419,10 +467,7 @@ public class Interactable : NetworkBehaviour
             UIManager.instance.interactionHoldBarBackground.enabled = true;
         }
 
-        if (!CustomRequirement())
-        {
-            UIManager.instance.Notify(requiredItemData.name + " required");
-        }
+        CustomRequirement();
     }
 
     public void UnTarget()
@@ -450,6 +495,7 @@ public class Interactable : NetworkBehaviour
         {
             if (GameSessionManager.Instance.localPlayerController.currentEquippedItem == null || GameSessionManager.Instance.localPlayerController.currentEquippedItem.itemData != requiredItemData)
             {
+                UIManager.instance.Notify(requiredItemData.name + " required");
                 return false;
             }
         }

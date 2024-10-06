@@ -285,7 +285,7 @@ public class I_InventoryItem : Interactable
         if (textPrompt != "" && interactionType != InteractionType.None)
         {
             UIManager.instance.interactionPrompt.text = "[E] ";
-            UIManager.instance.interactionPrompt.text += activated ? textPromptActivated : textPrompt;
+            UIManager.instance.interactionPrompt.text += activated.Value ? textPromptActivated : textPrompt;
         }
     }
 
@@ -347,13 +347,13 @@ public class I_InventoryItem : Interactable
 
         transform.parent = GameSessionManager.Instance.playerControllerList[playerId].equippedTransform;
 
-        if (IsServer)
+        /*if (IsServer)
         {
             if (GameSessionManager.Instance.gameStarted.Value)
             {
                 SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneAt(0));
             }
-        }
+        }*/
     }
 
     [Rpc(SendTo.Everyone)]

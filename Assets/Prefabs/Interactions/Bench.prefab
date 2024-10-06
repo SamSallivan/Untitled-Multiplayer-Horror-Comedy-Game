@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1311086515786438966}
-  - component: {fileID: 5401582302981377643}
   m_Layer: 0
   m_Name: Bip002 Spine1
   m_TagString: Untagged
@@ -33,30 +32,6 @@ Transform:
   - {fileID: 7972689849677146628}
   m_Father: {fileID: 2688932974543467320}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5401582302981377643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 14129344214188563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c15924752853459490d29011ba18d1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  effectorType: 0
-  multipliers: []
-  interactionSpeedMlp: 1
-  pivot: {fileID: 0}
-  rotationMode: 0
-  twistAxis: {x: 0, y: 1, z: 0}
-  twistWeight: 1
-  swingWeight: 0
-  threeDOFWeight: 1
-  rotateOnce: 1
-  usePoser: 1
-  bones: []
 --- !u!1 &15881670216067769
 GameObject:
   m_ObjectHideFlags: 0
@@ -414,7 +389,7 @@ MonoBehaviour:
   twistWeight: 1
   swingWeight: 0
   threeDOFWeight: 1
-  rotateOnce: 1
+  rotateOnce: 0
   usePoser: 1
   bones: []
 --- !u!1 &1377494746266798267
@@ -631,7 +606,7 @@ MonoBehaviour:
   twistWeight: 1
   swingWeight: 0
   threeDOFWeight: 1
-  rotateOnce: 1
+  rotateOnce: 0
   usePoser: 1
   bones: []
 --- !u!1 &2320404048916216589
@@ -743,7 +718,7 @@ GameObject:
   - component: {fileID: 1630052771954866444}
   - component: {fileID: 1898495486977650284}
   m_Layer: 7
-  m_Name: Bench 1
+  m_Name: Bench
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -782,7 +757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
+  GlobalObjectIdHash: 3166445451
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -1334,6 +1309,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7972689849677146628}
+  - component: {fileID: 3155848380903919207}
   m_Layer: 0
   m_Name: Bip002 Spine2
   m_TagString: Untagged
@@ -1357,6 +1333,30 @@ Transform:
   - {fileID: 811247465849513059}
   m_Father: {fileID: 1311086515786438966}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3155848380903919207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5134287275627761188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c15924752853459490d29011ba18d1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effectorType: 0
+  multipliers: []
+  interactionSpeedMlp: 1
+  pivot: {fileID: 0}
+  rotationMode: 0
+  twistAxis: {x: 0, y: 1, z: 0}
+  twistWeight: 1
+  swingWeight: 0
+  threeDOFWeight: 1
+  rotateOnce: 1
+  usePoser: 1
+  bones: []
 --- !u!1 &5136436961019552945
 GameObject:
   m_ObjectHideFlags: 0
@@ -1934,7 +1934,7 @@ MonoBehaviour:
   twistWeight: 1
   swingWeight: 0
   threeDOFWeight: 1
-  rotateOnce: 1
+  rotateOnce: 0
   usePoser: 1
   bones: []
 --- !u!1 &6163313593524858846
@@ -2696,7 +2696,7 @@ MonoBehaviour:
   twistWeight: 1
   swingWeight: 0
   threeDOFWeight: 1
-  rotateOnce: 1
+  rotateOnce: 0
   usePoser: 1
   bones: []
 --- !u!1 &8661587637710193927

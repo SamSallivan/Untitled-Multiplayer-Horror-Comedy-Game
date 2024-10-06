@@ -1205,6 +1205,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6696856933489835363}
+  - component: {fileID: 8560851543071723573}
   m_Layer: 8
   m_Name: mixamorig:RightFoot
   m_TagString: Untagged
@@ -1228,6 +1229,23 @@ Transform:
   - {fileID: 9005104901672684983}
   m_Father: {fileID: 1766511968094606789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8560851543071723573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2383260548104934284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98c3501ec8dc43c8a64321bd55c3f63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixTransforms: 0
+  poseRoot: {fileID: 0}
+  weight: 0
+  localRotationWeight: 1
+  localPositionWeight: 1
 --- !u!1 &2531559704477973713
 GameObject:
   m_ObjectHideFlags: 0
@@ -2276,6 +2294,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8365897209634948398}
+  - component: {fileID: 9009946433243896643}
   m_Layer: 8
   m_Name: mixamorig:LeftFoot
   m_TagString: Untagged
@@ -2299,6 +2318,23 @@ Transform:
   - {fileID: 940601092335102897}
   m_Father: {fileID: 4017087756770999746}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9009946433243896643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4003823624707071915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98c3501ec8dc43c8a64321bd55c3f63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixTransforms: 0
+  poseRoot: {fileID: 0}
+  weight: 0
+  localRotationWeight: 1
+  localPositionWeight: 1
 --- !u!1 &4086911762748126357
 GameObject:
   m_ObjectHideFlags: 0
@@ -4275,7 +4311,7 @@ MonoBehaviour:
     rotateSolver: 0
     pelvisSpeed: 5
     pelvisDamper: 0
-    lowerPelvisWeight: 0
+    lowerPelvisWeight: 0.5
     liftPelvisWeight: 0
     rootSphereCastRadius: 0.1
     overstepFallsDown: 1
@@ -5342,6 +5378,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1062100034788904668}
+  - component: {fileID: 3282258087027683049}
   m_Layer: 8
   m_Name: mixamorig:LeftHand
   m_TagString: Untagged
@@ -5369,6 +5406,23 @@ Transform:
   - {fileID: 1337290817285019465}
   m_Father: {fileID: 3627212889540355558}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3282258087027683049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7701282600536363731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98c3501ec8dc43c8a64321bd55c3f63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixTransforms: 0
+  poseRoot: {fileID: 0}
+  weight: 0
+  localRotationWeight: 1
+  localPositionWeight: 1
 --- !u!1 &7715493650015629340
 GameObject:
   m_ObjectHideFlags: 0
@@ -5716,6 +5770,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5563245468643534039}
+  - component: {fileID: 6700286841334417447}
   m_Layer: 8
   m_Name: mixamorig:RightHand
   m_TagString: Untagged
@@ -5743,6 +5798,23 @@ Transform:
   - {fileID: 2430575702265384929}
   m_Father: {fileID: 8580039418935979703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6700286841334417447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8155618482848888350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98c3501ec8dc43c8a64321bd55c3f63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixTransforms: 0
+  poseRoot: {fileID: 0}
+  weight: 0
+  localRotationWeight: 1
+  localPositionWeight: 1
 --- !u!1 &8293901891449739538
 GameObject:
   m_ObjectHideFlags: 0

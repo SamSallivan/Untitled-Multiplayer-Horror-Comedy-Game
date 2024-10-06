@@ -971,7 +971,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    public void InteractionUpdate()
    {
-       if (Physics.Raycast(gameplayCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
+       if (Physics.Raycast(gameplayCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance, ~0, QueryTriggerInteraction.Ignore) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
        {
            if (targetInteractable == null || targetInteractable != hitInfo.collider.GetComponent<Interactable>()) // || targetInteractable.triggerZone)
            {
@@ -1031,6 +1031,12 @@ public class PlayerController : NetworkBehaviour, IDamagable
                }
            }
        }
+   }
+   
+   [Rpc(SendTo.Owner)]
+   public void LockMovementRpc(bool state)
+   {
+       LockMovement(state);
    }
 
 
@@ -1129,6 +1135,30 @@ public class PlayerController : NetworkBehaviour, IDamagable
    #region Damage & Death
   
    public void TakeDamage(float damage, Vector3 direction)
+   {
+       if (base.IsOwner)
+       {
+           health.Value -= damage;
+
+
+           damageTimer = 0.5f;
+
+
+           rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
+
+
+           if (health.Value <= 0 && !isPlayerDead.Value)
+           {
+               Die();
+           }
+           
+           GetComponent<PlayerRating>().AddScore((int)damage * 5, "Took Damage");
+           Debug.Log($"{playerUsernameText} took {damage} damage.");
+       }
+   }
+  
+   [Rpc(SendTo.Owner)]
+   public void TakeDamageRpc(float damage, Vector3 direction)
    {
        if (base.IsOwner)
        {
@@ -1400,7 +1430,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void Discard_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient.Value & enableMovement)
+       if (base.IsOwner && controlledByClient.Value & !isPlayerDead.Value)
        {       
            if (!InventoryManager.instance.inventoryOpened)
            {
@@ -1416,7 +1446,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    private void SwitchItem_performed(InputAction.CallbackContext context)
    {
-       if (base.IsOwner && controlledByClient.Value & enableMovement)
+       if (base.IsOwner && controlledByClient.Value && !isPlayerDead.Value)
        {
            InventoryManager.instance.SwitchEquipedItem(Math.Sign(context.ReadValue<float>()));
            if (currentEmoteIndex.Value != -1)
