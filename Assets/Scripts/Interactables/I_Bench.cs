@@ -47,7 +47,7 @@ public class I_Bench : Interactable
                 if (benchPlayerPositionTargetTransform)
                 {
                     Vector3 targetPosition = benchPlayerPositionTargetTransform.position;
-                    //targetPosition.y = player.transform.position.y;
+                    targetPosition.y = player.transform.position.y;
                     player.rb.position = Vector3.Lerp(player.rb.position, targetPosition, Time.deltaTime * benchPlayerPositionInterpolationSpeed);
                 }
 
