@@ -249,5 +249,33 @@ namespace RootMotion.FinalIK {
 				if (b.collider == collider) b.Hit(force, point);
 			}
 		}
+
+		// Hit one of the hit points (defined by hit.collider)
+		public void Hit(string name, Vector3 force, Vector3 point) {
+			if (ik == null) {
+				Debug.LogError("No IK assigned in HitReaction");
+				return;
+			}
+
+			foreach (HitPointEffector e in effectorHitPoints) {
+				if (e.name == name) e.Hit(force, point);
+			}
+
+			foreach (HitPointBone b in boneHitPoints) {
+				if (b.name == name) b.Hit(force, point);
+			}
+		}
+
+		// Hit one of the hit points (defined by hit.collider)
+		public void Hit(FullBodyBipedEffector effector, Vector3 force) {
+			if (ik == null) {
+				Debug.LogError("No IK assigned in HitReaction");
+				return;
+			}
+
+			foreach (HitPointEffector e in effectorHitPoints) {
+				if (e.effectorLinks[0].effector == effector) e.Hit(force, Vector3.zero);
+			}
+		}
 	}
 }

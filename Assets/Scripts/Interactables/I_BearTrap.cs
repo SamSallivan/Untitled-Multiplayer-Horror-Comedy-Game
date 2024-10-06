@@ -100,7 +100,7 @@ public class I_BearTrap : Interactable
         StartInteractIkAnimationRpc(playerId);
         
         PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
-        playerController.TakeDamageRpc(damageOnHit, Vector3.zero);
+        playerController.TakeDamageRpc(damageOnHit, new Vector3(0, -0.25f, 0.5f));
         if (lockMovement)
         {
             playerController.LockMovementRpc(true);

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using RootMotion.FinalIK;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
@@ -8,8 +9,7 @@ using Sirenix.OdinInspector;
 
 public class PlayerAnimationController : MonoBehaviour
 {
-    [Header("References")] 
-    public Animator bodyAnimator;
+    [Header("References")] public Animator bodyAnimator;
     public Animator armAnimator;
     public PlayerController playerController;
 
@@ -32,8 +32,7 @@ public class PlayerAnimationController : MonoBehaviour
     public Transform leftFootTransform;
     public Transform rightFootTransform;
 
-    [Header("Settings")] 
-    public float walkAnimationInterpolationSpeed = 10f;
+    [Header("Settings")] public float walkAnimationInterpolationSpeed = 10f;
 
     public bool footStickToSurface = true;
     public LayerMask footSurfaceLayerMask;
@@ -46,8 +45,7 @@ public class PlayerAnimationController : MonoBehaviour
     public float turnBodyAngleThreshold = 45f;
     public float ArmIKWeightInterpolationSpeed = 15f;
 
-    [Header("Values")] 
-    private float velocityX;
+    [Header("Values")] private float velocityX;
     private float velocityZ;
 
     private Vector3 _leftFootIKTargetPos;
@@ -59,22 +57,15 @@ public class PlayerAnimationController : MonoBehaviour
     private float turnBodyCooldown;
     private Vector3 previousPosition;
 
-    [Header("Emotes")] 
-    public EmoteData emoteData;
-    [SerializeField]
-    private bool lockLookRotation;
-    [SerializeField]
-    private bool lockBodyRotation;
-    [SerializeField]
-    private bool overrideArmAnimation;
-    [SerializeField]
-    private bool leftArmAnimation;
-    [SerializeField]
-    private bool rightArmAnimation;
-    
-    
-    [Header("Models")] 
-    public List<GameObject> modelList = new List<GameObject>();
+    [Header("Emotes")] public EmoteData emoteData;
+    [SerializeField] private bool lockLookRotation;
+    [SerializeField] private bool lockBodyRotation;
+    [SerializeField] private bool overrideArmAnimation;
+    [SerializeField] private bool leftArmAnimation;
+    [SerializeField] private bool rightArmAnimation;
+
+
+    [Header("Models")] public List<GameObject> modelList = new List<GameObject>();
     public List<Avatar> avatarList = new List<Avatar>();
 
     void Awake()
@@ -93,9 +84,9 @@ public class PlayerAnimationController : MonoBehaviour
 
             UpdateWalkAnimation();
             UpdateCrouchAnimation();
-            
+
             UpdateEmoteAnimation();
-            
+
             UpdateBodyRotation();
             UpdateArmAnimationWeight();
             UpdateLookAnimationWeight();
@@ -116,16 +107,19 @@ public class PlayerAnimationController : MonoBehaviour
         {
             if (leftArmAnimation)
             {
-                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
             else
             {
-                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
 
             if (rightArmAnimation)
             {
-                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
 
                 foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
                 {
@@ -135,8 +129,9 @@ public class PlayerAnimationController : MonoBehaviour
             }
             else
             {
-                
-                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
 
                 foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
                 {
@@ -147,25 +142,29 @@ public class PlayerAnimationController : MonoBehaviour
 
             return;
         }
-        
+
         if (playerController.currentEquippedItem != null)
         {
             if (playerController.currentEquippedItem.itemData.leftHandAnimation)
             {
-                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 1f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
             else
             {
-                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
 
             if (playerController.currentEquippedItem.itemData.rightHandAnimation)
             {
-                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 1f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
             else
             {
-                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
+                rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f,
+                    Time.deltaTime * ArmIKWeightInterpolationSpeed);
             }
 
             foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
@@ -175,9 +174,11 @@ public class PlayerAnimationController : MonoBehaviour
         }
         else
         {
-            leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
-            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f, Time.deltaTime * ArmIKWeightInterpolationSpeed);
-            
+            leftArmIKConstraint.weight = Mathf.Lerp(leftArmIKConstraint.weight, 0f,
+                Time.deltaTime * ArmIKWeightInterpolationSpeed);
+            rightArmIKConstraint.weight = Mathf.Lerp(rightArmIKConstraint.weight, 0f,
+                Time.deltaTime * ArmIKWeightInterpolationSpeed);
+
             //left fingers
             foreach (ChainIKConstraint constraint in rightFingerIKConstraints)
             {
@@ -309,31 +310,43 @@ public class PlayerAnimationController : MonoBehaviour
             if (playerController.grounder.groundTime >= 0.5f)
             {
                 //headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
-                headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
-                headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
-                shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0.25f, Time.deltaTime * 5f);
-                chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0.25f, Time.deltaTime * 5f);
+                headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0.5f,
+                    Time.deltaTime * 5f);
+                headZRotationalConstraint.weight =
+                    Mathf.Lerp(headZRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
+                shoulderRotationalConstraint.weight =
+                    Mathf.Lerp(shoulderRotationalConstraint.weight, 0.25f, Time.deltaTime * 5f);
+                chestRotationalConstraint.weight =
+                    Mathf.Lerp(chestRotationalConstraint.weight, 0.25f, Time.deltaTime * 5f);
             }
             else
             {
                 //headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
-                headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
-                headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
-                shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
-                chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+                headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f,
+                    Time.deltaTime * 5f);
+                headZRotationalConstraint.weight =
+                    Mathf.Lerp(headZRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+                shoulderRotationalConstraint.weight =
+                    Mathf.Lerp(shoulderRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+                chestRotationalConstraint.weight =
+                    Mathf.Lerp(chestRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
             }
 
-            headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
+            headVerticalRotationalConstraint.weight =
+                Mathf.Lerp(headVerticalRotationalConstraint.weight, 0.5f, Time.deltaTime * 5f);
         }
         else
         {
-            headHorizontalRotationalConstraint.weight = Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            headHorizontalRotationalConstraint.weight =
+                Mathf.Lerp(headHorizontalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
             headZRotationalConstraint.weight = Mathf.Lerp(headZRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
-            shoulderRotationalConstraint.weight = Mathf.Lerp(shoulderRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            shoulderRotationalConstraint.weight =
+                Mathf.Lerp(shoulderRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
             chestRotationalConstraint.weight = Mathf.Lerp(chestRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
-            headVerticalRotationalConstraint.weight = Mathf.Lerp(headVerticalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
+            headVerticalRotationalConstraint.weight =
+                Mathf.Lerp(headVerticalRotationalConstraint.weight, 0f, Time.deltaTime * 5f);
         }
-        
+
     }
 
     void UpdateFootPlacement()
@@ -342,7 +355,7 @@ public class PlayerAnimationController : MonoBehaviour
         {
             return;
         }
-        
+
         if (playerController.grounder.grounded.Value)
         {
             bodyAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, bodyAnimator.GetFloat("LeftFoot"));
@@ -369,10 +382,12 @@ public class PlayerAnimationController : MonoBehaviour
         */
 
         bodyAnimator.SetIKPosition(AvatarIKGoal.LeftFoot, _leftFootIKTargetPos + footIKTargetPositionOffset);
-        bodyAnimator.SetIKRotation(AvatarIKGoal.LeftFoot, _leftFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
+        bodyAnimator.SetIKRotation(AvatarIKGoal.LeftFoot,
+            _leftFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
 
         bodyAnimator.SetIKPosition(AvatarIKGoal.RightFoot, _rightFootIKTargetPos + footIKTargetPositionOffset);
-        bodyAnimator.SetIKRotation(AvatarIKGoal.RightFoot, _rightFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
+        bodyAnimator.SetIKRotation(AvatarIKGoal.RightFoot,
+            _rightFootIKTargetRot * Quaternion.Euler(footIKTargetRotationOffset));
 
         /*leftFootIKConstraint.weight = animator.GetFloat("LeftFoot");
         rightFootIKConstraint.weight = animator.GetFloat("RightFoot");
@@ -428,14 +443,14 @@ public class PlayerAnimationController : MonoBehaviour
             rightArmAnimation = emoteData.rightArmAnimation;
         }
     }
-    
+
     public void StopEmoteAnimation()
     {
         if (!emoteData)
         {
             return;
         }
-        
+
         if (emoteData.fullBodyAnimation)
         {
             bodyAnimator.ResetTrigger(emoteData.animatorTrigger);
@@ -446,6 +461,7 @@ public class PlayerAnimationController : MonoBehaviour
             armAnimator.ResetTrigger(emoteData.animatorTrigger);
             armAnimator.SetTrigger("Stop Emote");
         }
+
         transform.localPosition = new Vector3(0, -1, 0);
         bodyAnimator.applyRootMotion = false;
         armAnimator.enabled = true;
@@ -467,11 +483,14 @@ public class PlayerAnimationController : MonoBehaviour
 
         if (playerController.inSpecialAnimation.Value)
         {
-            
+
         }
         else
         {
-            if (playerController.currentEmoteIndex.Value != -1 && (emoteData == null || emoteData != playerController.emoteDataList[playerController.currentEmoteIndex.Value]))
+            if (playerController.currentEmoteIndex.Value != -1 && (emoteData == null ||
+                                                                   emoteData !=
+                                                                   playerController.emoteDataList[
+                                                                       playerController.currentEmoteIndex.Value]))
             {
                 StopEmoteAnimation();
                 StartEmoteAnimation(playerController.emoteDataList[playerController.currentEmoteIndex.Value]);
@@ -494,10 +513,11 @@ public class PlayerAnimationController : MonoBehaviour
                     rightArmIKTarget.position = rightArmTransform.position;
                     rightArmIKTarget.rotation = rightArmTransform.rotation;
                 }
-                
+
                 if (playerController.IsOwner)
                 {
-                    if (bodyAnimator.GetBool("isMoving") || playerController.crouchingNetworkVariable.Value || playerController.isPlayerDead.Value)
+                    if (bodyAnimator.GetBool("isMoving") || playerController.crouchingNetworkVariable.Value ||
+                        playerController.isPlayerDead.Value)
                     {
                         playerController.StopEmote();
                     }
@@ -519,12 +539,26 @@ public class PlayerAnimationController : MonoBehaviour
         {
             if (emoteData && emoteData.overrideCameraPosition)
             {
-                Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, emoteData.targetCameraPosition, Time.deltaTime * 10f);
+                Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition,
+                    emoteData.targetCameraPosition, Time.deltaTime * 10f);
             }
             else if (!SpectateManager.Instance.isSpectating)
             {
-                Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, new Vector3(0, 0, 0), Time.deltaTime * 10f);
+                Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition,
+                    new Vector3(0, 0, 0), Time.deltaTime * 10f);
             }
         }
+    }
+
+    [Button]
+    public void HitReaction(string name, Vector3 force, Vector3 point)
+    {
+        GetComponent<HitReaction>().Hit(name, force, point);
+    }
+
+    [Button]
+    public void HitReaction(FullBodyBipedEffector effector, Vector3 force)
+    {
+        GetComponent<HitReaction>().Hit(effector, force);
     }
 }

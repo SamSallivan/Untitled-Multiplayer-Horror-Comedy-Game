@@ -17,6 +17,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
 using System.Threading.Tasks;
+using RootMotion.FinalIK;
 using Image = UnityEngine.UIElements.Image;
 
 
@@ -1155,30 +1156,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
            GetComponent<PlayerRating>().AddScore((int)damage * 5, "Took Damage");
            Debug.Log($"{playerUsernameText} took {damage} damage.");
        }
+       
+       playerAnimationController.HitReaction(FullBodyBipedEffector.LeftShoulder, direction);
    }
   
-   [Rpc(SendTo.Owner)]
+   [Rpc(SendTo.Everyone)]
    public void TakeDamageRpc(float damage, Vector3 direction)
    {
-       if (base.IsOwner)
-       {
-           health.Value -= damage;
-
-
-           damageTimer = 0.5f;
-
-
-           rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
-
-
-           if (health.Value <= 0 && !isPlayerDead.Value)
-           {
-               Die();
-           }
-           
-           GetComponent<PlayerRating>().AddScore((int)damage * 5, "Took Damage");
-           Debug.Log($"{playerUsernameText} took {damage} damage.");
-       }
+       TakeDamage(damage, direction);
    }
 
 
