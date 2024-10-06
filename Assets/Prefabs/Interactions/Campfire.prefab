@@ -193,7 +193,7 @@ MonoBehaviour:
   forcePlayerTransformExtendDuration: 0
   animationOnInteract: 1
   animationOnInteractExtendedDuration: 0
-  interactAnimation: {fileID: 11400000, guid: c7f03c1437ca48044ab7d459a1551ee4, type: 2}
+  interactAnimation: {fileID: 11400000, guid: 468899952e672d24eb7cfbee1ca89259, type: 2}
   ikAnimationsOnInteract: []
   animationOnInteractComplete: 0
   animationOnInteractCompleteDuration: 0

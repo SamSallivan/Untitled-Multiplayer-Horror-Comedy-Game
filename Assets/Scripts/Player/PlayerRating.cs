@@ -108,7 +108,7 @@ public class PlayerRating : NetworkBehaviour
         {
             score *= GetScoreMultiplier();
             this.score.Value += (int)score;
-            ratingMeter += score/10;
+            ratingMeter += score/100;
             if(ratingMeter >= 1 && rating.Value == Rating.SSS)
             {
                 ratingMeter = 1;

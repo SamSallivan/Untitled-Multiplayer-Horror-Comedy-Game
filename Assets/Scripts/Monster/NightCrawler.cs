@@ -235,7 +235,7 @@ public class NightCrawler : NetworkBehaviour, IDamagable
     [ClientRpc]
     public void AttackClientRpc()
     {
-        attatchedPlayer.TakeDamage(attackDamage,Vector3.zero);
+        attatchedPlayer.TakeDamage(attackDamage, Vector3.Normalize(attatchedPlayer.transform.position - transform.position));
     }
     
     public void JumpAttack()

@@ -716,7 +716,7 @@ GameObject:
   - component: {fileID: 6986106941052774714}
   - component: {fileID: 7250084067239571529}
   - component: {fileID: 1630052771954866444}
-  - component: {fileID: 1898495486977650284}
+  - component: {fileID: 7509726889079899306}
   m_Layer: 7
   m_Name: Bench
   m_TagString: Untagged
@@ -757,7 +757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3166445451
+  GlobalObjectIdHash: 2901346576
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -787,7 +787,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.87, y: 0.45, z: 0.46}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1898495486977650284
+--- !u!114 &7509726889079899306
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -796,14 +796,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2746985949566480270}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91585e61fee579744b20bb0712fd4532, type: 3}
+  m_Script: {fileID: 11500000, guid: f3fc9254656f86942a8f2d7a244a37c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textName: bench
+  textName: Bench
   textPrompt: Sit
   textPromptActivated: 
   highlightTarget: {fileID: 6516613363435643339}
-  interactionType: 3
+  interactionType: 4
   onceOnly: 0
   excludeOtherInteraction: 0
   requireHold: 0
@@ -811,51 +811,52 @@ MonoBehaviour:
   requireItem: 0
   requiredItemData: {fileID: 0}
   forcePlayerTransform: 1
-  playerPositionTargetTransform: {fileID: 1921148858906289835}
+  playerPositionTargetTransform: {fileID: 0}
+  playerDistance: 0
   playerPositionInterpolationSpeed: 10
   playerLookAtTargetTransform: {fileID: 1894182837636002909}
   playerRotationInterpolationSpeed: 10
-  forcePlayerTransformExtendDuration: 2
+  forcePlayerTransformExtendDuration: 1
   animationOnInteract: 0
-  animationOnInteractExtendedDuration: 2
+  animationOnInteractExtendedDuration: 0
   interactAnimation: {fileID: 0}
-  ikAnimationsOnInteract:
-  - effector: 0
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 3
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 4
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 7
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 8
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 5
-    interactionObject: {fileID: 1601084946019589237}
-  - effector: 6
-    interactionObject: {fileID: 1601084946019589237}
-  animationOnInteractComplete: 1
-  animationOnInteractCompleteDuration: 2
+  ikAnimationsOnInteract: []
+  animationOnInteractComplete: 0
+  animationOnInteractCompleteDuration: 0
   interactCompleteAnimation: {fileID: 0}
-  ikAnimationsOnInteractComplete:
-  - effector: 0
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 3
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 4
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 7
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 8
-    interactionObject: {fileID: 3198953875230405044}
-  - effector: 5
-    interactionObject: {fileID: 1601084946019589237}
-  - effector: 6
-    interactionObject: {fileID: 1601084946019589237}
-  activated: 0
+  ikAnimationsOnInteractComplete: []
+  activated:
+    m_InternalValue: 0
   interactedOnce: 0
   isHeld: 0
   heldDuration: 0
+  playerId:
+    m_InternalValue: -1
+  player: {fileID: 0}
+  ikAnimations:
+  - effector: 0
+    interactionObject: {fileID: 3198953875230405044}
+  - effector: 3
+    interactionObject: {fileID: 3198953875230405044}
+  - effector: 4
+    interactionObject: {fileID: 3198953875230405044}
+  - effector: 7
+    interactionObject: {fileID: 3198953875230405044}
+  - effector: 8
+    interactionObject: {fileID: 3198953875230405044}
+  - effector: 5
+    interactionObject: {fileID: 1601084946019589237}
+  - effector: 6
+    interactionObject: {fileID: 1601084946019589237}
+  benchPlayerPositionTargetTransform: {fileID: 1921148858906289835}
+  benchPlayerPositionInterpolationSpeed: 10
+  lockMovement: 0
+  benchPlayerLookTargetTransform: {fileID: 1894182837636002909}
+  clampHorizontalLookRotation: 1
+  maxHorizontalLookRotation: 90
+  benchPlayerRotationInterpolationSpeed: 5
+  lockTurnAnimationDelay: 1
+  lockTurnAnimationDelayTimer: 0
 --- !u!1 &2872692985124448380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1135,7 +1136,7 @@ Transform:
   m_GameObject: {fileID: 3828824036220435034}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5483768, z: 1.4564371}
+  m_LocalPosition: {x: 0, y: 0.846, z: 0.666}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2756,7 +2757,7 @@ Transform:
   m_GameObject: {fileID: 8760191134835239729}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0, y: 0, z: 0.252}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
