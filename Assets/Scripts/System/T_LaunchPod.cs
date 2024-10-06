@@ -25,7 +25,7 @@ public class T_LaunchPod : NetworkBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !other.isTrigger)
         {
             readyPlayerList.Add(other.gameObject.GetComponent<PlayerController>());
             launchPod.readyPlayerList.Add(other.gameObject.GetComponent<PlayerController>());
@@ -34,7 +34,7 @@ public class T_LaunchPod : NetworkBehaviour
 
     public void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !other.isTrigger)
         {
             readyPlayerList.Remove(other.gameObject.GetComponent<PlayerController>());
             launchPod.readyPlayerList.Remove(other.gameObject.GetComponent<PlayerController>());

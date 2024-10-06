@@ -983,12 +983,11 @@ MonoBehaviour:
   animationOnInteractCompleteDuration: 1
   interactCompleteAnimation: {fileID: 0}
   ikAnimationsOnInteractComplete: []
-  activated: 0
+  activated:
+    m_InternalValue: 0
   interactedOnce: 0
   isHeld: 0
   heldDuration: 0
-  open:
-    m_InternalValue: 0
   doorTransform: {fileID: 0}
   openRotation: {x: 0, y: 90, z: 0}
   closedRotation: {x: 0, y: 0, z: 0}
@@ -1548,7 +1547,7 @@ MonoBehaviour:
   interactionSpeedMlp: 1.5
   pivot: {fileID: 8929611998690217214}
   rotationMode: 0
-  twistAxis: {x: 0, y: 1, z: 0}
+  twistAxis: {x: 1, y: 0, z: 0}
   twistWeight: 1
   swingWeight: 0
   threeDOFWeight: 1

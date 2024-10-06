@@ -83,6 +83,10 @@ public class Interactable : NetworkBehaviour
     
     [FoldoutGroup("Settings")]
     [ShowIf("forcePlayerTransform")]
+    public float playerDistance;
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf("forcePlayerTransform")]
     public float playerPositionInterpolationSpeed = 10f;
 
     [FoldoutGroup("Settings")]
@@ -219,6 +223,10 @@ public class Interactable : NetworkBehaviour
                 Vector3 targetPosition = playerPositionTargetTransform.position;
                 targetPosition.y = playerController.transform.position.y;
                 playerController.rb.position = Vector3.Lerp(playerController.rb.position, targetPosition, Time.deltaTime * playerPositionInterpolationSpeed);
+            }
+            else if(playerDistance != 0 && Vector3.Distance(playerController.transform.position, transform.position) > playerDistance)
+            {
+                playerController.rb.position = Vector3.Lerp(playerController.rb.position, transform.position, Time.deltaTime * playerPositionInterpolationSpeed);
             }
 
             if (playerLookAtTargetTransform)
