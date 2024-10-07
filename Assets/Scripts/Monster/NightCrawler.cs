@@ -321,7 +321,7 @@ public class NightCrawler : MonsterBase
 
     } 
     
-    public override void TakeDamage(float damage, Vector3 direction)
+    public override void TakeDamage(float damage, Vector3 direction, float stunTime = 0f)
     {
         if (base.IsOwner && !isDead)
         {

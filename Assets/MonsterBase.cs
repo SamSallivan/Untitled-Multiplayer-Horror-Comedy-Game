@@ -45,7 +45,7 @@ public class MonsterBase : NetworkBehaviour , IDamagable
         
     }
     
-    public virtual void TakeDamage(float damage, Vector3 direction)
+    public virtual void TakeDamage(float damage, Vector3 direction, float stunTime = 0f)
     {
         if (base.IsOwner && !isDead)
         {

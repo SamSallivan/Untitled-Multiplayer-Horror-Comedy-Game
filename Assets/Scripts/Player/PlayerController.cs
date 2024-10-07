@@ -1135,7 +1135,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    #region Damage & Death
   
-   public void TakeDamage(float damage, Vector3 direction)
+   [Button]
+   public void TakeDamage(float damage, Vector3 direction, float stunTime = 1f)
    {
        if (base.IsOwner)
        {
@@ -1144,8 +1145,11 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
            damageTimer = 0.5f;
 
-           groundMovementControl = 0f;
-           jumpCooldown = 1f;
+           if (stunTime != 0)
+           {
+               groundMovementControl = 1 - stunTime;
+               jumpCooldown = stunTime;
+           }
 
            rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
 
@@ -1160,18 +1164,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
        }
        
        playerAnimationController.HitReaction(FullBodyBipedEffector.LeftShoulder, direction);
-   }
-  
-   public void TakeDamage(float damage, Vector3 direction, float groundControl, float groundControlCoolDown = 0f, float jumpCoolDown = 1f)
-   {
-       if (base.IsOwner)
-       {
-           TakeDamage(damage, direction);
-
-           groundMovementControl = groundControl;
-           groundMovementControlCoolDown = groundControlCoolDown;
-           jumpCooldown = jumpCoolDown;
-       }
    }
   
    [Rpc(SendTo.Everyone)]
