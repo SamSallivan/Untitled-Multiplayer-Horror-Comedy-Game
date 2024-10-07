@@ -46,7 +46,7 @@ public class I_BearTrap : Interactable
                 else
                 {
                     tickCooldown = tickInterval;
-                    trappedPlayer.TakeDamage(damageOnTick, Vector3.zero);
+                    trappedPlayer.TakeDamage(damageOnTick, new Vector3(0, 0, 0.25f));
                 }
             }
             else

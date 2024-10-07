@@ -865,7 +865,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            {
                if (inputDir.sqrMagnitude > 0.25f && groundMovementControlCoolDown <= 0f)
                {
-                   rb.AddForce((gDir * 100f - gVel * 10f * dynamicTargetSpeed) * groundMovementControl);
+                   rb.AddForce((gDir * 100f - gVel * 10f * dynamicTargetSpeed) * Mathf.Max(0, groundMovementControl));
                }
                //if not fast, accelerates the slowing down process
                else if (gVel.sqrMagnitude != 0f)
