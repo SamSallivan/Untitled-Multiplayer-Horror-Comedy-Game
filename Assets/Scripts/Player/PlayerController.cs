@@ -610,7 +610,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            }
            string playerName = new Friend(playerController.localSteamId.Value).Name;
            playerController.playerUsername = playerName;
-           if (playerController != this)
+           if (playerController != GameSessionManager.Instance.localPlayerController)
            {
                playerController.playerUsernameText.text = playerName;
            }
