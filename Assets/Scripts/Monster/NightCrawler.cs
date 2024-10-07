@@ -9,15 +9,11 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-public class NightCrawler : NetworkBehaviour, IDamagable
+public class NightCrawler : MonsterBase
 {
-    private Animator anim;
-    private NavMeshAgent _agent;
 
-    private Rigidbody rb;
-
-    Transform closestplayer;
-    public Transform target;
+    
+    
 
     public PlayerController attatchedPlayer;
 
@@ -26,13 +22,6 @@ public class NightCrawler : NetworkBehaviour, IDamagable
 
 
     public float chaseDistance = 10f;
-
-    
-    //health
-    public bool isDead = false;
-    public float maxHealth = 100;
-    public NetworkVariable<float> health = new NetworkVariable<float>();
-    
     
     
     //Jump Attack
@@ -71,86 +60,70 @@ public class NightCrawler : NetworkBehaviour, IDamagable
     public NetworkVariable<MonsterState> monState;
     public bool jumping = false;
 
-
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-        //monState = MonsterState.Idle;
-        if(IsServer)
-            health.Value = maxHealth;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        _agent = GetComponent<NavMeshAgent>();
-        rb = GetComponent<Rigidbody>();
-        anim = GetComponentInChildren<Animator>();
-    }
+    
 
     // Update is called once per frame
     void Update()
     {
         if (IsServer)
         {
-            if (monState.Value != MonsterState.Dead)
+            if (monState.Value == MonsterState.Dead)
             {
-                if (monState.Value != MonsterState.HitStunned)
+                
+            }
+            else if (monState.Value == MonsterState.HitStunned)
+            {
+                
+            }
+            else if (monState.Value == MonsterState.Attached)
+            {
+                AttachedUpdate();
+
+            }
+            else if (monState.Value != MonsterState.Attacking)
+            {
+                if (_agent.isOnNavMesh)
                 {
-                    if (monState.Value != MonsterState.Attached)
+                    if (_agent.velocity != Vector3.zero)
                     {
-                        if (monState.Value != MonsterState.Attacking)
-                        {
-                            if (_agent.isOnNavMesh)
-                            {
-                                if (_agent.velocity != Vector3.zero)
-                                {
-                                    anim.SetBool("Walking",true);
-                                }
-                                else
-                                {
-                                    anim.SetBool("Walking",false);
-                                }
-                                Chase();
-
-                            }
-                            else
-                            {
-                                TeleportToNearestNavmesh();
-                            }
-
-                            UpdateTarget();
-                            JumpAttack();
-                            if (monState.Value==MonsterState.Idle)
-                            {
-                                if (_agent.isOnNavMesh)
-                                {
-                                    if (_agent.velocity != Vector3.zero)
-                                    {
-                                        anim.SetBool("Walking",true);
-                                    }
-                                    else
-                                    {
-                                        anim.SetBool("Walking",false);
-                                    }
-                                    Patrol();
-                                }
-
-                                else
-                                {
-                                    TeleportToNearestNavmesh();
-                                }
-                            }
-
-
-                        }
-
+                        anim.SetBool("Walking",true);
                     }
                     else
                     {
-                        AttachedUpdate();
-                    }                   
+                        anim.SetBool("Walking",false);
+                    }
+                    Chase();
+
                 }
+                else
+                {
+                    TeleportToNearestNavmesh();
+                }
+
+                UpdateTarget();
+                JumpAttack();
+                if (monState.Value==MonsterState.Idle)
+                {
+                    if (_agent.isOnNavMesh)
+                    {
+                        if (_agent.velocity != Vector3.zero)
+                        {
+                            anim.SetBool("Walking",true);
+                        }
+                        else
+                        {
+                            anim.SetBool("Walking",false);
+                        }
+                        Patrol();
+                    }
+
+                    else
+                    {
+                        TeleportToNearestNavmesh();
+                    }
+                }
+
+
             }
 
         }
@@ -348,7 +321,7 @@ public class NightCrawler : NetworkBehaviour, IDamagable
 
     } 
     
-    public void TakeDamage(float damage, Vector3 direction)
+    public override void TakeDamage(float damage, Vector3 direction)
     {
         if (base.IsOwner && !isDead)
         {
@@ -362,15 +335,6 @@ public class NightCrawler : NetworkBehaviour, IDamagable
                 Die();
             }
             //Debug.Log($"{playerUsernameText} took {damage} damage.");
-        }
-    }
-
-    public void Die()
-    {
-        if (IsOwner && !isDead)
-        {
-            isDead = true;
-            Destroy(gameObject);
         }
     }
 
@@ -433,4 +397,6 @@ public class NightCrawler : NetworkBehaviour, IDamagable
         attatchedPlayer = null;
         GetComponent<Collider>().isTrigger = false;
     }
+
+
 }
