@@ -20,9 +20,9 @@ public class AttachTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_nightCrawler.monState.Value != NightCrawler.MonsterState.Attached&&other.GetComponentInParent<PlayerController>()&&!other.GetComponentInParent<PlayerController>().isPlayerGrabbed.Value)
+        if (_nightCrawler.monState.Value != NightCrawler.NightCrawlerState.Attached&&other.GetComponentInParent<PlayerController>()&&!other.GetComponentInParent<PlayerController>().isPlayerGrabbed.Value)
         {
-            _nightCrawler.monState.Value = NightCrawler.MonsterState.Attached;
+            _nightCrawler.monState.Value = NightCrawler.NightCrawlerState.Attached;
             _nightCrawler.SetAttachedPlayer(other.GetComponentInParent<PlayerController>());
             other.GetComponentInParent<PlayerController>().isPlayerGrabbed.Value = true;
 

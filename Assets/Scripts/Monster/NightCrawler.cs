@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using RenownedGames.AITree.Nodes;
+using Sirenix.OdinInspector;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,33 +22,37 @@ public class NightCrawler : MonsterBase
 
 
 
+    [FoldoutGroup("Chase")] 
     public float chaseDistance = 10f;
     
     
     //Jump Attack
 
-
+    [FoldoutGroup("AttackVars")] 
     public float JumpTriggerDist = 4f;
+    [FoldoutGroup("AttackVars")] 
     public float attackDamage;
 
-    
+    [FoldoutGroup("AttackVars")] 
     public float maxJumpCD=3f;
-
-    float currentJumpCD = 0f;
-
     
+    [FoldoutGroup("AttackVars")] 
     public float maxAttackCD=3f;
-
+    
+    float currentJumpCD = 0f;
     float currentAttackCD = 0f;
     
+    [FoldoutGroup("AttackVars")] 
     public float jumpForce;
+    [FoldoutGroup("AttackVars")] 
     public float thrustForce;
     
     //patrol
-    public float patrolTimer = 0;
+    float patrolTimer = 0;
+    [FoldoutGroup("Patrol")] 
     public float patrolTime;
     
-    public enum MonsterState
+    public enum NightCrawlerState
     {
         Idle,
         Chasing,
@@ -56,8 +61,9 @@ public class NightCrawler : MonsterBase
         Attached,
         Dead,
     }
-
-    public NetworkVariable<MonsterState> monState;
+    [FoldoutGroup("State")] 
+    public NetworkVariable<NightCrawlerState> monState;
+    [FoldoutGroup("State")] 
     public bool jumping = false;
 
     
@@ -67,20 +73,20 @@ public class NightCrawler : MonsterBase
     {
         if (IsServer)
         {
-            if (monState.Value == MonsterState.Dead)
+            if (monState.Value == NightCrawlerState.Dead)
             {
                 
             }
-            else if (monState.Value == MonsterState.HitStunned)
+            else if (monState.Value == NightCrawlerState.HitStunned)
             {
                 
             }
-            else if (monState.Value == MonsterState.Attached)
+            else if (monState.Value == NightCrawlerState.Attached)
             {
                 AttachedUpdate();
 
             }
-            else if (monState.Value != MonsterState.Attacking)
+            else if (monState.Value != NightCrawlerState.Attacking)
             {
                 if (_agent.isOnNavMesh)
                 {
@@ -102,7 +108,7 @@ public class NightCrawler : MonsterBase
 
                 UpdateTarget();
                 JumpAttack();
-                if (monState.Value==MonsterState.Idle)
+                if (monState.Value==NightCrawlerState.Idle)
                 {
                     if (_agent.isOnNavMesh)
                     {
@@ -131,7 +137,7 @@ public class NightCrawler : MonsterBase
 
     public void LateUpdate()
     {
-        if (monState.Value == MonsterState.Attached)
+        if (monState.Value == NightCrawlerState.Attached)
         {
             AttachedPositionUpdate();
         }
@@ -233,7 +239,7 @@ public class NightCrawler : MonsterBase
     public IEnumerator Jump()
     {
         
-        monState.Value = MonsterState.Attacking;
+        monState.Value = NightCrawlerState.Attacking;
         yield return new WaitForSeconds(0.5f);
         transform.LookAt(target.position);
         _agent.enabled = false;
@@ -246,7 +252,7 @@ public class NightCrawler : MonsterBase
         yield return new WaitForSeconds(1f);
         stuckHitbox.SetActive(false);
         jumping = false;
-        if (monState.Value == MonsterState.Attached)
+        if (monState.Value == NightCrawlerState.Attached)
             yield break;
         yield return new WaitForSeconds(0.5f);
         
@@ -254,7 +260,7 @@ public class NightCrawler : MonsterBase
             NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, _agent.areaMask));
         _agent.enabled = true;
         rb.velocity = Vector3.zero;
-        monState.Value = MonsterState.Idle;
+        monState.Value = NightCrawlerState.Idle;
         currentJumpCD = maxJumpCD;
     }
     
@@ -292,7 +298,7 @@ public class NightCrawler : MonsterBase
             _agent.isStopped = false;
             if (target != null)
             {
-                monState.Value = MonsterState.Chasing;
+                monState.Value = NightCrawlerState.Chasing;
                 _agent.SetDestination(target.position);
             }
         }
@@ -343,7 +349,7 @@ public class NightCrawler : MonsterBase
         if(attatchedPlayer!=null)
             attatchedPlayer.isPlayerGrabbed.Value = false;
         _agent.enabled = false;
-        if (monState.Value == MonsterState.Attached)
+        if (monState.Value == NightCrawlerState.Attached)
         {
             GetComponent<Collider>().isTrigger = false;
             UnattachPlayerClientRpc();
@@ -352,14 +358,14 @@ public class NightCrawler : MonsterBase
         rb.constraints = RigidbodyConstraints.None;
         
         rb.AddForce(direction.normalized * damage, ForceMode.Impulse);
-        monState.Value = MonsterState.HitStunned;
+        monState.Value = NightCrawlerState.HitStunned;
         yield return new WaitForSeconds(1.5f);
         yield return new WaitUntil(() =>
             NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 0.5f, _agent.areaMask));
         rb.velocity = Vector3.zero;
         _agent.enabled = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
-        monState.Value = MonsterState.Idle;
+        monState.Value = NightCrawlerState.Idle;
 
     }
 
@@ -373,7 +379,7 @@ public class NightCrawler : MonsterBase
         {
             _agent.Warp(hit.position+ new Vector3(0,2,0));
             _agent.enabled = true;
-            monState.Value = MonsterState.Idle;
+            monState.Value = NightCrawlerState.Idle;
         }
         
 
