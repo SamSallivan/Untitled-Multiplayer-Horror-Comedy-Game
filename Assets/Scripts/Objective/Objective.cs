@@ -90,6 +90,10 @@ public class Objective : NetworkBehaviour
         {
             ObjectiveManager.instance.AssignObjective(followupObjective);
         }
+        
+        yield return new WaitForSeconds(1.0f);
+        
+        NetworkObject.Despawn();
     }
 
     public void OnCompletedValueChanged(int prev, int curr)
