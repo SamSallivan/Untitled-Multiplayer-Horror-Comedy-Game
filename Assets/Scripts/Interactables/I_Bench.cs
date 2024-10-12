@@ -134,6 +134,9 @@ public class I_Bench : Interactable
         {
             playerController.playerAnimationController.GetComponent<InteractionSystem>().StartInteraction(ikAnimation.effector, ikAnimation.interactionObject, true);
         }
+        
+        player.zeroGravity = true;
+        player.playerCollider.enabled = false;
     }
     
     [Rpc(SendTo.Everyone)]
@@ -164,6 +167,8 @@ public class I_Bench : Interactable
         lockTurnAnimationDelayTimer = 0;
         player.playerAnimationController.turnAnimation = true;
         player.playerAnimationController.bodyRotationInterpolationSpeed = 3;
+        player.zeroGravity = false;
+        player.playerCollider.enabled = true;
     }
     
     public void OnplayerIdChanged(int prevValue, int newValue)

@@ -844,10 +844,6 @@ MonoBehaviour:
     interactionObject: {fileID: 3198953875230405044}
   - effector: 8
     interactionObject: {fileID: 3198953875230405044}
-  - effector: 5
-    interactionObject: {fileID: 1601084946019589237}
-  - effector: 6
-    interactionObject: {fileID: 1601084946019589237}
   benchPlayerPositionTargetTransform: {fileID: 1921148858906289835}
   benchPlayerPositionInterpolationSpeed: 10
   lockMovement: 0
@@ -2757,7 +2753,7 @@ Transform:
   m_GameObject: {fileID: 8760191134835239729}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0.252}
+  m_LocalPosition: {x: -0, y: 0.505, z: 0.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
