@@ -166,10 +166,10 @@ public class ObjectiveManager : NetworkBehaviour
                     objectiveList.Remove(objective.GetComponent<Objective>());
                     UpdateObjectiveUI();
 
-                    if (IsServer)
-                    {
-                        objective.Despawn();
-                    }
+                    // if (IsServer)
+                    // {
+                    //     objective.Despawn();
+                    // }
                 }
             );
         }
