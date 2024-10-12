@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5220195998050794810}
   - component: {fileID: 336191540222543956}
   m_Layer: 0
-  m_Name: default
+  m_Name: Liquid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 7102960316055567865}
   - component: {fileID: 8628791804421109914}
   m_Layer: 0
-  m_Name: default
+  m_Name: Bottle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1743208917
+  GlobalObjectIdHash: 3708180548
   InScenePlacedSourceGlobalObjectIdHash: 1743208917
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -267,19 +267,28 @@ MonoBehaviour:
   highlightTarget: {fileID: 7074802747145682746}
   interactionType: 2
   onceOnly: 0
+  excludeOtherInteraction: 0
   requireHold: 0
   requiredHoldDuration: 1
   requireItem: 0
   requiredItemData: {fileID: 0}
+  forcePlayerTransform: 0
   playerPositionTargetTransform: {fileID: 0}
+  playerDistance: 0
+  playerPositionInterpolationSpeed: 10
   playerLookAtTargetTransform: {fileID: 0}
-  excludeOtherInteraction: 0
+  playerRotationInterpolationSpeed: 10
+  forcePlayerTransformExtendDuration: 0
   animationOnInteract: 0
+  animationOnInteractExtendedDuration: 0
   interactAnimation: {fileID: 0}
+  ikAnimationsOnInteract: []
   animationOnInteractComplete: 1
   animationOnInteractCompleteDuration: 0.25
   interactCompleteAnimation: {fileID: 11400000, guid: 468899952e672d24eb7cfbee1ca89259, type: 2}
-  activated: 0
+  ikAnimationsOnInteractComplete: []
+  activated:
+    m_InternalValue: 0
   interactedOnce: 0
   isHeld: 0
   heldDuration: 0
@@ -301,6 +310,7 @@ MonoBehaviour:
     m_InternalValue: 0
   firstPickup:
     m_InternalValue: 1
+  pickupDelay: 0.25
 --- !u!65 &-6232999888522255441
 BoxCollider:
   m_ObjectHideFlags: 0

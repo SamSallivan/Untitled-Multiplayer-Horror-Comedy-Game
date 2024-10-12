@@ -664,7 +664,7 @@ namespace RootMotion.FinalIK {
 		public InteractionLookAt lookAt = new InteractionLookAt();
 
 		// The array of Interaction Effectors
-		private InteractionEffector[] interactionEffectors = new InteractionEffector[9] {
+		public InteractionEffector[] interactionEffectors = new InteractionEffector[9] {
 			new InteractionEffector(FullBodyBipedEffector.Body),
 			new InteractionEffector(FullBodyBipedEffector.LeftFoot),
 			new InteractionEffector(FullBodyBipedEffector.LeftHand),

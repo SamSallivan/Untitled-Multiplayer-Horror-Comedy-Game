@@ -24,13 +24,14 @@ namespace RootMotion.FinalIK {
 		// Internal values
 		private Poser poser;
 		private IKEffector effector;
+		private IKMappingLimb mapping;
 		private float timer, length, weight, fadeInSpeed, defaultPositionWeight, defaultRotationWeight, defaultPull, defaultReach, defaultPush, defaultPushParent, defaultBendGoalWeight, defaultPoserWeight, resetTimer;
 		private bool positionWeightUsed, rotationWeightUsed, pullUsed, reachUsed, pushUsed, pushParentUsed, bendGoalWeightUsed, poserUsed;
 		private bool pickedUp, defaults, pickUpOnPostFBBIK;
 		private Vector3 pickUpPosition, pausePositionRelative;
 		private Quaternion pickUpRotation, pauseRotationRelative;
 		private InteractionTarget interactionTarget;
-		private Transform target;
+		public Transform target;
 		private List<bool> triggered = new List<bool>();
 		private InteractionSystem interactionSystem;
 		private bool started;
@@ -47,6 +48,7 @@ namespace RootMotion.FinalIK {
 			// Find the effector if we haven't already
 			effector = interactionSystem.ik.solver.GetEffector(effectorType);
 			poser = effector.bone.GetComponent<Poser>();
+			mapping = interactionSystem.ik.solver.GetLimbMapping(effectorType);
 
 			StoreDefaults();
 		}
@@ -99,6 +101,11 @@ namespace RootMotion.FinalIK {
 				poserUsed = false;
 
 				defaults = true;
+			}
+			
+			if (mapping != null)
+			{
+				//mapping.weight = Mathf.Lerp(mapping.weight, 0, deltaTime * fadeInSpeed);
 			}
 
 			return true;
@@ -256,6 +263,10 @@ namespace RootMotion.FinalIK {
 			// Advance the interaction timer and weight
 			timer += deltaTime * speed * (interactionTarget != null? interactionTarget.interactionSpeedMlp: 1f);
 			weight = Mathf.Clamp(weight + deltaTime * fadeInSpeed * speed, 0f, 1f);
+			if (mapping != null)
+			{
+				//mapping.weight = Mathf.Lerp(mapping.weight, 1, deltaTime * fadeInSpeed);
+			}
 
 			// Interaction events
 			bool pickUp = false;

@@ -4276,13 +4276,13 @@ MonoBehaviour:
       bone1: {fileID: 350324697377933351}
       bone2: {fileID: 3627212889540355558}
       bone3: {fileID: 1062100034788904668}
-      maintainRotationWeight: 0
+      maintainRotationWeight: 1
       weight: 1
     - parentBone: {fileID: 3944482931547071106}
       bone1: {fileID: 559722073700074522}
       bone2: {fileID: 8580039418935979703}
       bone3: {fileID: 5563245468643534039}
-      maintainRotationWeight: 0
+      maintainRotationWeight: 1
       weight: 1
     - parentBone: {fileID: 0}
       bone1: {fileID: 8576360453572355356}
@@ -4367,6 +4367,16 @@ MonoBehaviour:
     lerpSpeed: 5
     weightSpeed: 1
     isPaused: 0
+  interactionEffectors:
+  - target: {fileID: 0}
+  - target: {fileID: 0}
+  - target: {fileID: 0}
+  - target: {fileID: 0}
+  - target: {fileID: 0}
+  - target: {fileID: 0}
+  - target: {fileID: 0}
+  - target: {fileID: 0}
+  - target: {fileID: 0}
 --- !u!114 &4950297217559275824
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -133,7 +133,7 @@ namespace RootMotion.FinalIK {
 		/// Gets the head IK mapping.
 		/// </summary>
 		public IKMappingBone headMapping { get { return boneMappings[0]; }}
-
+		
 		/// <summary>
 		/// Sets chain weights for the specified chain.
 		/// </summary>
@@ -197,6 +197,21 @@ namespace RootMotion.FinalIK {
 			case FullBodyBipedEffector.RightFoot: return effectors[8];
 			}
 			return null;
+		}
+		
+		public FullBodyBipedEffector GetEffectorType(int index) {
+			switch(index) {
+				case 0 : return FullBodyBipedEffector.Body;
+				case 1 : return FullBodyBipedEffector.LeftShoulder;
+				case 2 : return FullBodyBipedEffector.RightShoulder;
+				case 3 : return FullBodyBipedEffector.LeftThigh;
+				case 4 : return FullBodyBipedEffector.RightThigh;
+				case 5 : return FullBodyBipedEffector.LeftHand;
+				case 6 : return FullBodyBipedEffector.RightHand;
+				case 7 : return FullBodyBipedEffector.LeftFoot;
+				case 8 : return FullBodyBipedEffector.RightFoot;
+				default: return FullBodyBipedEffector.Body;
+			}
 		}
 
 		/// <summary>
@@ -496,7 +511,25 @@ namespace RootMotion.FinalIK {
 
 		protected override void ReadPose() {
 			// Set effectors to their targets
-			for (int i = 0; i < effectors.Length; i++) effectors[i].SetToTarget();
+			for (int i = 0; i < effectors.Length; i++)
+			{
+				bool flag = true;
+				if (root.TryGetComponent<InteractionSystem>(out InteractionSystem interactionSystem))
+				{
+					foreach (InteractionEffector effector in interactionSystem.interactionEffectors)
+					{
+						if (effector.effectorType == GetEffectorType(i) && effector.target != null)
+						{
+							flag = false;
+						}
+					}
+				}
+
+				if (flag)
+				{
+					effectors[i].SetToTarget();
+				}
+			}
 
 			// Pulling the body with the hands
 			PullBody();

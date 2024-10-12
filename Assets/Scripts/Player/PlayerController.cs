@@ -211,6 +211,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
    public bool isNonPhysics;
 
 
+   [FoldoutGroup("Settings")]
+   public bool zeroGravity;
+
+
    [FoldoutGroup("Physics Based Movements")]
    public float dynamicTargetSpeed = 1f;
 
@@ -718,10 +722,6 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    public void Jump(float multiplier = 1f)
    {
-       if (isNonPhysics)
-       {
-           //return;
-       }
        if (!enableJump || jumpCooldown > 0 || stamina < staminaCostPerJump)
        {
            return;
@@ -883,18 +883,22 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
            //applies gravity in the direction of ground normal
            //so player does not slide off within the tolerable angle
-           if(grounder.grounded.Value)
+           if (!zeroGravity)
            {
-               //lerp from current position to target ground position
-               Vector3 targetGroundPosition = new Vector3(rb.position.x, grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
-               targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 15f);
-               rb.MovePosition(targetGroundPosition);
-               rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-           }
-           else
-           {
-               //rb.AddForce(grounder.groundNormal * gravity);
-               rb.AddForce(Vector3.up * gravity);
+               if (grounder.grounded.Value)
+               {
+                   //lerp from current position to target ground position
+                   Vector3 targetGroundPosition = new Vector3(rb.position.x,
+                       grounder.groundPosition.y + grounder.groundedPositionOffset.y, rb.position.z);
+                   targetGroundPosition = Vector3.Lerp(rb.position, targetGroundPosition, Time.fixedDeltaTime * 15f);
+                   rb.MovePosition(targetGroundPosition);
+                   rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+               }
+               else
+               {
+                   //rb.AddForce(grounder.groundNormal * gravity);
+                   rb.AddForce(Vector3.up * gravity);
+               }
            }
 
 
