@@ -12,55 +12,57 @@ public class ItemController : NetworkBehaviour
     [ReadOnly]
     public  bool buttonHeld;
     [ReadOnly]
+    public  bool buttonHeldSecondary;
+    [ReadOnly]
     public float heldTime;
     public float minHeldTime;
     [ReadOnly]
     public float cooldown;
     public float cooldownSetting;
     
+    public bool holdItemWithSecondaryButton;
     
-
+    
     public void Awake()
     {
         inventoryItem = GetComponent<I_InventoryItem>();
     }
-
-    public virtual void Update()
-    {
-        if (buttonHeld)
-        {
-            heldTime += Time.deltaTime;
-        }
-        else if(heldTime > 0)
-        {
-            heldTime = 0;
-        }
         
-        if (cooldown >= 0)
-        {
-            cooldown -= Time.deltaTime;
-        }
-
-        ItemUpdate();
-    }
-
-    public virtual void ItemUpdate()
-    {
-    }
-        
-    public virtual void UseItem(bool buttonDown = true)
+    public void UseItem(bool buttonDown = true)
     {
         if(buttonDown)
         {
             buttonHeld = true;
-            HoldItemClientRpc(true);
             OnButtonHeld();
         }
         else if (!buttonDown)
         {
             buttonHeld = false;
-            HoldItemClientRpc(false);
             OnButtonReleased();
+        }
+
+        if (!holdItemWithSecondaryButton)
+        {
+            PlayHoldAnimationClientRpc(buttonDown);
+        }
+    }
+        
+    public void UseItemSecondary(bool buttonDown = true)
+    {
+        if(buttonDown)
+        {
+            buttonHeldSecondary = true;
+            OnButtonHeldSecondary();
+        }
+        else if (!buttonDown)
+        {
+            buttonHeldSecondary = false;
+            OnButtonReleasedSecondary();
+        }
+
+        if (holdItemWithSecondaryButton)
+        {
+            PlayHoldAnimationClientRpc(buttonDown);
         }
     }
 
@@ -72,19 +74,58 @@ public class ItemController : NetworkBehaviour
     {
     }
 
+    public virtual void OnButtonHeldSecondary()
+    {
+    }
+    
+    public virtual void OnButtonReleasedSecondary()
+    {
+    }
+
+    public virtual void Update()
+    {
+        if (!holdItemWithSecondaryButton)
+        {
+            if (buttonHeld)
+            {
+                heldTime += Time.deltaTime;
+            }
+            else if (heldTime > 0)
+            {
+                heldTime = 0;
+            }
+        }
+        else
+        {
+            if (buttonHeldSecondary)
+            {
+                heldTime += Time.deltaTime;
+            }
+            else if (heldTime > 0)
+            {
+                heldTime = 0;
+            }
+        }
+
+        if (cooldown >= 0)
+        {
+            cooldown -= Time.deltaTime;
+        }
+
+        ItemUpdate();
+    }
+
+    public virtual void ItemUpdate()
+    {
+    }
+
     public virtual void Activate()
     {
-        ActivateItemClientRpc();
+        PlayActivateAnimationClientRpc();
     }
     
     [Rpc(SendTo.Everyone)]
-    public void ActivateItemClientRpc()
-    {
-        inventoryItem.owner.playerAnimationController.armAnimator.SetTrigger("Activate");
-    }
-    
-    [Rpc(SendTo.Everyone)]
-    public void HoldItemClientRpc(bool buttonDown)
+    public void PlayHoldAnimationClientRpc(bool buttonDown)
     {
         if (inventoryItem.owner != null)
         {
@@ -96,10 +137,17 @@ public class ItemController : NetworkBehaviour
             inventoryItem.owner.playerAnimationController.armAnimator.SetBool("Held", buttonDown);
         }
     }
+    
+    [Rpc(SendTo.Everyone)]
+    public void PlayActivateAnimationClientRpc()
+    {
+        inventoryItem.owner.playerAnimationController.armAnimator.SetTrigger("Activate");
+    }
 
     public virtual void Cancel()
     {
         buttonHeld = false;
-        HoldItemClientRpc(false);
+        buttonHeldSecondary = false;
+        PlayHoldAnimationClientRpc(false);
     }
 }

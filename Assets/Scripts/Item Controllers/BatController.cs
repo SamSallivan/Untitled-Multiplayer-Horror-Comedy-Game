@@ -11,15 +11,7 @@ public class BatController : ItemController
 
     public AudioClip swingSound;
     public AudioClip hitSound;
-
-    public override void Update()
-    {
-        base.Update();
-    }
     
-    /*public override void OnButtonHeld()
-    {
-    }*/
     
     public override void OnButtonReleased()
     {
@@ -31,6 +23,7 @@ public class BatController : ItemController
         }
     }
 
+    
     public override void Activate()
     {
         base.Activate();
@@ -38,6 +31,7 @@ public class BatController : ItemController
         BatSwingClientRpc();
     }
 
+    
     [Rpc(SendTo.Everyone)]
     public void BatSwingClientRpc()
     {

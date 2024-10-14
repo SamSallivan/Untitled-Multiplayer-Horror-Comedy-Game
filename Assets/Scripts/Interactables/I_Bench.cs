@@ -135,8 +135,8 @@ public class I_Bench : Interactable
             playerController.playerAnimationController.GetComponent<InteractionSystem>().StartInteraction(ikAnimation.effector, ikAnimation.interactionObject, true);
         }
         
-        player.zeroGravity = true;
-        player.playerCollider.enabled = false;
+        playerController.zeroGravity = true;
+        playerController.playerCollider.enabled = false;
     }
     
     [Rpc(SendTo.Everyone)]

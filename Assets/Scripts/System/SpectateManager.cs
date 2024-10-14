@@ -82,7 +82,7 @@ public class SpectateManager : MonoBehaviour
         }
     }
     
-    public void SpectateNextPlayer()
+    public void SpectateNextPlayer(int value = 1)
     {
         if (onDeathZoomOutTime < onDeathZoomOutTimeSetting * 4f)
         {
@@ -93,7 +93,7 @@ public class SpectateManager : MonoBehaviour
         
         for (int i = 0; i < GameNetworkManager.Instance.maxPlayerNumber; i++)
         {
-            targetPlayerId = (targetPlayerId + 1) % GameSessionManager.Instance.connectedPlayerCount.Value;
+            targetPlayerId = (targetPlayerId + value) % GameSessionManager.Instance.connectedPlayerCount.Value;
             PlayerController targetPlayerController = GameSessionManager.Instance.playerControllerList[targetPlayerId];
             
             if (targetPlayerController.controlledByClient.Value && !targetPlayerController.isPlayerDead.Value && !targetPlayerController.isPlayerExtracted.Value && targetPlayerController != GameSessionManager.Instance.localPlayerController)

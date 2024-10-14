@@ -1,6 +1,7 @@
 using System;
 //using Cinemachine;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraBob : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class CameraBob : MonoBehaviour
 	private float rotTimer;
 
 	private float rotSpeed;
-    public float defaultFOV = 90;
+    public float targetFOV = 90;
 
 	private Quaternion rot;
 
@@ -140,7 +141,7 @@ public class CameraBob : MonoBehaviour
 
         foreach (Camera camera in GetComponentsInChildren<Camera>())
         {
-            float fov = Mathf.Lerp(camera.fieldOfView, defaultFOV + (GameSessionManager.Instance.localPlayerController.GetClimbState() != 0 ? 15f : 0f), Time.deltaTime * 20f);
+            float fov = Mathf.Lerp(camera.fieldOfView, targetFOV + (GameSessionManager.Instance.localPlayerController.GetClimbState() != 0 ? 15f : 0f), Time.deltaTime * 10f);
             camera.fieldOfView = fov;
 
         }

@@ -46,9 +46,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""ActivateItem"",
+                    ""name"": ""UseItem"",
                     ""type"": ""Button"",
                     ""id"": ""1d63122b-7619-4d94-9050-cd854a441664"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseItemSecondary"",
+                    ""type"": ""Button"",
+                    ""id"": ""f400c6a7-3dc1-45b2-b417-b0a06e801a55"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -327,7 +336,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""ActivateItem"",
+                    ""action"": ""UseItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -338,40 +347,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""ActivateItem"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""886e731e-7071-4ae4-95c0-e61739dad6fd"",
-                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Touch"",
-                    ""action"": ""ActivateItem"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ee3d0cd2-254e-47a7-a8cb-bc94d9658c54"",
-                    ""path"": ""<Joystick>/trigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""ActivateItem"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8255d333-5683-4943-a58a-ccb207ff1dce"",
-                    ""path"": ""<XRController>/{PrimaryAction}"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""ActivateItem"",
+                    ""action"": ""UseItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -834,6 +810,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fe409838-ad39-492a-ba8d-148e1e034972"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""UseItemSecondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1744aa0f-fb63-4dcf-a6ce-bb5f893028e6"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""UseItemSecondary"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1423,7 +1421,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
-        m_Player_ActivateItem = m_Player.FindAction("ActivateItem", throwIfNotFound: true);
+        m_Player_UseItem = m_Player.FindAction("UseItem", throwIfNotFound: true);
+        m_Player_UseItemSecondary = m_Player.FindAction("UseItemSecondary", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
@@ -1510,7 +1509,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
-    private readonly InputAction m_Player_ActivateItem;
+    private readonly InputAction m_Player_UseItem;
+    private readonly InputAction m_Player_UseItemSecondary;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Interact;
@@ -1528,7 +1528,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public PlayerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Look => m_Wrapper.m_Player_Look;
-        public InputAction @ActivateItem => m_Wrapper.m_Player_ActivateItem;
+        public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
+        public InputAction @UseItemSecondary => m_Wrapper.m_Player_UseItemSecondary;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
@@ -1555,9 +1556,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @ActivateItem.started += instance.OnActivateItem;
-            @ActivateItem.performed += instance.OnActivateItem;
-            @ActivateItem.canceled += instance.OnActivateItem;
+            @UseItem.started += instance.OnUseItem;
+            @UseItem.performed += instance.OnUseItem;
+            @UseItem.canceled += instance.OnUseItem;
+            @UseItemSecondary.started += instance.OnUseItemSecondary;
+            @UseItemSecondary.performed += instance.OnUseItemSecondary;
+            @UseItemSecondary.canceled += instance.OnUseItemSecondary;
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
@@ -1601,9 +1605,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @ActivateItem.started -= instance.OnActivateItem;
-            @ActivateItem.performed -= instance.OnActivateItem;
-            @ActivateItem.canceled -= instance.OnActivateItem;
+            @UseItem.started -= instance.OnUseItem;
+            @UseItem.performed -= instance.OnUseItem;
+            @UseItem.canceled -= instance.OnUseItem;
+            @UseItemSecondary.started -= instance.OnUseItemSecondary;
+            @UseItemSecondary.performed -= instance.OnUseItemSecondary;
+            @UseItemSecondary.canceled -= instance.OnUseItemSecondary;
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
@@ -1821,7 +1828,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
-        void OnActivateItem(InputAction.CallbackContext context);
+        void OnUseItem(InputAction.CallbackContext context);
+        void OnUseItemSecondary(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);

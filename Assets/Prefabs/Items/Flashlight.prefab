@@ -549,19 +549,28 @@ MonoBehaviour:
   highlightTarget: {fileID: 1576475593488901863}
   interactionType: 2
   onceOnly: 0
+  excludeOtherInteraction: 0
   requireHold: 0
   requiredHoldDuration: 1
   requireItem: 0
   requiredItemData: {fileID: 0}
+  forcePlayerTransform: 0
   playerPositionTargetTransform: {fileID: 0}
+  playerDistance: 0
+  playerPositionInterpolationSpeed: 10
   playerLookAtTargetTransform: {fileID: 0}
-  excludeOtherInteraction: 0
+  playerRotationInterpolationSpeed: 10
+  forcePlayerTransformExtendDuration: 0
   animationOnInteract: 0
+  animationOnInteractExtendedDuration: 0
   interactAnimation: {fileID: 0}
+  ikAnimationsOnInteract: []
   animationOnInteractComplete: 1
   animationOnInteractCompleteDuration: 0.25
   interactCompleteAnimation: {fileID: 11400000, guid: 468899952e672d24eb7cfbee1ca89259, type: 2}
-  activated: 0
+  ikAnimationsOnInteractComplete: []
+  activated:
+    m_InternalValue: 0
   interactedOnce: 0
   isHeld: 0
   heldDuration: 0
@@ -583,6 +592,7 @@ MonoBehaviour:
     m_InternalValue: 0
   firstPickup:
     m_InternalValue: 1
+  pickupDelay: 0.25
 --- !u!114 &1414142076186821944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,10 +607,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryItem: {fileID: 0}
   buttonHeld: 0
+  buttonHeldSecondary: 0
   heldTime: 0
   minHeldTime: 0
   cooldown: 0
   cooldownSetting: 0
+  holdItemWithSecondaryButton: 0
   light: {fileID: 7046685739311265399}
   activated:
     m_InternalValue: 0

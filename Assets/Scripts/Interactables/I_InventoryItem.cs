@@ -201,7 +201,7 @@ public class I_InventoryItem : Interactable
         playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
         playerController.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
 
-        if (TryGetComponent<ItemController>(out var itemController) && itemController.buttonHeld)
+        if (TryGetComponent<ItemController>(out var itemController) && (itemController.buttonHeld || itemController.buttonHeldSecondary))
         {
             itemController.Cancel();
         }
@@ -213,14 +213,13 @@ public class I_InventoryItem : Interactable
         {
             if (owner.controlledByClient.Value && !owner.isPlayerDead.Value) 
             {
-                Transform targetTransform = owner.equippedTransform;
-                transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
-                transform.rotation = targetTransform.rotation;
-                transform.Rotate(itemData.equipRotation);
-                /*Transform targetTransform = owner.playerAnimationController.rightArmTransform;
-                transform.position = targetTransform.TransformPoint(itemData.equipPosition);;
-                transform.rotation = owner.equippedTransform.rotation;
-                transform.Rotate(itemData.equipRotation);*/
+                if (transform.parent != null)
+                {
+                    Transform targetTransform = owner.equippedTransform;
+                    transform.position = targetTransform.TransformPoint(itemData.equipPosition); 
+                    transform.rotation = targetTransform.rotation;
+                    transform.Rotate(itemData.equipRotation);
+                }
             }
             else if (IsServer)
             {
@@ -238,11 +237,9 @@ public class I_InventoryItem : Interactable
 
     public override IEnumerator InteractionEvent()
     {
-        yield return new WaitForSeconds(pickupDelay);
-
         if(itemData != null)
         {
-            if ( firstPickup.Value)
+            if (firstPickup.Value)
             {
                 ChangeFirstPickupServerRpc();
                 RatingManager.instance.AddScore(itemData.discoverScore,"Found a " + textName + "!");
@@ -300,6 +297,10 @@ public class I_InventoryItem : Interactable
     {
         itemStatus.amount = amount;
         itemStatus.durability = durability;
+        if (ownerPlayerId.Value != -1)
+        {
+            transform.parent = GameSessionManager.Instance.playerControllerList[ownerPlayerId.Value].equippedTransform;
+        }
     }
 
     public void OnSetInventorySlot()
@@ -345,8 +346,8 @@ public class I_InventoryItem : Interactable
             enableItemPhysics.Value = false;
         }
 
-        transform.parent = GameSessionManager.Instance.playerControllerList[playerId].equippedTransform;
-
+        StartCoroutine(PocketItemCoroutine(playerId));
+        
         /*if (IsServer)
         {
             if (GameSessionManager.Instance.gameStarted.Value)
@@ -356,13 +357,23 @@ public class I_InventoryItem : Interactable
         }*/
     }
 
+    public IEnumerator PocketItemCoroutine(int playerId)
+    {
+        yield return new WaitForSeconds(pickupDelay);
+        
+        transform.parent = GameSessionManager.Instance.playerControllerList[playerId].equippedTransform;
+        transform.localPosition = itemData.equipPosition;
+        transform.localRotation = Quaternion.identity;
+        transform.Rotate(itemData.equipRotation);
+    }
+
     [Rpc(SendTo.Everyone)]
     public void UnpocketItemRpc()
     {
         if (owner)
         {
             transform.position = owner.headTransform.transform.position + owner.headTransform.transform.forward * 0.5f;
-            transform.rotation = owner.headTransform.transform.rotation;
+            transform.rotation = owner.headTransform.transform.rotation; 
         }
 
         if (IsServer)

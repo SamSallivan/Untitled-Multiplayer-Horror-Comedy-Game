@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 
-public class CameraItemController : ItemController
+public class CameraController : ItemController
 {
     public Camera cam;
     public GameObject light;

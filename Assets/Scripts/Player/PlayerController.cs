@@ -464,9 +464,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
        playerInputActions.FindAction("Sprint").performed += Sprint_performed;
        playerInputActions.FindAction("Jump").performed += Jump_performed;
        playerInputActions.FindAction("Crouch").performed += Crouch_performed;
-       playerInputActions.FindAction("ActivateItem").performed += ActivateItem_performed;
-       playerInputActions.FindAction("ActivateItem").canceled += ActivateItem_canceled;
-       // playerInputActions.FindAction("ItemSecondaryUse").performed += ItemSecondaryUse_performed;
+       playerInputActions.FindAction("UseItem").performed += UseItem_performed;
+       playerInputActions.FindAction("UseItem").canceled += UseItem_canceled;
+       playerInputActions.FindAction("UseItemSecondary").performed += UseItemSecondary_performed;
+       playerInputActions.FindAction("UseItemSecondary").canceled += UseItemSecondary_canceled;
        playerInputActions.FindAction("Interact").performed += Interact_performed;
        playerInputActions.FindAction("Interact").canceled += Interact_canceled;
        playerInputActions.FindAction("Discard").performed += Discard_performed;
@@ -489,9 +490,10 @@ public class PlayerController : NetworkBehaviour, IDamagable
        playerInputActions.FindAction("Sprint").performed -= Sprint_performed;
        playerInputActions.FindAction("Jump").performed -= Jump_performed;
        playerInputActions.FindAction("Crouch").performed -= Crouch_performed;
-       playerInputActions.FindAction("ActivateItem").performed -= ActivateItem_performed;
-       playerInputActions.FindAction("ActivateItem").canceled -= ActivateItem_canceled;
-       // playerInputActions.FindAction("ItemSecondaryUse").performed -= ItemSecondaryUse_performed;
+       playerInputActions.FindAction("UseItem").performed -= UseItem_performed;
+       playerInputActions.FindAction("UseItem").canceled -= UseItem_canceled;
+       playerInputActions.FindAction("UseItemSecondary").performed -= UseItemSecondary_performed;
+       playerInputActions.FindAction("UseItemSecondary").canceled -= UseItemSecondary_canceled;
        playerInputActions.FindAction("Interact").performed -= Interact_performed;
        playerInputActions.FindAction("Interact").canceled -= Interact_canceled;
        playerInputActions.FindAction("Discard").performed -= Discard_performed;
@@ -1030,7 +1032,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
            if (currentEquippedItem != null &&
                currentEquippedItem.TryGetComponent<ItemController>(out var itemController))
            {
-               if (itemController.buttonHeld)
+               if (itemController.buttonHeld || itemController.buttonHeldSecondary)
                {
                    itemController.Cancel();
                }
@@ -1382,7 +1384,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    }
 
 
-   private void ActivateItem_performed(InputAction.CallbackContext context)
+   private void UseItem_performed(InputAction.CallbackContext context)
    {
        if (base.IsOwner && controlledByClient.Value)
        {
@@ -1408,7 +1410,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
        }
    }
   
-   private void ActivateItem_canceled(InputAction.CallbackContext context)
+   private void UseItem_canceled(InputAction.CallbackContext context)
    {
        if (base.IsOwner && controlledByClient.Value & enableMovement)
        {
@@ -1417,6 +1419,47 @@ public class PlayerController : NetworkBehaviour, IDamagable
                if (InventoryManager.instance.equippedItem.GetComponent<ItemController>())
                {
                    InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItem(false);
+               }
+           }
+       }
+   }
+
+
+   private void UseItemSecondary_performed(InputAction.CallbackContext context)
+   {
+       if (base.IsOwner && controlledByClient.Value)
+       {
+           if (enableMovement)
+           {
+               if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner &&
+                   InventoryManager.instance.equippedItem.owner == this)
+               {
+                   if (InventoryManager.instance.equippedItem.GetComponent<ItemController>())
+                   {
+                       InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItemSecondary(true);
+                       if (currentEmoteIndex.Value != -1)
+                       {
+                           StopEmote();
+                       }
+                   }
+               }
+           }
+           else if(SpectateManager.Instance.isSpectating)
+           {
+               SpectateManager.Instance.SpectateNextPlayer(-1);
+           }
+       }
+   }
+  
+   private void UseItemSecondary_canceled(InputAction.CallbackContext context)
+   {
+       if (base.IsOwner && controlledByClient.Value & enableMovement)
+       {
+           if (InventoryManager.instance.equippedItem && InventoryManager.instance.equippedItem.owner && InventoryManager.instance.equippedItem.owner == this)
+           {
+               if (InventoryManager.instance.equippedItem.GetComponent<ItemController>())
+               {
+                   InventoryManager.instance.equippedItem.GetComponent<ItemController>().UseItemSecondary(false);
                }
            }
        }
