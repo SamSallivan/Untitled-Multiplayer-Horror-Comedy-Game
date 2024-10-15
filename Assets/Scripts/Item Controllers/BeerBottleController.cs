@@ -100,6 +100,11 @@ public class BeerBottleController : ItemController
                 Vector3 direction = hitss[i].transform.position - transform.position;
                 component.TakeDamage(damage, direction);
             }
+            
+            if (hitss[i].transform.TryGetComponent<I_BearTrap>(out I_BearTrap trap))
+            {
+                trap.ActivateTrapRpc();
+            }
         }
         
         Destroy(gameObject);

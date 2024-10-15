@@ -15,7 +15,6 @@ public class I_Bench : Interactable
     public float benchPlayerPositionInterpolationSpeed = 10f;
     public bool lockMovement = false;
     
-    
     public Transform benchPlayerLookTargetTransform;
     public bool clampHorizontalLookRotation = true;
     public float maxHorizontalLookRotation = 90f;
@@ -103,7 +102,7 @@ public class I_Bench : Interactable
         
         activated.Value = true;
         this.playerId.Value = playerId;
-        StartInteractIkAnimationRpc(playerId);
+        StartActivateIkAnimationRpc(playerId);
         
         PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
         if (lockMovement)
@@ -120,14 +119,14 @@ public class I_Bench : Interactable
             player.LockMovementRpc(false);
         }
         
-        StopInteractIkAnimationRpc(player.localPlayerId);
+        StopActivateIkAnimationRpc(player.localPlayerId);
         activated.Value = false;
         playerId.Value = -1;
     }
 
 
     [Rpc(SendTo.Everyone)]
-    public void StartInteractIkAnimationRpc(int playerId)
+    public void StartActivateIkAnimationRpc(int playerId)
     {
         PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
         foreach (IkAnimation ikAnimation in ikAnimations)
@@ -140,7 +139,7 @@ public class I_Bench : Interactable
     }
     
     [Rpc(SendTo.Everyone)]
-    public void StopInteractIkAnimationRpc(int playerId)
+    public void StopActivateIkAnimationRpc(int playerId)
     {
         PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
         foreach (IkAnimation ikAnimation in ikAnimations)

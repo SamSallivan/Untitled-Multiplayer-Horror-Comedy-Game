@@ -422,6 +422,7 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void StartEmoteAnimation(EmoteData data)
     {
+        
         emoteData = data;
         if (emoteData.fullBodyAnimation)
         {
@@ -442,10 +443,13 @@ public class PlayerAnimationController : MonoBehaviour
             leftArmAnimation = emoteData.leftArmAnimation;
             rightArmAnimation = emoteData.rightArmAnimation;
         }
+        
+        Debug.Log(playerController.name + " started emote animation " + emoteData.animatorTrigger);
     }
 
     public void StopEmoteAnimation()
     {
+        
         if (!emoteData)
         {
             return;
@@ -471,7 +475,8 @@ public class PlayerAnimationController : MonoBehaviour
         leftArmAnimation = false;
         rightArmAnimation = false;
         emoteData = null;
-        //playerController.StopEmote();
+        
+        Debug.Log(playerController.name + " stoped emote animation");
     }
 
     void UpdateEmoteAnimation()

@@ -12,12 +12,20 @@ public class I_BearTrap : Interactable
     
     public Transform trappedPlayerPositionTargetTransform;
     public float trappedPlayerPositionInterpolationSpeed = 10f;
+    public bool lockMovement = false;
+    
+    public Transform trappedPlayerLookTargetTransform;
+    public bool clampHorizontalLookRotation = true;
+    public float maxHorizontalLookRotation = 90f;
+    public float benchPlayerRotationInterpolationSpeed = 5f;
+
+    public float lockTurnAnimationDelay = 1f;
+    public float lockTurnAnimationDelayTimer = 0f;
     
     public float damageOnHit = 25f;
     public float damageOnTick = 25f;
     public float tickInterval = 1f;
     public float tickCooldown = 0;
-    public bool lockMovement = false;
     
     public override void OnNetworkSpawn()
     {
@@ -35,8 +43,16 @@ public class I_BearTrap : Interactable
                 if (trappedPlayerPositionTargetTransform)
                 {
                     Vector3 targetPosition = trappedPlayerPositionTargetTransform.position;
-                    targetPosition.y = trappedPlayer.transform.position.y;
+                    //targetPosition.y = trappedPlayer.transform.position.y;
                     trappedPlayer.rb.position = Vector3.Lerp(trappedPlayer.rb.position, targetPosition, Time.deltaTime * trappedPlayerPositionInterpolationSpeed);
+                }
+
+                if (clampHorizontalLookRotation)
+                {
+                    if (Quaternion.Angle(trappedPlayer.mouseLookX.transform.rotation, Quaternion.LookRotation(trappedPlayerLookTargetTransform.forward)) > maxHorizontalLookRotation)
+                    {
+                        trappedPlayer.mouseLookX.transform.rotation = Quaternion.Lerp(trappedPlayer.mouseLookX.transform.rotation, Quaternion.LookRotation(trappedPlayerLookTargetTransform.forward), Time.deltaTime * benchPlayerRotationInterpolationSpeed);       
+                    }
                 }
 
                 if (tickCooldown > 0)
@@ -57,14 +73,22 @@ public class I_BearTrap : Interactable
 
         if (trappedPlayer)
         {
-            
-        }
-        else
-        {
-            
+            if (lockTurnAnimationDelayTimer < lockTurnAnimationDelay)
+            {
+                lockTurnAnimationDelayTimer += Time.deltaTime;
+            }
+            else
+            {
+                trappedPlayer.playerAnimationController.turnAnimation = false;
+                
+                if (clampHorizontalLookRotation)
+                {
+                    trappedPlayer.playerAnimationController.bodyRotationInterpolationSpeed = 0;
+                }
+            }
         }
 
-        if (isHeld)
+        if (isHeld && trappedPlayer != GameSessionManager.Instance.localPlayerController)
         {
             GameSessionManager.Instance.localPlayerController.crouching = true;
             GameSessionManager.Instance.localPlayerController.crouchingNetworkVariable.Value = true;
@@ -79,7 +103,7 @@ public class I_BearTrap : Interactable
 
     public override bool CustomRequirement()
     {
-        if (trappedPlayer && trappedPlayer != GameSessionManager.Instance.localPlayerController)
+        if (trappedPlayer)
         {
             return true;
         }
@@ -88,7 +112,7 @@ public class I_BearTrap : Interactable
     }
     
     [Rpc(SendTo.Server)]
-    public void ActivateTrapRpc(int playerId)
+    public void ActivateTrapRpc(int playerId = -1)
     {
         if (activated.Value)
         {
@@ -96,11 +120,26 @@ public class I_BearTrap : Interactable
         }
         
         activated.Value = true;
+
+        if (playerId == -1)
+        {
+            return;
+        }
+        
         trappedPlayerId.Value = playerId;
+        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
+        
+        Vector3 direction = transform.position - playerController.transform.position;
+        direction.y = 0;
+        transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+
+        //playerController.playerAnimationController.targetBodyRotation = playerController.transform.GetChild(0).rotation;
+        playerController.playerAnimationController.transform.rotation  = playerController.transform.GetChild(0).rotation;
+        
         StartInteractIkAnimationRpc(playerId);
         
-        PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
         playerController.TakeDamageRpc(damageOnHit, new Vector3(0, -0.25f, 0.5f));
+        
         if (lockMovement)
         {
             playerController.LockMovementRpc(true);
@@ -115,7 +154,7 @@ public class I_BearTrap : Interactable
             trappedPlayer.LockMovementRpc(false);
         }
         StopInteractIkAnimationRpc(trappedPlayer.localPlayerId);
-        activated.Value = false;
+        //activated.Value = false;
         trappedPlayerId.Value = -1;
     }
     
@@ -140,6 +179,10 @@ public class I_BearTrap : Interactable
         {
             playerController.playerAnimationController.GetComponent<InteractionSystem>().StartInteraction(ikAnimation.effector, ikAnimation.interactionObject, true);
         }
+        
+        playerController.zeroGravity = true;
+        playerController.grounder.detectionOffset.y = 0f;
+        playerController.playerCollider.enabled = false;
     }
     
     [Rpc(SendTo.Everyone)]
@@ -166,5 +209,12 @@ public class I_BearTrap : Interactable
                 playerController.playerAnimationController.leftFootTransform.GetComponent<HandPoser>().weight = 0;
             }
         }
+
+        lockTurnAnimationDelayTimer = 0;
+        playerController.playerAnimationController.turnAnimation = true;
+        playerController.playerAnimationController.bodyRotationInterpolationSpeed = 3;
+        playerController.zeroGravity = false;
+        playerController.grounder.detectionOffset.y = -0.55f;
+        playerController.playerCollider.enabled = true;
     }
 }
