@@ -8,6 +8,7 @@ public class I_BearTrap : Interactable
 {
     public NetworkVariable<int> trappedPlayerId = new NetworkVariable<int>(-1);
     public PlayerController trappedPlayer;
+    
     public List<IkAnimation> ikAnimations = new List<IkAnimation>();
     
     public Transform trappedPlayerPositionTargetTransform;
@@ -18,9 +19,6 @@ public class I_BearTrap : Interactable
     public bool clampHorizontalLookRotation = true;
     public float maxHorizontalLookRotation = 90f;
     public float benchPlayerRotationInterpolationSpeed = 5f;
-
-    public float lockTurnAnimationDelay = 1f;
-    public float lockTurnAnimationDelayTimer = 0f;
     
     public float damageOnHit = 25f;
     public float damageOnTick = 25f;
@@ -73,19 +71,11 @@ public class I_BearTrap : Interactable
 
         if (trappedPlayer)
         {
-            if (lockTurnAnimationDelayTimer < lockTurnAnimationDelay)
-            {
-                lockTurnAnimationDelayTimer += Time.deltaTime;
-            }
-            else
-            {
-                trappedPlayer.playerAnimationController.turnAnimation = false;
-                
-                if (clampHorizontalLookRotation)
-                {
-                    trappedPlayer.playerAnimationController.bodyRotationInterpolationSpeed = 0;
-                }
-            }
+            trappedPlayer.playerAnimationController.turnAnimation = false;
+            trappedPlayer.playerAnimationController.bodyRotationInterpolationSpeed = 0;
+            Vector3 targetRotation = Quaternion.LookRotation(trappedPlayerLookTargetTransform.forward).eulerAngles;
+            targetRotation = new Vector3(0, targetRotation.y - 30, 0);
+            trappedPlayer.playerAnimationController.transform.rotation = Quaternion.Lerp(trappedPlayer.playerAnimationController.transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime);
         }
 
         if (isHeld && trappedPlayer != GameSessionManager.Instance.localPlayerController)
@@ -132,9 +122,6 @@ public class I_BearTrap : Interactable
         Vector3 direction = transform.position - playerController.transform.position;
         direction.y = 0;
         transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
-
-        //playerController.playerAnimationController.targetBodyRotation = playerController.transform.GetChild(0).rotation;
-        playerController.playerAnimationController.transform.rotation  = playerController.transform.GetChild(0).rotation;
         
         StartInteractIkAnimationRpc(playerId);
         
@@ -157,18 +144,6 @@ public class I_BearTrap : Interactable
         //activated.Value = false;
         trappedPlayerId.Value = -1;
     }
-    
-    public void OnTrappedPlayerIdChanged(int prevValue, int newValue)
-    {
-        if (trappedPlayerId.Value != -1)
-        {
-            trappedPlayer = GameSessionManager.Instance.playerControllerList[trappedPlayerId.Value];
-        }
-        else
-        {
-            trappedPlayer = null;
-        }
-    }
 
 
     [Rpc(SendTo.Everyone)]
@@ -181,8 +156,8 @@ public class I_BearTrap : Interactable
         }
         
         playerController.zeroGravity = true;
-        playerController.grounder.detectionOffset.y = 0f;
         playerController.playerCollider.enabled = false;
+        playerController.grounder.detectionOffset.y = 0f;
     }
     
     [Rpc(SendTo.Everyone)]
@@ -210,11 +185,22 @@ public class I_BearTrap : Interactable
             }
         }
 
-        lockTurnAnimationDelayTimer = 0;
+        playerController.zeroGravity = false;
+        playerController.playerCollider.enabled = true;
+        playerController.grounder.detectionOffset.y = -0.55f;
         playerController.playerAnimationController.turnAnimation = true;
         playerController.playerAnimationController.bodyRotationInterpolationSpeed = 3;
-        playerController.zeroGravity = false;
-        playerController.grounder.detectionOffset.y = -0.55f;
-        playerController.playerCollider.enabled = true;
+    }
+    
+    public void OnTrappedPlayerIdChanged(int prevValue, int newValue)
+    {
+        if (trappedPlayerId.Value != -1)
+        {
+            trappedPlayer = GameSessionManager.Instance.playerControllerList[trappedPlayerId.Value];
+        }
+        else
+        {
+            trappedPlayer = null;
+        }
     }
 }

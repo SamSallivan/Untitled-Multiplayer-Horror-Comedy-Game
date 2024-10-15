@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9101471777829469210}
   - component: {fileID: 6616505055806669357}
+  - component: {fileID: 1059493377851027740}
   m_Layer: 0
   m_Name: Reflection Probe
   m_TagString: Untagged
@@ -65,6 +66,18 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!114 &1059493377851027740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5293137248346715102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ef105e50b9ee2d4b94cb4ddcee25569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7979108491106814770
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,18 +332,28 @@ MonoBehaviour:
   highlightTarget: {fileID: 7979108491106814770}
   interactionType: 3
   onceOnly: 0
+  excludeOtherInteraction: 0
   requireHold: 1
   requiredHoldDuration: 1
   requireItem: 0
   requiredItemData: {fileID: 0}
+  forcePlayerTransform: 0
   playerPositionTargetTransform: {fileID: 0}
+  playerDistance: 0
+  playerPositionInterpolationSpeed: 10
   playerLookAtTargetTransform: {fileID: 0}
-  excludeOtherInteraction: 0
-  hasSpecialAnimation: 0
+  playerRotationInterpolationSpeed: 10
+  forcePlayerTransformExtendDuration: 0
+  animationOnInteract: 0
+  animationOnInteractExtendedDuration: 0
   interactAnimation: {fileID: 0}
-  extendDurationOnComplete: 0
+  ikAnimationsOnInteract: []
+  animationOnInteractComplete: 0
+  animationOnInteractCompleteDuration: 0
   interactCompleteAnimation: {fileID: 0}
-  activated: 0
+  ikAnimationsOnInteractComplete: []
+  activated:
+    m_InternalValue: 0
   interactedOnce: 0
   isHeld: 0
   heldDuration: 0

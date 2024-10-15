@@ -19,9 +19,6 @@ public class I_Bench : Interactable
     public bool clampHorizontalLookRotation = true;
     public float maxHorizontalLookRotation = 90f;
     public float benchPlayerRotationInterpolationSpeed = 5f;
-
-    public float lockTurnAnimationDelay = 1f;
-    public float lockTurnAnimationDelayTimer = 0f;
     
     public override void OnNetworkSpawn()
     {
@@ -66,19 +63,12 @@ public class I_Bench : Interactable
 
         if (player)
         {
-            if (lockTurnAnimationDelayTimer < lockTurnAnimationDelay)
-            {
-                lockTurnAnimationDelayTimer += Time.deltaTime;
-            }
-            else
-            {
-                player.playerAnimationController.turnAnimation = false;
-                
-                if (clampHorizontalLookRotation)
-                {
-                    player.playerAnimationController.bodyRotationInterpolationSpeed = 0;
-                }
-            }
+            player.playerAnimationController.turnAnimation = false;
+            player.playerAnimationController.bodyRotationInterpolationSpeed = 0;
+            Vector3 targetRotation = Quaternion.LookRotation(benchPlayerLookTargetTransform.forward).eulerAngles;
+            targetRotation = new Vector3(0, targetRotation.y - 30, 0);
+            player.playerAnimationController.transform.rotation = Quaternion.Lerp(player.playerAnimationController.transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime);
+    
         }
     }
 
@@ -136,6 +126,7 @@ public class I_Bench : Interactable
         
         playerController.zeroGravity = true;
         playerController.playerCollider.enabled = false;
+        playerController.grounder.detectionOffset.y = 0f;
     }
     
     [Rpc(SendTo.Everyone)]
@@ -162,12 +153,11 @@ public class I_Bench : Interactable
                 playerController.playerAnimationController.leftFootTransform.GetComponent<HandPoser>().weight = 0;
             }
         }
-
-        lockTurnAnimationDelayTimer = 0;
-        player.playerAnimationController.turnAnimation = true;
-        player.playerAnimationController.bodyRotationInterpolationSpeed = 3;
-        player.zeroGravity = false;
-        player.playerCollider.enabled = true;
+        playerController.zeroGravity = false;
+        playerController.playerCollider.enabled = true;
+        playerController.grounder.detectionOffset.y = -0.55f;
+        playerController.playerAnimationController.turnAnimation = true;
+        playerController.playerAnimationController.bodyRotationInterpolationSpeed = 3;
     }
     
     public void OnplayerIdChanged(int prevValue, int newValue)
