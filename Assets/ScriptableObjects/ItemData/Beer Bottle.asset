@@ -17,11 +17,14 @@ MonoBehaviour:
   description: Tsingtao beer bottle.
   isStackable: 0
   maxStackAmount: 1
+  hasDurability: 0
+  isHeavy: 0
   discoverScore: 5
   equipPosition: {x: 0, y: 0, z: 0}
-  equipRotation: {x: 0, y: 0, z: 0}
+  equipRotation: {x: 180, y: 0, z: 0}
   dropObject: {fileID: 7074802747145682746, guid: bfbfa091281804c429aaaf095c8936e2, type: 3}
   examineScale: 1
   examineRotation: {x: 0.25881904, y: 0, z: 0, w: 0.9659258}
   equipAnimatorParameter: Beer Bottle
-  twoHandAnimation: 0
+  leftHandAnimation: 0
+  rightHandAnimation: 1

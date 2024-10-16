@@ -20,7 +20,7 @@ MonoBehaviour:
   hasDurability: 0
   isHeavy: 1
   discoverScore: 5
-  equipPosition: {x: -0.14, y: -0.15, z: 0.16}
+  equipPosition: {x: 0.16, y: -0.15, z: 0.16}
   equipRotation: {x: 0, y: 0, z: 0}
   dropObject: {fileID: 4062514989801116217, guid: a9a1617487fcdf44d9a215d8760f3f3b, type: 3}
   examineScale: 1
