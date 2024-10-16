@@ -8,7 +8,7 @@ public class I_BearTrap : Interactable
 {
     public NetworkVariable<int> trappedPlayerId = new NetworkVariable<int>(-1);
     public PlayerController trappedPlayer;
-    
+
     public List<IkAnimation> ikAnimations = new List<IkAnimation>();
     
     public Transform trappedPlayerPositionTargetTransform;
@@ -75,7 +75,7 @@ public class I_BearTrap : Interactable
             trappedPlayer.playerAnimationController.bodyRotationInterpolationSpeed = 0;
             Vector3 targetRotation = Quaternion.LookRotation(trappedPlayerLookTargetTransform.forward).eulerAngles;
             targetRotation = new Vector3(0, targetRotation.y - 30, 0);
-            trappedPlayer.playerAnimationController.transform.rotation = Quaternion.Lerp(trappedPlayer.playerAnimationController.transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime);
+            trappedPlayer.playerAnimationController.transform.rotation = Quaternion.Lerp(trappedPlayer.playerAnimationController.transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime * benchPlayerRotationInterpolationSpeed);
         }
 
         if (isHeld && trappedPlayer != GameSessionManager.Instance.localPlayerController)
@@ -136,6 +136,11 @@ public class I_BearTrap : Interactable
     [Rpc(SendTo.Server)]
     public void DeactivateTrapRpc()
     {
+        if(!trappedPlayer)
+        {
+            return;
+        }
+
         if (!trappedPlayer.isPlayerDead.Value && lockMovement)
         {
             trappedPlayer.LockMovementRpc(false);
@@ -158,6 +163,8 @@ public class I_BearTrap : Interactable
         playerController.zeroGravity = true;
         playerController.playerCollider.enabled = false;
         playerController.grounder.detectionOffset.y = 0f;
+        playerController.playerAnimationController.turnAnimation = false;
+        playerController.playerAnimationController.bodyRotationInterpolationSpeed = 0;
     }
     
     [Rpc(SendTo.Everyone)]

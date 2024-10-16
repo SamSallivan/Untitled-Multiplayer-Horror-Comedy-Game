@@ -63,11 +63,9 @@ public class I_Bench : Interactable
 
         if (player)
         {
-            player.playerAnimationController.turnAnimation = false;
-            player.playerAnimationController.bodyRotationInterpolationSpeed = 0;
             Vector3 targetRotation = Quaternion.LookRotation(benchPlayerLookTargetTransform.forward).eulerAngles;
             targetRotation = new Vector3(0, targetRotation.y - 30, 0);
-            player.playerAnimationController.transform.rotation = Quaternion.Lerp(player.playerAnimationController.transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime);
+            player.playerAnimationController.transform.rotation = Quaternion.Lerp(player.playerAnimationController.transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime * benchPlayerRotationInterpolationSpeed);
     
         }
     }
@@ -104,6 +102,11 @@ public class I_Bench : Interactable
     [Rpc(SendTo.Server)]
     public void DeactivateRpc()
     {
+        if(!player)
+        {
+            return;
+        }
+
         if (!player.isPlayerDead.Value && lockMovement)
         {
             player.LockMovementRpc(false);
@@ -127,11 +130,14 @@ public class I_Bench : Interactable
         playerController.zeroGravity = true;
         playerController.playerCollider.enabled = false;
         playerController.grounder.detectionOffset.y = 0f;
+        playerController.playerAnimationController.turnAnimation = false;
+        playerController.playerAnimationController.bodyRotationInterpolationSpeed = 0;
     }
     
     [Rpc(SendTo.Everyone)]
     public void StopActivateIkAnimationRpc(int playerId)
     {
+        Debug.Log("StopActivateIkAnimationRpc");
         PlayerController playerController = GameSessionManager.Instance.playerControllerList[playerId];
         foreach (IkAnimation ikAnimation in ikAnimations)
         {
