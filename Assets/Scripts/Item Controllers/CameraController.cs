@@ -72,6 +72,11 @@ public class CameraController : ItemController
         }
     }
 
+    [Rpc(SendTo.Server)]
+    public void FlashSoundServerRpc(){
+        SoundManager.Instance.PlayServerSoundEffect(flashSound,transform.position);
+    }
+
 
 
     [Rpc(SendTo.Server)]

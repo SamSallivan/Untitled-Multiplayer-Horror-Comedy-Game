@@ -66,7 +66,12 @@ public class NightCrawler : MonsterBase
     [FoldoutGroup("State")] 
     public bool jumping = false;
 
-    
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        monState.Value = NightCrawlerState.Idle;
+    }
 
     // Update is called once per frame
     void Update()
