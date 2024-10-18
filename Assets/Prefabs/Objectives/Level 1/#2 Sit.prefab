@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3986831380451878277}
   - component: {fileID: 1568875398103329933}
   m_Layer: 0
-  m_Name: Start the campfire.
+  m_Name: '#2 Sit'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1844034679
+  GlobalObjectIdHash: 2927089826
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -66,10 +66,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 964fa84b731fbf045858b119c5b1fc9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectiveName: Start the campfire.
-  objectiveText: Add wood to the campfire.
-  triggerEvent: Camp Fire
+  objectiveName: Gather Around the Campfire.
+  objectiveText: Sit around the campfire.
+  triggerEvent: Sit
   showNotification: 1
+  hasTimeLimit: 0
+  timeLimit: 600
+  timer:
+    m_InternalValue: 0
   requiredValue: 4
   completedValue:
     m_InternalValue: 0
@@ -77,8 +81,8 @@ MonoBehaviour:
     m_InternalValue: 0
   targetPlayerId:
     m_InternalValue: -1
-  score: 100
-  followupObjective: {fileID: 1568875398103329933, guid: 2265a2d1eec65ad4594d49dc87a8072f, type: 3}
+  score: 25
+  followupObjective: {fileID: 1568875398103329933, guid: acfa1db605dc335448f7a9c701178066, type: 3}
   followupObjectiveAssignDelay: 4
   isSubObjective: 0
   parentObjective: {fileID: 0}

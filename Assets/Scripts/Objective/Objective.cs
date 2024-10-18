@@ -4,6 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using UnityEngine.Serialization;
 
 public class Objective : NetworkBehaviour
 {
@@ -13,6 +14,13 @@ public class Objective : NetworkBehaviour
     public string objectiveText;
     public string triggerEvent;
     public bool showNotification;
+    
+    [Space]
+    public bool hasTimeLimit;
+    [ShowIf("hasTimeLimit")]
+    public int timeLimit;
+    [ShowIf("hasTimeLimit")]
+    public NetworkVariable<float> timer = new (0, writePerm: NetworkVariableWritePermission.Server);
     
     [Space]
     public int requiredValue = 1;
@@ -55,23 +63,23 @@ public class Objective : NetworkBehaviour
             return;
         }
         
+        StartCoroutine(AddProgressCoroutine(value));
+    }
+
+    public IEnumerator AddProgressCoroutine(int value)
+    {
+        yield return new WaitForSeconds(0.5f);
+        
         completedValue.Value += value;
         
-        if (completedValue.Value >= requiredValue) {
+        if (completedValue.Value >= requiredValue) 
+        {
             isCompleted.Value = true;
             ObjectiveManager.instance.CompleteObjective(this);
             StartCoroutine(OnObjectiveCompletedCoroutine());
             StartCoroutine(AssignFollowupObjectiveCoroutine());
             if (isSubObjective && parentObjective != null)
             {
-                /*foreach (Objective subObjective in parentObjective.subObjectiveList)
-                {
-                    if (!subObjective.isCompleted.Value)
-                    {
-                        return;
-                    }
-                }*/
-                
                 parentObjective.AddProgressServerRpc(1);
             }
         }
@@ -92,8 +100,11 @@ public class Objective : NetworkBehaviour
         }
         
         yield return new WaitForSeconds(1.0f);
-        
-        NetworkObject.Despawn();
+
+        if (!isSubObjective)
+        {
+            NetworkObject.Despawn();
+        }
     }
 
     public void OnCompletedValueChanged(int prev, int curr)
@@ -113,13 +124,38 @@ public class Objective : NetworkBehaviour
         followupObjectiveAssignDelay = objectiveData.followupObjectiveAssignDelay;
     }*/
     
-    /*public void Update()
+    public void Update()
     {
+        if (!IsServer)
+        {
+            return;
+        }
+        
+        if (hasTimeLimit && !isCompleted.Value)
+        {
+            if (timer.Value > 0)
+            {
+                timer.Value -= Time.deltaTime;
+            }
+            else
+            {
+                isCompleted.Value = true;
+                ObjectiveManager.instance.CompleteObjective(this, true);
+                StartCoroutine(OnObjectiveFailedCoroutine());
+                StartCoroutine(AssignFollowupObjectiveCoroutine());
+            }
+        }
+        
         ObjectiveUpdate();
-    }*/
+    }
 
-    /*public virtual void ObjectiveUpdate()
+    public virtual IEnumerator OnObjectiveFailedCoroutine()
+    {
+        yield return null;
+    }
+
+    public virtual void ObjectiveUpdate()
     {
 
-    }*/
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class I_Door : Interactable
     public Vector3 closedRotation;
     public float doorRotationInterpolationSpeed = 5f;
     public float delay = 0f;
+    public I_Door flipSideDoor;
     
     public override void OnNetworkSpawn()
     {
@@ -33,6 +35,11 @@ public class I_Door : Interactable
     public void ToggleDoorServerRPC()
     {
         activated.Value = !activated.Value;
+
+        if (flipSideDoor)
+        {
+            flipSideDoor.activated.Value = !flipSideDoor.activated.Value;
+        }
     }
 
     public override void InteractableUpdate()

@@ -237,13 +237,13 @@ public class I_InventoryItem : Interactable
 
     public override IEnumerator InteractionEvent()
     {
+        if (ownerPlayerId.Value != -1 || owner != null)
+        {
+            yield break;
+        }
+            
         if(itemData != null)
         {
-            if (firstPickup.Value)
-            {
-                ChangeFirstPickupServerRpc();
-                RatingManager.instance.AddScore(itemData.discoverScore,"Found a " + textName + "!");
-            }
             I_InventoryItem item = InventoryManager.instance.AddItemToInventory(this);
             if (item != null)
             {
@@ -252,6 +252,12 @@ public class I_InventoryItem : Interactable
                     InventoryManager.instance.OpenInventory();
                     InventoryManager.instance.selectedSlot = item.inventorySlot;
                 }
+            }
+            
+            if (firstPickup.Value)
+            {
+                ChangeFirstPickupServerRpc();
+                RatingManager.instance.AddScore(itemData.discoverScore,"Found a " + textName + "!");
             }
         }
         yield return null; 
@@ -346,6 +352,10 @@ public class I_InventoryItem : Interactable
             enableItemPhysics.Value = false;
         }
 
+        owner = GameSessionManager.Instance.playerControllerList[playerId];
+        OnEnableItemMeshesChanged(true, false);
+        OnEnableItemPhysicsChanged(true, false);
+        
         StartCoroutine(PocketItemCoroutine(playerId));
         
         /*if (IsServer)
@@ -384,6 +394,9 @@ public class I_InventoryItem : Interactable
         }
 
         transform.parent = null;
+
+        OnEnableItemMeshesChanged(false, true);
+        OnEnableItemPhysicsChanged(false, true);
 
         if (IsServer)
         {

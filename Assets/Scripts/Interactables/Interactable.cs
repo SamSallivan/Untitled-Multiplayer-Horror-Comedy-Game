@@ -103,9 +103,8 @@ public class Interactable : NetworkBehaviour
     
     private float forcePlayerTransformExtendDurationTimer;
     
-    //[FoldoutGroup("Settings")]
-    //public Trigger triggerZone;
-    
+    [FoldoutGroup("Settings")]
+    public Trigger triggerZone;
 
     [FoldoutGroup("Animation")]
     public bool animationOnInteract;

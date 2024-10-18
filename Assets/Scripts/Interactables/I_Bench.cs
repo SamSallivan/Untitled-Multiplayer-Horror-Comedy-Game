@@ -97,6 +97,11 @@ public class I_Bench : Interactable
         {
             playerController.LockMovementRpc(true);
         }
+
+        if (ObjectiveManager.instance != null)
+        {
+            ObjectiveManager.instance.AddProgressToObjective("Sit", 1);
+        }
     }
     
     [Rpc(SendTo.Server)]
@@ -106,7 +111,7 @@ public class I_Bench : Interactable
         {
             return;
         }
-
+        
         if (!player.isPlayerDead.Value && lockMovement)
         {
             player.LockMovementRpc(false);
@@ -115,6 +120,12 @@ public class I_Bench : Interactable
         StopActivateIkAnimationRpc(player.localPlayerId);
         activated.Value = false;
         playerId.Value = -1;
+        player = null;
+
+        if (ObjectiveManager.instance != null)
+        {
+            ObjectiveManager.instance.AddProgressToObjective("Sit", -1);
+        }
     }
 
 

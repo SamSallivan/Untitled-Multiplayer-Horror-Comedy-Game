@@ -12,10 +12,11 @@ public class Trigger : NetworkBehaviour
     
     public NetworkVariable<bool> triggered;
     
-    public bool onceOnly;
+    //public bool onceOnly;
     
-    public GameObject colliderGameObject;
+    public List<int> playerIds = new List<int>();
     
+
     public virtual void Start()
     {
         GetComponent<Rigidbody>().isKinematic = true;
@@ -28,29 +29,35 @@ public class Trigger : NetworkBehaviour
 
     public virtual void OnTriggerEnter(Collider other)
     {
-        if (!IsServer)
-        {
-            return;
-        }
         
-        if ((triggerLayers.value & 1 << other.gameObject.layer) > 0 && !triggered.Value)
+        if ((triggerLayers.value & 1 << other.gameObject.layer) > 0)
         {
-            triggered.Value = true;
-            colliderGameObject = other.gameObject;
-            StartCoroutine(TriggerEvent());
+            if (other.gameObject.TryGetComponent(out PlayerController playerController) && !playerIds.Contains(playerController.localPlayerId))
+            {
+                playerIds.Add(playerController.localPlayerId);
+            }
+            
+            if (IsServer)
+            {
+                triggered.Value = true;
+                StartCoroutine(TriggerEvent());
+            }
         }
     }
     public virtual void OnTriggerExit(Collider other)
     {
-        if (!IsServer)
-        {
-            return;
-        }
         
-        if ((triggerLayers.value & 1 << other.gameObject.layer) > 0 && triggered.Value && !onceOnly)
+        if ((triggerLayers.value & 1 << other.gameObject.layer) > 0 && triggered.Value)
         {
-            triggered.Value = false;
-            colliderGameObject = null;
+            if (other.gameObject.TryGetComponent(out PlayerController playerController) && playerIds.Contains(playerController.localPlayerId))
+            {
+                playerIds.Remove(playerController.localPlayerId);
+            }
+            
+            if (IsServer && playerIds.Count == 0)
+            {
+                triggered.Value = false;
+            }
         }
     }
 }

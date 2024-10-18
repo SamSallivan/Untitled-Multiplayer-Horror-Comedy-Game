@@ -358,6 +358,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
   
    [FoldoutGroup("Interaction")]
    public LayerMask interactableLayer;
+  
+   [FoldoutGroup("Interaction")]
+   public float interactCooldown;
 
 
    [FoldoutGroup("Health")]
@@ -978,9 +981,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    public void InteractionUpdate()
    {
-       if (Physics.Raycast(gameplayCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance, ~0, QueryTriggerInteraction.Ignore) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
+       if (interactCooldown > 0)
        {
-           if (targetInteractable == null || targetInteractable != hitInfo.collider.GetComponent<Interactable>()) // || targetInteractable.triggerZone)
+           interactCooldown -= Time.deltaTime;
+       }
+       
+       if (Physics.Raycast(gameplayCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)), out RaycastHit hitInfo, interactDistance, ~0, QueryTriggerInteraction.Collide) && (interactableLayer.value & 1 << hitInfo.collider.gameObject.layer) > 0)
+       {
+           if (targetInteractable == null || targetInteractable != hitInfo.collider.GetComponent<Interactable>() || targetInteractable.triggerZone)
            {
                if (targetInteractable != null && targetInteractable != hitInfo.collider.GetComponent<Interactable>())
                {
@@ -997,12 +1005,13 @@ public class PlayerController : NetworkBehaviour, IDamagable
                        targetInteractable = null;
                        return;
                    }
-                   // if (targetInteractable.triggerZone != null && !targetInteractable.triggerZone.triggered)
-                   // {
-                   //     targetInteractable.UnTarget();
-                   //     targetInteractable = null;
-                   //     return;
-                   // }
+                   if (targetInteractable.triggerZone != null && !targetInteractable.triggerZone.playerIds.Contains(localPlayerId))
+                   {
+                       targetInteractable.UnTarget();
+                       targetInteractable = null;
+                       return;
+                   }
+                   
                    targetInteractable.Target();
                }
            }
@@ -1513,7 +1522,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
    {
        if (base.IsOwner && controlledByClient.Value)
        {
-           if (enableMovement && targetInteractable != null)
+           if (enableMovement && targetInteractable != null && interactCooldown <= 0)
            {
                targetInteractable.StartCoroutine(targetInteractable.ResetInteract());
            }

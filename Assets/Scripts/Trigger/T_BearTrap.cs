@@ -7,11 +7,12 @@ public class T_BearTrap : Trigger
 {
     public override IEnumerator TriggerEvent()
     {
-        if (colliderGameObject.TryGetComponent<PlayerController>(out PlayerController player))
+        if (GetComponent<I_BearTrap>().activated.Value || playerIds.Count < 1)
         {
-            GetComponent<I_BearTrap>().ActivateTrapRpc(player.localPlayerId);
+            yield break;
         }
-
-        yield break;
+        
+        PlayerController player = GameSessionManager.Instance.playerControllerList[playerIds[0]];
+        GetComponent<I_BearTrap>().ActivateTrapRpc(player.localPlayerId);
     }
 }

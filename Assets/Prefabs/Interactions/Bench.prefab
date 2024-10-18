@@ -91,7 +91,7 @@ Transform:
   m_GameObject: {fileID: 182787148790738024}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.04042554, y: -0.2, z: 0.43290386}
+  m_LocalPosition: {x: 0, y: -0.2, z: 0.43290386}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -817,6 +817,7 @@ MonoBehaviour:
   playerLookAtTargetTransform: {fileID: 1894182837636002909}
   playerRotationInterpolationSpeed: 10
   forcePlayerTransformExtendDuration: 1
+  triggerZone: {fileID: 0}
   animationOnInteract: 0
   animationOnInteractExtendedDuration: 0
   interactAnimation: {fileID: 0}
@@ -851,8 +852,6 @@ MonoBehaviour:
   clampHorizontalLookRotation: 1
   maxHorizontalLookRotation: 90
   benchPlayerRotationInterpolationSpeed: 5
-  lockTurnAnimationDelay: 1
-  lockTurnAnimationDelayTimer: 0
 --- !u!1 &2872692985124448380
 GameObject:
   m_ObjectHideFlags: 0
