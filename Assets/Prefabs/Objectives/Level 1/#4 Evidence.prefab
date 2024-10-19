@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3465641285645993410}
   - component: {fileID: 3986831380451878277}
-  - component: {fileID: 1568875398103329933}
+  - component: {fileID: 4607262297044430745}
   m_Layer: 0
   m_Name: '#4 Evidence'
   m_TagString: Untagged
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2717225436
+  GlobalObjectIdHash: 4235834081
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -54,7 +54,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 0
---- !u!114 &1568875398103329933
+--- !u!114 &4607262297044430745
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,7 +63,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4723192285520765192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 964fa84b731fbf045858b119c5b1fc9a, type: 3}
+  m_Script: {fileID: 11500000, guid: 5fc68d7d53a671e4b866a943125d6fd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   objectiveName: Collect Evidence
@@ -81,7 +81,7 @@ MonoBehaviour:
     m_InternalValue: 0
   targetPlayerId:
     m_InternalValue: -1
-  score: 0
+  score: 1000
   followupObjective: {fileID: 0}
   followupObjectiveAssignDelay: 4
   isSubObjective: 0

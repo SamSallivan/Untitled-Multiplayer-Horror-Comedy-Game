@@ -56,7 +56,6 @@ public class LevelManager : NetworkBehaviour
         if (IsServer)
         {
             currentGameState.Value = GameState.NotStarted;
-            matchTimer.Value = preExtractionTime;
 
             StartCoroutine(RespawnScenePlacedInventoryItemsCoroutine());
         }
@@ -120,7 +119,8 @@ public class LevelManager : NetworkBehaviour
         if (currentGameState.Value == GameState.NotStarted)
         {
             //temp just start game
-            currentGameState.Value = GameState.PreExtraction;
+            //matchTimer.Value = preExtractionTime;
+            //currentGameState.Value = GameState.PreExtraction;
         }
         else if (currentGameState.Value == GameState.PreExtraction)
         {
@@ -128,9 +128,7 @@ public class LevelManager : NetworkBehaviour
             SpawnMonsters();
             if (matchTimer.Value <= 0)
             {
-                matchTimer.Value = extractionTime;
-                currentGameState.Value = GameState.Extraction;
-                ActivateExtractRPC();
+                BeginExtraction();
             }
         }
         else if (currentGameState.Value == GameState.Extraction)
@@ -165,6 +163,13 @@ public class LevelManager : NetworkBehaviour
                 EndGame();
             }
         }
+    }
+
+    public void BeginExtraction()
+    {
+        matchTimer.Value = extractionTime;
+        currentGameState.Value = GameState.Extraction;
+        ActivateExtractRPC();
     }
 
     public void EndGame()

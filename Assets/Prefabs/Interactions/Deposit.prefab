@@ -142,8 +142,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648b8fe1347d3fd469e1346cce83194a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textName: Deposit
-  textPrompt: 
+  textName: Terminal
+  textPrompt: Deposit Evidence
   textPromptActivated: 
   highlightTarget: {fileID: 5087229612512000688}
   interactionType: 3

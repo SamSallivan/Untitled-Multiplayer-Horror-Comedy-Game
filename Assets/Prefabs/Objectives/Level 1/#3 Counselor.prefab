@@ -82,7 +82,7 @@ MonoBehaviour:
   targetPlayerId:
     m_InternalValue: -1
   score: 100
-  followupObjective: {fileID: 1568875398103329933, guid: 1f0f29fa0da1a8242b2e8759adbd1eac, type: 3}
+  followupObjective: {fileID: 4607262297044430745, guid: 1f0f29fa0da1a8242b2e8759adbd1eac, type: 3}
   followupObjectiveAssignDelay: 4
   isSubObjective: 0
   parentObjective: {fileID: 0}

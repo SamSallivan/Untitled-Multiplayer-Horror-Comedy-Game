@@ -502,7 +502,7 @@ public class Interactable : NetworkBehaviour
         {
             if (GameSessionManager.Instance.localPlayerController.currentEquippedItem == null || GameSessionManager.Instance.localPlayerController.currentEquippedItem.itemData != requiredItemData)
             {
-                UIManager.instance.Notify(requiredItemData.name + " required");
+                UIManager.instance.Notify(requiredItemData.title + " required");
                 return false;
             }
         }
