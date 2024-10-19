@@ -64,7 +64,7 @@ public class I_Bench : Interactable
         if (player)
         {
             Vector3 targetRotation = Quaternion.LookRotation(benchPlayerLookTargetTransform.forward).eulerAngles;
-            targetRotation = new Vector3(0, targetRotation.y - 30, 0);
+            targetRotation = new Vector3(0, targetRotation.y, 0);
             player.playerAnimationController.transform.rotation = Quaternion.Lerp(player.playerAnimationController.transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime * benchPlayerRotationInterpolationSpeed);
     
         }

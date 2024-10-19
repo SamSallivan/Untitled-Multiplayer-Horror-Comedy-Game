@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class I_CampFire : Interactable
+public class I_Campfire : Interactable
 {
+    
     public override IEnumerator InteractionEvent()
     {
         if (GameSessionManager.Instance.localPlayerController.currentEquippedItem.itemData == requiredItemData)

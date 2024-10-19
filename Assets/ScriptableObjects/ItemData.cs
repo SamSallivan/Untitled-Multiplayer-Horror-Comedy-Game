@@ -47,7 +47,14 @@ public class ItemData : ScriptableObject
     public bool isHeavy;
     
     [FoldoutGroup("Settings")]
-    public int discoverScore= 5;
+    public int discoverScore = 5;
+    
+    [FoldoutGroup("Settings")]
+    public bool depositable;
+    
+    [FoldoutGroup("Settings")]
+    [ShowIf(nameof(depositable))]
+    public int depositProgress = 1;
 
     //[ConditionalField(nameof(isEquippable))]
     //public EquipType equipType;
