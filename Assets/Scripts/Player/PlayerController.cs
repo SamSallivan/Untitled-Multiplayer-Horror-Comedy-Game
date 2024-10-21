@@ -514,15 +514,14 @@ public class PlayerController : NetworkBehaviour, IDamagable
    
    private void Update()
    {
+       if(!IsOwner)
+           VCNoiseUpdate();
        if (IsOwner && controlledByClient.Value)
        {
            if (!playerControllerInitialized)
            {
                ConnectClientToPlayerObject();
            }
-
-           
-           VCNoiseUpdate();
            InputUpdate();
            LookUpdate();
            InteractionUpdate();
