@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1856e6d548b6c4daf9c5787854b926, type: 3}
+  m_Name: Evidence
+  m_EditorClassIdentifier: 
+  title: Evidence
+  sprite: {fileID: 21300000, guid: e08a3fbad4193cd47b4a741f3be76154, type: 3}
+  description: Evidence
+  isStackable: 0
+  maxStackAmount: 5
+  hasDurability: 0
+  isHeavy: 1
+  discoverScore: 5
+  depositable: 1
+  depositProgress: 3
+  equipPosition: {x: 0.16, y: -0.15, z: 0.16}
+  equipRotation: {x: 0, y: 0, z: 0}
+  dropObject: {fileID: 4062514989801116217, guid: fd0769bd022e4e04491ae6ec3e7a4332, type: 3}
+  examineScale: 1
+  examineRotation: {x: 0, y: 0, z: 0, w: 1}
+  equipAnimatorParameter: 
+  leftHandAnimation: 0
+  rightHandAnimation: 1

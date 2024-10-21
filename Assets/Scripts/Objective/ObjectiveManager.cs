@@ -34,6 +34,14 @@ public class ObjectiveManager : NetworkBehaviour
         }
     }
 
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        objectiveList.Clear();
+        personalObjectiveList.Clear();
+    }
+
     public void Update()
     {
         UpdateObjectiveUI();

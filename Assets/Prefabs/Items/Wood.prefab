@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 2035924991986039603}
   - component: {fileID: 4267976058939923075}
   m_Layer: 7
-  m_Name: Cube
+  m_Name: Wood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
