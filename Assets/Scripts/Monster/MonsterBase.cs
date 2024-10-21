@@ -69,6 +69,14 @@ public class MonsterBase : NetworkBehaviour , IDamagable
             Destroy(gameObject);
         }
     }
+    
+    public void TeleportToNearestNavmesh()
+    {
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
+        {
+            _agent.Warp(hit.position+ new Vector3(0,2,0));
+        }
+    }
 
 
 }

@@ -83,6 +83,7 @@ public class BeerBottleController : ItemController
             return;
         }
 
+        Noises.MakeSound(new Noise(transform.position,5,Noise.SoundType.Dangerous));
         BottleHitClientRpc();
         thrown = false;
         thrownTime = 0f;

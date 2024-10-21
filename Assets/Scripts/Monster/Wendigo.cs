@@ -8,11 +8,14 @@ using UnityEngine;
 public class Wendigo : MonsterBase, IHear
 {
 
-
+    public float patrolTimer;
+    public float patrolTime = 3f;
+    
     public float alertTime = 3f;
     public float alertTimer = 0;
     public float searchTime = 8f;
-    
+
+    private bool reachSearchLocation = false;
 
     public float alertDelay = 1f;
     private float alertDelayTimer = 0;
@@ -48,14 +51,18 @@ public class Wendigo : MonsterBase, IHear
         {
             if (monState.Value == WendigoState.Idle)
             {
+                _agent.speed = 1.5f;
+                Patrol();
                 SeePlayer();
                 
             }
             else if (monState.Value == WendigoState.Alert)
             {
+                _agent.speed = 2;
                 SeePlayer();
                 if (alertTimer > 0)
                 {
+                    _agent.speed = 0;
                     alertTimer -= Time.deltaTime;
                 }
                 else
@@ -70,13 +77,22 @@ public class Wendigo : MonsterBase, IHear
             }
             else if (monState.Value == WendigoState.Searching)
             {
+                _agent.speed = 2;
+                Vector3 searchLoc = transform.position;
                 SeePlayer();
                 if(alertTimer>0)
                 {
                     alertTimer -= Time.deltaTime;
-                    if (!_agent.hasPath)
+                    if (!reachSearchLocation)
                     {
-                        SearchArea();
+                        SearchArea(searchLoc);
+                    }
+                    else if (!_agent.hasPath)
+                    {
+                        searchLoc = transform.position;
+                        reachSearchLocation = true;
+                        SearchArea(searchLoc);
+                        
                     }
                 }
                 else
@@ -87,11 +103,27 @@ public class Wendigo : MonsterBase, IHear
             }
             else if (monState.Value == WendigoState.Chasing)
             {
+                _agent.speed = 4;
                 Chase();
             }
         }
     }
 
+    public void Patrol()
+    {
+        if (patrolTimer <= 0)
+        {
+            patrolTimer = patrolTime + Random.Range(-4,4);
+            if (_agent.isOnNavMesh)
+            {
+                _agent.SetDestination(transform.position + new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5)));
+            }
+        }
+        else
+        {
+            patrolTimer -= Time.deltaTime;
+        }
+    }
 
     public void FindPlayerInVision()
     {
@@ -161,8 +193,10 @@ public class Wendigo : MonsterBase, IHear
         UpdateAttackTarget();
 
         FindPlayerInVision();
-        if(target!=null)
+        if (target != null)
+        {
             _agent.SetDestination(target.position);
+        }
         else
         {
             monState.Value = WendigoState.Idle;
@@ -175,10 +209,15 @@ public class Wendigo : MonsterBase, IHear
     }
 
 
-    public void SearchArea()
+    public void SearchArea(Vector3 startingSpot)
     {
-        
+        if (!_agent.hasPath)
+        {
+            _agent.SetDestination(startingSpot + new Vector3(Random.Range(-3, 3), 0, Random.Range(-3, 3)));
+        }
     }
+    
+    
 
     public void RespondToSound(Noise noise)
     {
@@ -199,6 +238,7 @@ public class Wendigo : MonsterBase, IHear
                     alertTimer = searchTime;
                     monState.Value = WendigoState.Searching;
                     _agent.SetDestination(noise.pos);
+                    reachSearchLocation = false;
                 }
             }
             else if (monState.Value == WendigoState.Alert)
@@ -210,6 +250,7 @@ public class Wendigo : MonsterBase, IHear
                         alertTimer = searchTime;
                         monState.Value = WendigoState.Searching;
                         _agent.SetDestination(noise.pos);
+                        reachSearchLocation = false;
                     }
                 }
 
@@ -220,6 +261,7 @@ public class Wendigo : MonsterBase, IHear
                 {
                     alertTimer = searchTime;
                     _agent.SetDestination(noise.pos);
+                    reachSearchLocation = false;
                 }
             }
             

@@ -181,14 +181,7 @@ public class NightCrawler : MonsterBase
             patrolTimer -= Time.deltaTime;
         }
     }
-
-    public void TeleportToNearestNavmesh()
-    {
-        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, _agent.areaMask))
-        {
-            _agent.Warp(hit.position+ new Vector3(0,2,0));
-        }
-    }
+    
     public void AttachedUpdate()
     {
         _agent.enabled = false;
