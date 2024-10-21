@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2770371171
+  GlobalObjectIdHash: 3187966563
   InScenePlacedSourceGlobalObjectIdHash: 3805860024
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -224,10 +224,13 @@ MonoBehaviour:
   health:
     m_InternalValue: 0
   target: {fileID: 0}
-  aggroMeter: 0
+  alertTime: 4
+  alertTimer: 0
+  searchTime: 8
+  alertDelay: 1
   fovAngle: 90
   fovPoint: {fileID: 4107364780598602770}
-  range: 20
+  range: 15
   visionLayer:
     serializedVersion: 2
     m_Bits: 384

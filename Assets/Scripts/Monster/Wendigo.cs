@@ -5,10 +5,17 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Wendigo : MonsterBase
+public class Wendigo : MonsterBase, IHear
 {
 
-    public float aggroMeter = 0;
+
+    public float alertTime = 3f;
+    public float alertTimer = 0;
+    public float searchTime = 8f;
+    
+
+    public float alertDelay = 1f;
+    private float alertDelayTimer = 0;
     
     public float fovAngle = 90f;
     public Transform fovPoint;
@@ -19,10 +26,9 @@ public class Wendigo : MonsterBase
     public enum WendigoState
     {
         Idle,
-        Stalking,
+        Alert,
         Searching,
         Chasing,
-        Grabbing,
         HitStunned,
         Dead,
     }
@@ -42,16 +48,42 @@ public class Wendigo : MonsterBase
         {
             if (monState.Value == WendigoState.Idle)
             {
-                UpdateStalkTarget();
+                SeePlayer();
                 
             }
-            else if (monState.Value == WendigoState.Stalking)
+            else if (monState.Value == WendigoState.Alert)
             {
-                Stalk();
+                SeePlayer();
+                if (alertTimer > 0)
+                {
+                    alertTimer -= Time.deltaTime;
+                }
+                else
+                {
+                    monState.Value = WendigoState.Idle;
+                }
+
+                if (alertDelayTimer > 0)
+                {
+                    alertDelayTimer -= Time.deltaTime;
+                }
             }
             else if (monState.Value == WendigoState.Searching)
             {
-                SearchArea();
+                SeePlayer();
+                if(alertTimer>0)
+                {
+                    alertTimer -= Time.deltaTime;
+                    if (!_agent.hasPath)
+                    {
+                        SearchArea();
+                    }
+                }
+                else
+                {
+                    monState.Value = WendigoState.Idle;
+                }
+                
             }
             else if (monState.Value == WendigoState.Chasing)
             {
@@ -114,7 +146,7 @@ public class Wendigo : MonsterBase
         
 
     }
-    public void UpdateStalkTarget()
+    public void SeePlayer()
     {
         FindPlayerInVision();
         if (target != null)
@@ -122,19 +154,7 @@ public class Wendigo : MonsterBase
             monState.Value = WendigoState.Chasing;
         }
     }
-
-    public void Stalk()
-    {
-        if (target != null)
-        {
-            
-        }
-    }
-
-    public void SearchArea()
-    {
-        UpdateAttackTarget();
-    }
+    
 
     public void Chase()
     {
@@ -151,6 +171,60 @@ public class Wendigo : MonsterBase
 
     public void UpdateAttackTarget()
     {
+        
+    }
+
+
+    public void SearchArea()
+    {
+        
+    }
+
+    public void RespondToSound(Noise noise)
+    {
+        
+        if (target == null)
+        {
+            if (monState.Value == WendigoState.Idle)
+            {
+
+                if (noise.soundType == Noise.SoundType.Interesting)
+                {
+                    alertDelayTimer = alertDelay;
+                    alertTimer = alertTime;
+                    monState.Value = WendigoState.Alert;
+                }
+                else if (noise.soundType == Noise.SoundType.Dangerous)
+                {
+                    alertTimer = searchTime;
+                    monState.Value = WendigoState.Searching;
+                    _agent.SetDestination(noise.pos);
+                }
+            }
+            else if (monState.Value == WendigoState.Alert)
+            {
+                if (alertDelayTimer <= 0)
+                {
+                    if (noise.soundType == Noise.SoundType.Interesting||noise.soundType == Noise.SoundType.Dangerous)
+                    {
+                        alertTimer = searchTime;
+                        monState.Value = WendigoState.Searching;
+                        _agent.SetDestination(noise.pos);
+                    }
+                }
+
+            }
+            else if (monState.Value == WendigoState.Searching)
+            {
+                if (noise.soundType == Noise.SoundType.Interesting||noise.soundType == Noise.SoundType.Dangerous)
+                {
+                    alertTimer = searchTime;
+                    _agent.SetDestination(noise.pos);
+                }
+            }
+            
+        }
+
         
     }
 }

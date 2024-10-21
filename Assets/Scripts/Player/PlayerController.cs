@@ -521,6 +521,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
                ConnectClientToPlayerObject();
            }
 
+           
+           VCNoiseUpdate();
            InputUpdate();
            LookUpdate();
            InteractionUpdate();
@@ -533,7 +535,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
            EffectUpdate();
-
+            
 
        }
        /*else
@@ -814,6 +816,8 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
    public void MovementUpdate()
    {
+       
+       
        //recalculates the previous velocity based on new ground normals
        if (!isNonPhysics)
        {
@@ -822,6 +826,9 @@ public class PlayerController : NetworkBehaviour, IDamagable
 
 
        gVel = Vector3.ProjectOnPlane(vel, grounder.groundNormal);
+
+       //make noise
+       WalkNoiseUpdate();
 
 
        //recalculates direction based on new ground normals
@@ -1688,7 +1695,39 @@ public class PlayerController : NetworkBehaviour, IDamagable
        playerAnimationController.modelList[currentCharacterModelIndex.Value].SetActive(!isPlayerDead.Value);
        playerAnimationController.bodyAnimator.avatar = playerAnimationController.avatarList[currentCharacterModelIndex.Value];
    }
-  
+
+
+   public void WalkNoiseUpdate()
+   {
+       if (gVel.magnitude >= 0.2f)
+       {
+           if (!crouching)
+           {
+               if (sprinting)
+               {
+                   Noises.MakeSound(new Noise(transform.position,10,Noise.SoundType.Dangerous));
+               }
+               else
+               {
+                   Noises.MakeSound(new Noise(transform.position,7,Noise.SoundType.Interesting));
+               }
+           }
+
+           
+       }
+   }
+
+   public void VCNoiseUpdate()
+   {
+       if (voicePlayerState != null)
+       {
+           if (voicePlayerState.IsSpeaking)
+           {
+               Noises.MakeSound(new Noise(transform.position,5,Noise.SoundType.Interesting));
+           }
+       }
+
+   }
 }
 
 
