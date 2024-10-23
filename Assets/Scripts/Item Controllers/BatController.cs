@@ -39,48 +39,56 @@ public class BatController : ItemController
         RaycastHit[] hits = Physics.SphereCastAll(owner.headTransform.position + owner.headTransform.right * -0.35f, 0.8f, owner.headTransform.forward, 1.5f, attackMask, QueryTriggerInteraction.Collide);
         List<RaycastHit> hitList = hits.OrderBy((RaycastHit x) => x.distance).ToList();
         bool hitSomething = false;
+        List<Transform> alreadyHitList = new List<Transform>();
         for (int i = 0; i < hitList.Count; i++)
         {
             IDamagable component;
             Rigidbody rb;
             PlayerController pc;
             NightCrawler ma;
-            
-            if (hitList[i].transform.TryGetComponent<IDamagable>(out component) && hitList[i].transform != owner.transform)
+
+
+            if (!alreadyHitList.Contains(hitList[i].transform))
             {
-                Vector3 direction = owner.headTransform.forward;
-                hitSomething = true;
-                component.TakeDamage(damage, direction,1f);
-            }
-            
-            else if (hitList[i].transform.TryGetComponent<Rigidbody>(out rb) && hitList[i].transform != owner.transform)
-            {
-                Vector3 direction = owner.headTransform.forward;
-                rb.AddForce(direction * damage, ForceMode.Impulse);
-            }
-            
-            if (hitList[i].transform.TryGetComponent<PlayerController>(out pc) && hitList[i].transform != owner.transform)
-            {
-                if(pc!=null)
-                    RatingManager.instance.AddScore(20,"Friendly Fire!", owner);
-            }
-            
-            if (hitList[i].transform.TryGetComponent<NightCrawler>(out ma) && hitList[i].transform != owner.transform)
-            {
-                if (ma != null)
+                if (hitList[i].transform.TryGetComponent<IDamagable>(out component) && hitList[i].transform != owner.transform)
                 {
-                    if (ma.attatchedPlayer != null)
-                    {
-                        RatingManager.instance.AddScore(50,"Friend Saved!", owner);
-                    }
-                    else if (ma.jumping)
-                    {
-                        RatingManager.instance.AddScore(100,"Home Run!", owner);
-                    }
-                    RatingManager.instance.AddScore(30,"Enemy Hit!", owner);
+                    Vector3 direction = owner.headTransform.forward;
+                    hitSomething = true;
+                    component.TakeDamage(damage, direction,1f);
                 }
+            
+                else if (hitList[i].transform.TryGetComponent<Rigidbody>(out rb) && hitList[i].transform != owner.transform)
+                {
+                    Vector3 direction = owner.headTransform.forward;
+                    rb.AddForce(direction * damage, ForceMode.Impulse);
+                }
+            
+                if (hitList[i].transform.TryGetComponent<PlayerController>(out pc) && hitList[i].transform != owner.transform)
+                {
+                    if(pc!=null)
+                        RatingManager.instance.AddScore(20,"Friendly Fire!", owner);
+                }
+            
+                if (hitList[i].transform.TryGetComponent<NightCrawler>(out ma) && hitList[i].transform != owner.transform)
+                {
+                    if (ma != null)
+                    {
+                        if (ma.attatchedPlayer != null)
+                        {
+                            RatingManager.instance.AddScore(50,"Friend Saved!", owner);
+                        }
+                        else if (ma.jumping)
+                        {
+                            RatingManager.instance.AddScore(100,"Home Run!", owner);
+                        }
+                        RatingManager.instance.AddScore(30,"Enemy Hit!", owner);
+                    }
                     
+                }
+                alreadyHitList.Add(hitList[i].transform);
             }
+            
+
         }
 
         if (hitSomething)

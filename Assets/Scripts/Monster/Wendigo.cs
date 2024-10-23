@@ -240,24 +240,31 @@ public class Wendigo : MonsterBase, IHear
         RaycastHit[] hits = Physics.SphereCastAll(attackCenter.position, 1.4f, transform.forward, 1.5f, attackMask, QueryTriggerInteraction.Collide);
         List<RaycastHit> hitList = hits.OrderBy((RaycastHit x) => x.distance).ToList();
         bool hitSomething = false;
+        List<Transform> alreadyHitList = new List<Transform>();
         for (int i = 0; i < hitList.Count; i++)
         {
             IDamagable component;
             Rigidbody rb;
- 
-            if (hitList[i].transform.TryGetComponent<IDamagable>(out component) &&
-                hitList[i].transform != transform)
+
+            if (!alreadyHitList.Contains(hitList[i].transform))
             {
-                Vector3 direction = transform.forward;
-                hitSomething = true;
-                component.TakeDamage(attackDamage, direction, 1f);
+                if (hitList[i].transform.TryGetComponent<IDamagable>(out component) &&
+                    hitList[i].transform != transform)
+                {
+                    Vector3 direction = transform.forward;
+                    hitSomething = true;
+                    component.TakeDamage(attackDamage, direction, 1f);
+                }
+
+                else if (hitList[i].transform.TryGetComponent<Rigidbody>(out rb) && hitList[i].transform != transform)
+                {
+                    Vector3 direction = transform.forward;
+                    rb.AddForce(direction * attackDamage, ForceMode.Impulse);
+                }
+                
+                alreadyHitList.Add(hitList[i].transform);
             }
 
-            else if (hitList[i].transform.TryGetComponent<Rigidbody>(out rb) && hitList[i].transform != transform)
-            {
-                Vector3 direction = transform.forward;
-                rb.AddForce(direction * attackDamage, ForceMode.Impulse);
-            }
         }
     }
     
