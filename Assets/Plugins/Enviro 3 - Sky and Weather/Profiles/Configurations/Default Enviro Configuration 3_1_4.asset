@@ -130,9 +130,9 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 0fcdd472bd6a8ec429fc1e9bc978c4fa, type: 2}
   showCirrusCloudsControls: 0
   show2DCloudsControls: 0
-  cloudFlatBaseAnim: {x: 0.84350246, y: -0.15807457}
-  cloudFlatDetailAnim: {x: -0.28785837, y: -0.12734741}
-  cirrusAnim: {x: -0.57453126, y: 0.9123692}
+  cloudFlatBaseAnim: {x: -0.9423889, y: -0.3724102}
+  cloudFlatDetailAnim: {x: 0.78381956, y: 0.80127}
+  cirrusAnim: {x: -0.4673613, y: 0.805198}
 --- !u!114 &-5447272849285213076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1352,7 +1352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b18a0693e95fd064e9d0a3b96e538236, type: 3}
   m_Name: Lighting Module
   m_EditorClassIdentifier: 
-  showModuleInspector: 0
+  showModuleInspector: 1
   showSaveLoad: 0
   active: 1
   Settings:
@@ -1915,7 +1915,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.8
+        value: 0.1
         inSlope: 0
         outSlope: 0
         tangentMode: 34
@@ -1924,7 +1924,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.8
+        value: 0.1
         inSlope: 0
         outSlope: 0
         tangentMode: 34
@@ -1937,7 +1937,7 @@ MonoBehaviour:
     ambientIntensityModifier: 1
     ambientSkyboxUpdateIntervall: 0.25
   preset: {fileID: 11400000, guid: 81d8b109102443243bcb0894975c0718, type: 2}
-  showDirectLightingControls: 0
+  showDirectLightingControls: 1
   showAmbientLightingControls: 1
   showReflectionControls: 0
 --- !u!114 &1310742743334959994
@@ -2320,7 +2320,7 @@ MonoBehaviour:
   showDensityControls: 0
   showTextureControls: 0
   showWindControls: 0
-  cloudAnimLayer1: {x: 0.104818, y: -0.002869651, z: 0.7036651}
+  cloudAnimLayer1: {x: 0.42632106, y: -0.32437268, z: 0.9896276}
   cloudAnimLayer2: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer1: {x: 0, y: 0, z: 0}
   cloudAnimNonScaledLayer2: {x: 0, y: 0, z: 0}
@@ -2581,6 +2581,7 @@ MonoBehaviour:
   showVolumetricsControls: 0
   showUnityFogControls: 1
   fogLights:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
