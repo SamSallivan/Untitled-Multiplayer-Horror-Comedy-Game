@@ -20,7 +20,7 @@ MonoBehaviour:
   showSkyControls: 0
   showLightingControls: 0
   showAuroraControls: 0
-  showEnvironmentControls: 1
+  showEnvironmentControls: 0
   showAudioControls: 0
   showAmbientAudioControls: 0
   showWeatherAudioControls: 0

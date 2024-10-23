@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbac6e678443724c9bd2baf5d564c1d, type: 3}
   m_Name: Custom
   m_EditorClassIdentifier: 
-  showEditor: 0
+  showEditor: 1
   showEffectControls: 0
   showCloudControls: 0
   showFlatCloudControls: 0
   showFogControls: 0
   showSkyControls: 0
   showLightingControls: 0
-  showAuroraControls: 0
+  showAuroraControls: 1
   showEnvironmentControls: 0
   showAudioControls: 0
   showAmbientAudioControls: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
   showLightningControls: 0
   cloudsOverride:
     ambientLightIntensity: 1
-    showLayer1: 1
+    showLayer1: 0
     coverageLayer1: -0.102
     dilateCoverageLayer1: 1
     dilateTypeLayer1: 1
@@ -79,9 +79,9 @@ MonoBehaviour:
     intensity: 1
     skyColorTint: {r: 1, g: 1, b: 1, a: 1}
   fogOverride:
-    fogDensity: 0.142
-    fogHeightFalloff: 0.0034
-    fogHeight: 0
+    fogDensity: 0.1
+    fogHeightFalloff: 0.033
+    fogHeight: 150
     fogDensity2: 0.651
     fogHeightFalloff2: 0.0469
     fogHeight2: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
     unityFogStartDistance: 0
     unityFogEndDistance: 1000
   auroraOverride:
-    auroraIntensity: 0.5
+    auroraIntensity: 0.25
   effectsOverride:
     effectsOverride: []
   audioOverride:

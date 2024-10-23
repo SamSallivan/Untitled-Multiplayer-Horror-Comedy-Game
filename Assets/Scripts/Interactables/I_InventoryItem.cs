@@ -29,6 +29,8 @@ public class I_InventoryItem : Interactable
     [FoldoutGroup("Inventory Item")]
     private InventorySlot _inventorySlot;
 
+    private Coroutine pocketCoroutine;
+
     public InventorySlot inventorySlot
     {
         get
@@ -356,7 +358,7 @@ public class I_InventoryItem : Interactable
         OnEnableItemMeshesChanged(true, false);
         OnEnableItemPhysicsChanged(true, false);
         
-        StartCoroutine(PocketItemCoroutine(playerId));
+        pocketCoroutine = StartCoroutine(PocketItemCoroutine(playerId));
         
         /*if (IsServer)
         {
@@ -380,6 +382,8 @@ public class I_InventoryItem : Interactable
     [Rpc(SendTo.Everyone)]
     public void UnpocketItemRpc()
     {
+        StopCoroutine(pocketCoroutine);
+        
         if (owner)
         {
             transform.position = owner.headTransform.transform.position + owner.headTransform.transform.forward * 0.5f;
