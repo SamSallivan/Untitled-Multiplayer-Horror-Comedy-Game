@@ -50,7 +50,7 @@ public class BatController : ItemController
             {
                 Vector3 direction = owner.headTransform.forward;
                 hitSomething = true;
-                component.TakeDamage(damage, direction);
+                component.TakeDamage(damage, direction,1f);
             }
             
             else if (hitList[i].transform.TryGetComponent<Rigidbody>(out rb) && hitList[i].transform != owner.transform)

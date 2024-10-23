@@ -57,7 +57,8 @@ public class CameraController : ItemController
     IEnumerator StartFlash()
     {
         ToggleLightServerRpc();
-        SoundManager.Instance.PlayServerSoundEffect(flashSound,transform.position);
+        FlashSoundServerRpc();
+        
         yield return new WaitForSeconds(0.1f);
         CheckBlindClientRpc();
         yield return new WaitForSeconds(0.2f);

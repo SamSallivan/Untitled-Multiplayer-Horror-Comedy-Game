@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -25,6 +26,17 @@ public class Wendigo : MonsterBase, IHear
     public float range = 8;
     public LayerMask visionLayer;
 
+    
+    
+    public float attackDamage = 50;
+
+    public float attackCD = 3f;
+    private bool canAttack = true;
+    public Transform attackCenter;
+
+    public LayerMask attackMask;
+    
+
     private PlayerController closestVisiblePlayer;
     public enum WendigoState
     {
@@ -32,6 +44,7 @@ public class Wendigo : MonsterBase, IHear
         Alert,
         Searching,
         Chasing,
+        Attacking,
         HitStunned,
         Dead,
     }
@@ -62,7 +75,6 @@ public class Wendigo : MonsterBase, IHear
                 SeePlayer();
                 if (alertTimer > 0)
                 {
-                    _agent.speed = 0;
                     alertTimer -= Time.deltaTime;
                 }
                 else
@@ -103,8 +115,12 @@ public class Wendigo : MonsterBase, IHear
             }
             else if (monState.Value == WendigoState.Chasing)
             {
-                _agent.speed = 4;
+                _agent.speed = 3;
                 Chase();
+            }
+            else if (monState.Value == WendigoState.Attacking)
+            {
+
             }
         }
     }
@@ -190,12 +206,18 @@ public class Wendigo : MonsterBase, IHear
 
     public void Chase()
     {
-        UpdateAttackTarget();
 
         FindPlayerInVision();
         if (target != null)
         {
             _agent.SetDestination(target.position);
+            if (Vector3.Distance(transform.position,target.position)<=1f)
+            {
+                if (canAttack)
+                {
+                    StartCoroutine(AttackCoroutine());
+                }
+            }
         }
         else
         {
@@ -203,10 +225,42 @@ public class Wendigo : MonsterBase, IHear
         }
     }
 
-    public void UpdateAttackTarget()
+    public IEnumerator AttackCoroutine()
     {
-        
+        canAttack = false;
+        monState.Value = WendigoState.Attacking;
+        Attack();
+        yield return new WaitForSeconds(attackCD);
+        canAttack = true;
+        monState.Value = WendigoState.Idle;
     }
+    public void Attack()
+    {
+        Debug.Log("Attacking");
+        RaycastHit[] hits = Physics.SphereCastAll(attackCenter.position, 1.4f, transform.forward, 1.5f, attackMask, QueryTriggerInteraction.Collide);
+        List<RaycastHit> hitList = hits.OrderBy((RaycastHit x) => x.distance).ToList();
+        bool hitSomething = false;
+        for (int i = 0; i < hitList.Count; i++)
+        {
+            IDamagable component;
+            Rigidbody rb;
+ 
+            if (hitList[i].transform.TryGetComponent<IDamagable>(out component) &&
+                hitList[i].transform != transform)
+            {
+                Vector3 direction = transform.forward;
+                hitSomething = true;
+                component.TakeDamage(attackDamage, direction, 1f);
+            }
+
+            else if (hitList[i].transform.TryGetComponent<Rigidbody>(out rb) && hitList[i].transform != transform)
+            {
+                Vector3 direction = transform.forward;
+                rb.AddForce(direction * attackDamage, ForceMode.Impulse);
+            }
+        }
+    }
+    
 
 
     public void SearchArea(Vector3 startingSpot)
@@ -268,5 +322,28 @@ public class Wendigo : MonsterBase, IHear
         }
 
         
+    }
+    
+    public override void TakeDamage(float damage, Vector3 direction, float stunTime = 0f)
+    {
+        if (base.IsOwner && !isDead)
+        {
+            health.Value -= damage;
+
+            StartCoroutine(Stun(stunTime));
+
+            if (health.Value <= 0)
+            {
+                Die();
+            }
+            //Debug.Log($"{playerUsernameText} took {damage} damage.");
+        }
+    }
+
+    IEnumerator Stun(float stunTime)
+    {
+        monState.Value = WendigoState.HitStunned;
+        yield return new WaitForSeconds(stunTime);
+        monState.Value = WendigoState.Idle;
     }
 }

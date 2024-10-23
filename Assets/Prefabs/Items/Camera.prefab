@@ -132,7 +132,6 @@ GameObject:
   - component: {fileID: 4291515639674582539}
   - component: {fileID: 2115430391677776708}
   - component: {fileID: 9002758322704953093}
-  - component: {fileID: 7753986743579532550}
   - component: {fileID: 8583196197622479805}
   m_Layer: 0
   m_Name: Spotlight and Beam SD
@@ -375,27 +374,6 @@ MonoBehaviour:
   useOcclusionCulling: 1
   depthMapResolution: 128
   fadeDistanceToSurface: 0
---- !u!114 &7753986743579532550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7046685739311265399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1447889094
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!135 &8583196197622479805
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -517,7 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 644438374
+  GlobalObjectIdHash: 2211336202
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -556,6 +534,7 @@ MonoBehaviour:
   playerLookAtTargetTransform: {fileID: 0}
   playerRotationInterpolationSpeed: 10
   forcePlayerTransformExtendDuration: 0
+  triggerZone: {fileID: 0}
   animationOnInteract: 0
   animationOnInteractExtendedDuration: 0
   interactAnimation: {fileID: 0}
