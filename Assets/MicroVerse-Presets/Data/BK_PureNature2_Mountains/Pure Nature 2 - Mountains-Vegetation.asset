@@ -1,0 +1,225 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ede25ccd6fd4e8e98a828e1f7c552d, type: 3}
+  m_Name: Pure Nature 2 - Mountains-Vegetation
+  m_EditorClassIdentifier: 
+  contentType: 2
+  author: Rowlan
+  packName: Pure Nature 2 - Mountains
+  id: '[v1]https://assetstore.unity.com/packages/3d/environments/pure-nature-2-mountains-269088'
+  renderPipeline: 0
+  previewGradient: {fileID: 0}
+  contents:
+  - prefab: {fileID: 1126284013504587644, guid: 65df30ce17cf2ef48b6794eb7496ed36, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 144cfae74d8430d4fae81bda5d3eacd0, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7424966522322725680, guid: f3f1695653087bf4a8c564a7a158f81b, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 3694c5393b788124e828f7f0f441039b, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 335631453978188627, guid: 9844c679aba3b98499269e4a581abaa7, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 7650bddce05f27d4897173fb2cb80aac, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2897568905725903534, guid: 3864b1d3d3a6db649b3940ce20198dca, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 8d6d9acf12649274e9a358b781a07082, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5282999756715788926, guid: d59de20299a2b59408042f310e2abd27, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 77a11928dcc19f04e841a2ea9bbc5ee3, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 3087235751019870061, guid: 2212677ee35a1de409cbffe1d79ce024, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 386b7b05e0fe2de488867c86d39e32ab, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5389331823869500274, guid: 3b33f7f581331bd4bb7eb16d3854fb3d, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 7c96c45646423eb4891ff67d428e59a7, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 3308614527760040930, guid: 6d75338a57d46874e92b942381e63883, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 3a0e85433abdbe94bae97186604d0123, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 4858587030521371971, guid: b527ad69d58fcca488429daeb3d15489, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: ea42d3a1ce9a3f64b9bb4f0fcf351aa2, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 33589457391065524, guid: 1cdef4c1612153a40bfd351f6dc01975, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 51b228c990076a74da7003b64677bd9d, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 3563291983571450896, guid: 09d47f5330414094291eee9017e904cd, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 5db5e8759c23ad84c9c5aaae048f1901, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 8357406573237666720, guid: 178656f8ba14a5947b479848f07258d6, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 38c2c12ca33ddaf4091a0e511b59080e, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5278088839604488875, guid: 7e1b3b73c3563d344b9136228d3352c4, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 14ed764ea69d41a45a9f759c5e36cb9a, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5548403608778984367, guid: f81789952ceac7846a4540c91d3e9890, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 06ed10fa90642bd40ba7af88b05d115d, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5796887179339044536, guid: e2307f8d791f194428ae30342f2698bf, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 19fd6abb8b2c38046bbc06ae42578a7c, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 6935526866761469173, guid: 69aaa7c6d9c4fcc4e9afc55bf319cd11, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 237b5ac8c76c87344bc488b7359bf04e, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7145902058659416484, guid: 95e2c32be64c0f042aac3b8d1d40d1ba, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: ed2beb977373d0141b4f4c79ca396903, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 8653057957678098030, guid: f7864c70828920e4c891894ebc954886, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: bdb66c2bf8324e04a8a41a1435db415d, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2945748596957158690, guid: 2b4dec53605eea247b8abf8324e02ada, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: d436327f621d5ff45bb86bcc42546933, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 8600711555967160457, guid: 223a6c39db421d84aab227cf9e1f8803, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 6841645780a40f44685ca99d882f19d0, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5616261643194796042, guid: 93d272174a138ac498c329fffcfa1c3e, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 20a5862bafc20174ab6fbfc189d6d5f8, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 8230990300747895064, guid: 3209f3d55eca51f4fbd1a71ec629edab, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: a29cf1eed7bf0e34d9c69e35fe2c7016, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 6194786397129890390, guid: b791bdf60c327f444afed968ca0a23f1, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 2a995bfc4960fe04ab18cc458a0f93b2, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 6468229221971640128, guid: cfdf585e449b23f438108fcb7f75aead, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 5bc659d536097a145ae449b89c449d52, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 1193576121993038681, guid: 3aaf3b278ebeb5e449d35436b2016800, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: a88a7331fc96887498a9d59b6f327ee4, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 8021083612334692448, guid: 3ba1058436dd67c4fa4f4271d91b2d93, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 3786cdc9310ca954b849958c556314da, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5998609002099225288, guid: dc7e03639e5dc1b45b413c013b1b65fa, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: c8f61b9abc8a65d4cba4b2c639e5158c, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5726828981020058138, guid: c17b0407f732aa84492dfbf83d7d36d2, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: c89f484659a079942a33d22152cf3c4a, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2945422220600120403, guid: 60a1085b8d1488f4c8f6277caa8c7a7d, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: b817bfd42712396488c1a75b013f9846, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  systemConfig: {fileID: 0}

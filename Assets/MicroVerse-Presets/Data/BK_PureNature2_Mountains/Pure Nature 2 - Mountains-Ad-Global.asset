@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cceca7f10e994940a472e6cb9b0c10f, type: 3}
+  m_Name: Pure Nature 2 - Mountains-Ad-Global
+  m_EditorClassIdentifier: 
+  contentType: 8
+  author: Rowlan
+  packName: Pure Nature 2 - Mountains
+  id: '[v1]https://assetstore.unity.com/packages/3d/environments/pure-nature-2-mountains-269088'
+  renderPipeline: 0
+  image: {fileID: 2800000, guid: ac52d8dd02589e54e84ed5d57923b881, type: 3}
+  downloadPath: https://assetstore.unity.com/packages/3d/environments/pure-nature-2-mountains-269088
+  requireInstalledObject: 1
+  installedObject: {fileID: 5129432693442360854, guid: 81b32d8ad0c65dd4d80807ce71c37bcd, type: 3}
+  description: 

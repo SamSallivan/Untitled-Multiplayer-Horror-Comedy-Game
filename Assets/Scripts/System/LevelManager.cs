@@ -121,9 +121,9 @@ public class LevelManager : NetworkBehaviour
             //temp just start game
             //matchTimer.Value = preExtractionTime;
             //currentGameState.Value = GameState.PreExtraction;
+            SpawnMonsters();
         }
-        //else if (currentGameState.Value == GameState.PreExtraction)
-        else if (currentGameState.Value == GameState.NotStarted)
+        else if (currentGameState.Value == GameState.PreExtraction)
         {
             matchTimer.Value -= Time.deltaTime;
             SpawnMonsters();

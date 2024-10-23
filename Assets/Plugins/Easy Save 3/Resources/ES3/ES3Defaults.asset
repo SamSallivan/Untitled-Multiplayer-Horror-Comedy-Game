@@ -44,6 +44,9 @@ MonoBehaviour:
     - Enviro3.Runtime
     - ExLib
     - Facepunch Transport for Netcode for GameObjects
+    - JBooth.MicroVerseCore
+    - JBooth.MicroVerseCore.Demo
+    - JBooth.MicroVerseCore.Demo.TimeOfDay.Runtime
     - NWH.Common
     - NWH.DWP2
     - QFSW.QC
@@ -55,6 +58,7 @@ MonoBehaviour:
     - QFSW.QC.Serializers
     - QFSW.QC.Suggestors
     - QFSW.QC.UI
+    - Rowlan.MicroVerse.Presets.Runtime
     - sc.posteffects.runtime
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0

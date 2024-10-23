@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ede25ccd6fd4e8e98a828e1f7c552d, type: 3}
+  m_Name: Pure Nature 2 - Meadows-Objects
+  m_EditorClassIdentifier: 
+  contentType: 3
+  author: Rowlan
+  packName: Pure Nature 2 - Meadows
+  id: '[v1]https://assetstore.unity.com/packages/3d/environments/pure-nature-2-meadows-269085'
+  renderPipeline: 0
+  previewGradient: {fileID: 0}
+  contents:
+  - prefab: {fileID: 5986711486977873001, guid: 55534872ee916824499d05294931257e, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: a89b49af9f1d63946b832cc643e9b6ce, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 9188388984895687320, guid: 2c970375c3207624ca2394570cc4aa15, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 789272be7c09a9a4cbf8c90f58de0359, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 4314272152786947061, guid: 31d6a062965dc9a4dbafa2f9c22d76cc, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: bb43435d70263c748b16df95dadd7eba, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7041070833175435977, guid: 6b868e75543176f4ab5822ce432368e9, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 6fc1822a3f09d544b9a68199dfb8a53b, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7520328873656479352, guid: 2ae182d583685c442b4a7b2bae6a67aa, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: e041be9feb30bac47b3fa52c1a258f43, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 4013376628975552730, guid: ed3881669c4fb094daeeb1851fc6bf03, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 25a02ae25c8b5a54686a20261bfeb27d, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 6361350827163618261, guid: 8cd4ef408ff9072418ef752dad137940, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: a1ba1479d6c06ff4e9aad78d99d5cb99, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 1942007648056901149, guid: 44f952a57511c5c40921c64720831e06, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 03081082c63f84e4bbfbf49b77f59180, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 1475231101093322382, guid: 5199d1ad8d2bc254eac3bf080796b877, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 0704671c18750ca48a203d752cfcde94, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  systemConfig: {fileID: 0}

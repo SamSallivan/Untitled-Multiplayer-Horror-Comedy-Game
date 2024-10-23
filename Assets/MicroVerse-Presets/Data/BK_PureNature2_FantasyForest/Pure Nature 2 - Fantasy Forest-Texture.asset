@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ede25ccd6fd4e8e98a828e1f7c552d, type: 3}
+  m_Name: Pure Nature 2 - Fantasy Forest-Texture
+  m_EditorClassIdentifier: 
+  contentType: 1
+  author: Rowlan
+  packName: Pure Nature 2 - Fantasy Forest
+  id: '[v1]https://assetstore.unity.com/packages/3d/environments/pure-nature-2-fantasy-forest-282665'
+  renderPipeline: 0
+  previewGradient: {fileID: 0}
+  contents:
+  - prefab: {fileID: 8811278230633111934, guid: d1977f22f826fcf4fb95f0f73ec1d9c6, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 10337b6607378f84e995a2c61ea7a5fd, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 4578592271026824194, guid: 1b1731be68ae1494cb07a568622f520d, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 1bf3bc8e3a1c6254692225d5fdfe73f8, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7104148506636930697, guid: 0f7a6e0e3f64127479530034b546cea6, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 386855eb3c2dac04ba29be66aca065ba, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 1824743899583070433, guid: 0133fea5fb5cfa149b869161f4305753, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 5821c3bb45d42e1498bda4629b1044cc, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 8174718215152542615, guid: e4a9a5e5aa3c507439383f4897736749, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 7f484b6deaa1f794291bd27dee3c4f74, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 1704098247774598831, guid: c762acfb7a2006d49b5d80542f5983e1, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 7862dc56d9752524bbd06f09df6c6b91, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 3031688057235230782, guid: b0707853f74858e448eb36e170c5b374, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: ae4777d0c584eb04488ca6da260979c1, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7893409178025893276, guid: 25a73ac437bfe3848ba786910b312aea, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 7b9c5d2d482782b44936b6bedc863434, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 6896228428795425160, guid: 57f58017da53b0348ab86700282e326f, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: c111eb912149d3841bca9e12e6a46496, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 375339098737766498, guid: 7d7683fa45f314349ad9d84f5d330ef6, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: d1ed936fb53f5534586f0b9b8474b625, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  systemConfig: {fileID: 0}

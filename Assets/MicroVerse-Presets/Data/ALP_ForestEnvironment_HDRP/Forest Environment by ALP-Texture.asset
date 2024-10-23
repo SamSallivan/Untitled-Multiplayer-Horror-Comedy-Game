@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ede25ccd6fd4e8e98a828e1f7c552d, type: 3}
+  m_Name: Forest Environment by ALP-Texture
+  m_EditorClassIdentifier: 
+  contentType: 1
+  author: Rowlan
+  packName: Forest Environment by ALP
+  id: HDRP_https://assetstore.unity.com/packages/3d/vegetation/nature-package-forest-environment-165645
+  renderPipeline: 0
+  previewGradient: {fileID: 0}
+  contents:
+  - prefab: {fileID: 6516156276635192504, guid: b82433f380045d54fb5ff14a2feacc15,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 8f62bb2bb5834d145ae900535663c90d, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2103615048480703633, guid: f49fa344f19429544860452e4dfed1c3,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 726f1f28a3307224fad0dffa6f62f191, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2852590895524709442, guid: 7845e7054d60bb44dbbc22b9ae8cfaff,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 410c41fed75ce7e49b932b4be8774322, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 871748231405946876, guid: 5c921ed0ca7a9de469225b33631df0ba, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: f5e9af4cf4ce8534e8e60c5c9d5927b6, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 8473143034855386931, guid: ad71bfc1456f10841a777f562a54aa51,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 2469cf8cc37a25c439209cb2a8351790, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 4957133626273874229, guid: 5d0885cc6f97f94459fc661c7be16dfc,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 4a8d15bc3b3500548b395a078c7ffb3b, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2020983436763489518, guid: 1f68ecafb6f8240458708e66ceb53b59,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 089b2621eb7ab2f43943e22a2f976f76, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 4125817374125407406, guid: e39add03db56a6b4491d13a8bf04be74,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: b906435fc0723f743a967f698cac089d, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2829049162709465515, guid: 1de15f1bfa4afa443bb6c6b76101b4cf,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 97d912115194150449940b930ee8b50f, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 594443953238302592, guid: 36d77eb5fd6f6ee4fb3e94215a76a775, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: aa6e59edfa9cdbf4fbe8804f27253d70, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  systemConfig: {fileID: 0}

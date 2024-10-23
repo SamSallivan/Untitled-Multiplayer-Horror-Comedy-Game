@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ede25ccd6fd4e8e98a828e1f7c552d, type: 3}
+  m_Name: Forest Environment by ALP-Biomes
+  m_EditorClassIdentifier: 
+  contentType: 5
+  author: Rowlan
+  packName: Forest Environment by ALP
+  id: HDRP_https://assetstore.unity.com/packages/3d/vegetation/nature-package-forest-environment-165645
+  renderPipeline: 0
+  previewGradient: {fileID: 0}
+  contents:
+  - prefab: {fileID: 1109284552985670805, guid: 16d8d9216c5eaea49bc73cd8631b3d8b,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 925b3da582df38b4b8a17d3ffa50dd21, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7483673940262664077, guid: 9ff76063094ec6b40aea4ff84c93a976,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: c60d38e484575b243964c09a13b359ee, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 6001880659568009584, guid: 0d30968be0fc1464fbd0b0f0f556f910,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 7d9e0dffdcb8976469ee711a70118bae, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 2278843271264320469, guid: f65e486aeefa0b740b6bb08428a8384c,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 6b02f83162ffbd949976a51b2a3e486a, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 7811471871014587614, guid: 411d8292bab8f264997d6e99861ad837,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 64799f3241279934383a2736a87ddf46, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  - prefab: {fileID: 5220779511201312379, guid: 9e6b8b2321ef3ae43951a3fd4dba7d57,
+      type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 977ed3b987c42d34997c1eaab4b09613, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: 
+  systemConfig: {fileID: 0}

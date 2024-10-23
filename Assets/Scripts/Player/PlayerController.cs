@@ -845,7 +845,7 @@ public class PlayerController : NetworkBehaviour, IDamagable
                staminaReplenishCooldown = 0.5f;
               
                //Stops sprinting if not inputing forward
-               if (stamina <= 0f || inputDir == Vector3.zero || inputDir.z < 0)
+               if (stamina <= 0f || inputDir == Vector3.zero || inputDir.z < 0 || gVel.sqrMagnitude < 0.5f)
                {
                    sprinting = false;
                    sprintingNetworkVariable.Value = false;

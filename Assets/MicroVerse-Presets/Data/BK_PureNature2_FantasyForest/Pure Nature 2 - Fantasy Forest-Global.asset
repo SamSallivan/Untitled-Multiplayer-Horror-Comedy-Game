@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10ede25ccd6fd4e8e98a828e1f7c552d, type: 3}
+  m_Name: Pure Nature 2 - Fantasy Forest-Global
+  m_EditorClassIdentifier: 
+  contentType: 8
+  author: Rowlan
+  packName: Pure Nature 2 - Fantasy Forest
+  id: '[v1]https://assetstore.unity.com/packages/3d/environments/pure-nature-2-fantasy-forest-282665'
+  renderPipeline: 0
+  previewGradient: {fileID: 0}
+  contents:
+  - prefab: {fileID: 4985828789596828057, guid: 4b09c8881372d8b4489baedefd58e647, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: 6f03a9d3e5dc27349999b190df5a7379, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: Directional Light assignment required
+  - prefab: {fileID: 7949305180630517468, guid: e57798341726ba343be1eca4cc18d646, type: 3}
+    childPrefab: {fileID: 0}
+    previewImage: {fileID: 2800000, guid: a60e6d800f820b2439eba057b51b5219, type: 3}
+    previewAsset: {fileID: 0}
+    stamp: 
+    previewGradient: {fileID: 0}
+    description: Directional Light assignment required
+  systemConfig: {fileID: 0}
