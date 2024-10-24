@@ -31,40 +31,6 @@ MonoBehaviour:
   m_Active: 0
   settings:
     renderPassEvent: 550
---- !u!114 &-5830241498431537440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 039ea2c8d80d11f4aa1926e992d660b4, type: 3}
-  m_Name: '[SCPE] ColorSplitRenderer'
-  m_EditorClassIdentifier: 
-  m_Active: 0
-  settings:
-    injectionPoint: 550
-    alwaysEnable: 0
-    cameraTypes: 5
---- !u!114 &-2704410504090354372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0f847b2f420ea54ba779e55bdc277ad, type: 3}
-  m_Name: PixelizeRenderer
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  settings:
-    injectionPoint: 550
-    alwaysEnable: 0
-    cameraTypes: 5
 --- !u!114 &-338252444394574457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,17 +73,13 @@ MonoBehaviour:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
   m_RendererFeatures:
-  - {fileID: 9134544913553207386}
-  - {fileID: -2704410504090354372}
-  - {fileID: 2778186126716071367}
-  - {fileID: 8921119208457087222}
-  - {fileID: 138853701947654139}
   - {fileID: -338252444394574457}
-  - {fileID: 7071788978566123845}
-  - {fileID: -5830241498431537440}
+  - {fileID: 9134544913553207386}
+  - {fileID: 2778186126716071367}
   - {fileID: 6988211669221259233}
   - {fileID: 2755237285161482305}
-  m_RendererFeatureMap: 5ab030b5336cc47e3cfddba0f90078dac76dd41290198e26f6a8ff6aa72ece7bfb7f56ccb44eed01872d74a731494efb45d1f4a99b0a24624138f685b6913c26
+  - {fileID: 8921119208457087222}
+  m_RendererFeatureMap: 872d74a731494efb5ab030b5336cc47ec76dd41290198e26f6a8ff6aa72ece7b
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -156,23 +118,6 @@ MonoBehaviour:
   m_CopyDepthMode: 1
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 1
---- !u!114 &138853701947654139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8173f089832511149b44a215bb4a2f39, type: 3}
-  m_Name: DitheringRenderer
-  m_EditorClassIdentifier: 
-  m_Active: 0
-  settings:
-    injectionPoint: 550
-    alwaysEnable: 0
-    cameraTypes: 5
 --- !u!114 &2147395302443729137
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -253,23 +198,6 @@ MonoBehaviour:
   m_Name: SCPE SharpenRenderer
   m_EditorClassIdentifier: 
   m_Active: 1
-  settings:
-    injectionPoint: 550
-    alwaysEnable: 0
-    cameraTypes: 5
---- !u!114 &7071788978566123845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 400dc2baa0a22054cb259512e4ce8907, type: 3}
-  m_Name: KuwaharaRenderer
-  m_EditorClassIdentifier: 
-  m_Active: 0
   settings:
     injectionPoint: 550
     alwaysEnable: 0

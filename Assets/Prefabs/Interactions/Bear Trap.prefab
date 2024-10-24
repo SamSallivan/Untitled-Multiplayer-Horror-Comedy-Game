@@ -360,6 +360,7 @@ MonoBehaviour:
   playerLookAtTargetTransform: {fileID: 8634248803141280160}
   playerRotationInterpolationSpeed: 30
   forcePlayerTransformExtendDuration: 0
+  triggerZone: {fileID: 0}
   animationOnInteract: 1
   animationOnInteractExtendedDuration: 0
   interactAnimation: {fileID: 0}
@@ -419,8 +420,7 @@ MonoBehaviour:
     m_Bits: 256
   triggered:
     m_InternalValue: 1
-  onceOnly: 0
-  colliderGameObject: {fileID: 0}
+  playerIds: 
 --- !u!114 &4633895544927574086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3565,7 +3565,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 538488eafc471544097cff798a5c5955, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
