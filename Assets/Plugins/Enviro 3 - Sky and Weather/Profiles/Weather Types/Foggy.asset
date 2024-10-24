@@ -27,7 +27,7 @@ MonoBehaviour:
   showLightningControls: 0
   cloudsOverride:
     ambientLightIntensity: 1
-    showLayer1: 1
+    showLayer1: 0
     coverageLayer1: 0.208
     dilateCoverageLayer1: 0.836
     dilateTypeLayer1: 0.479
@@ -79,12 +79,12 @@ MonoBehaviour:
     intensity: 1
     skyColorTint: {r: 1, g: 1, b: 1, a: 1}
   fogOverride:
-    fogDensity: 0.142
-    fogHeightFalloff: 0.0034
-    fogHeight: 0
-    fogDensity2: 0.651
-    fogHeightFalloff2: 0.0469
-    fogHeight2: 0
+    fogDensity: 0
+    fogHeightFalloff: 0
+    fogHeight: 181.62
+    fogDensity2: 0.279
+    fogHeightFalloff2: 0.0291
+    fogHeight2: 100
     fogColorBlend: 0.75
     fogColorMod: {r: 1, g: 1, b: 1, a: 1}
     scattering: 0.461

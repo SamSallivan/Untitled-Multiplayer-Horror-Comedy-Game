@@ -185,7 +185,14 @@ public class I_InventoryItem : Interactable
         playerController.currentEquippedItem = this;
         playerController.playerAnimationController.armAnimator.SetBool("Equipped", true);
         playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
-        playerController.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
+        if (!string.IsNullOrEmpty(itemData.equipAnimatorParameter))
+        {
+            playerController.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, true);
+        }
+        else
+        {
+            playerController.playerAnimationController.armAnimator.SetBool("Default", true);
+        }
     }
     
     [Rpc(SendTo.Everyone)]
@@ -201,7 +208,14 @@ public class I_InventoryItem : Interactable
         playerController.currentEquippedItem = null;
         playerController.playerAnimationController.armAnimator.SetBool("Equipped", false);
         playerController.playerAnimationController.armAnimator.SetTrigger("SwitchItem");
-        playerController.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
+        if (!string.IsNullOrEmpty(itemData.equipAnimatorParameter))
+        {
+            playerController.playerAnimationController.armAnimator.SetBool(itemData.equipAnimatorParameter, false);
+        }
+        else
+        {
+            playerController.playerAnimationController.armAnimator.SetBool("Default", false);
+        }
 
         if (TryGetComponent<ItemController>(out var itemController) && (itemController.buttonHeld || itemController.buttonHeldSecondary))
         {
