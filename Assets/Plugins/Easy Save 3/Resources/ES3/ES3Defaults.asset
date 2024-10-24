@@ -40,6 +40,8 @@ MonoBehaviour:
     - Apex.Serialization
     - Assembly-CSharp
     - Assembly-CSharp-firstpass
+    - Crest
+    - Crest.Examples
     - DissonanceVoip
     - Enviro3.Runtime
     - ExLib
